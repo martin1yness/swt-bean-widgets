@@ -1,0 +1,8 @@
+-- README :: SWT-BEAN-WIDGETS
+--
+-- This library is a set experimental widgets intended to be used with
+-- bean like Java business applications. They have all been built for 
+-- a singluar data management system and may not be adaptable to your
+-- projects. With that said, I would love to make them more generic and
+-- useful to others and will try to do so as time permits.
+-- /Martin

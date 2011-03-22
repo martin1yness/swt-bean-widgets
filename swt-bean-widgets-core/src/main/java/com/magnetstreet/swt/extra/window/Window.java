@@ -3,12 +3,12 @@
  */
 package com.magnetstreet.swt.extra.window;
 
-import com.magnetstreet.swt.extra.splash.IndeterminateLoadingSplash;
 import com.magnetstreet.swt.extra.window.hotkey.HotKeyManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -43,7 +43,7 @@ public abstract class
 
     private static String glblTitlePrefix, glblTitlePostfix;
 
-    public enum STATE { OPENED, OPENING, HIDDEN, CLOSED, NEW }
+    public enum STATE { OPENED, OPENING, HIDDEN, CLOSED, NEW, USER }
     private Log log = LogFactory.getLog(Window.class);
 
     private java.util.List<WindowListener> listeners = new LinkedList<WindowListener>();
@@ -88,7 +88,7 @@ public abstract class
     /**
      * Convience function for opening window
      */
-    public void open() {
+    public void performOpenAction() {
         switch(state) {
             case OPENED:
                 RuntimeException re = new RuntimeException("Cannot open a window multiple times, each instance can only be opened once! This window's state is already in OPENED.");
@@ -103,13 +103,15 @@ public abstract class
                 log.error("Already closed", new RuntimeException(msg));
                 alert("Bug", msg);
                 break;
+            case USER:
+                log.warn("Windows is in an intermediate state awaiting input from the user, open command ignored.");
+                break;
             case OPENING:
                 log.warn("Window already in opening state, will NOT try to re-open!");
                 break;
             default:
                 try {
                     setState(STATE.OPENING);
-                    IndeterminateLoadingSplash.openSplash(getDisplay());
                     long start = System.currentTimeMillis();
                     preInitGUI();
 
@@ -131,8 +133,7 @@ public abstract class
                     getInitialFocusWidget().forceFocus();
                 } catch(Exception e) {
                     log.error("Unknown exception caught while opening window.", e);
-                } finally {
-                    IndeterminateLoadingSplash.closeSplash();
+                    setState(STATE.CLOSED);
                 }
         }
     }
@@ -173,10 +174,15 @@ public abstract class
             l.statusChanged(newState);
     }
 
+    private synchronized STATE getState() {
+        return state;
+    }
+
     public void addWindowListener(WindowListener l) { this.listeners.add(l); }
 
     protected void alert(String title, String msg) {
-        if(state == STATE.OPENING) IndeterminateLoadingSplash.closeSplash();
+        STATE origState = getState();
+        setState(STATE.USER);
         MessageBox box;
         try {
             box = new MessageBox(getShell(), SWT.OK);
@@ -186,10 +192,11 @@ public abstract class
 		box.setText(title);
 		box.setMessage(msg);
 		box.open();
-        if(state == STATE.OPENING) IndeterminateLoadingSplash.openSplash(getDisplay());
+        setState(origState);
     }
     protected boolean confirm(String title, String msg) {
-        if(state == STATE.OPENING) IndeterminateLoadingSplash.closeSplash();
+        STATE origState = getState();
+        setState(STATE.USER);
         MessageBox box;
         try {
             box = new MessageBox(getShell(), SWT.OK|SWT.CANCEL);
@@ -199,22 +206,48 @@ public abstract class
 		box.setText(title);
 		box.setMessage(msg);
         int ret = box.open();
-        if(state == STATE.OPENING) IndeterminateLoadingSplash.openSplash(getDisplay());
+        setState(origState);
         return (ret == SWT.OK);
     }
     protected String prompt(String title, String msg) {
+        STATE origState = getState();
+        setState(STATE.USER);
         Prompt.PromptListener promptListener = new Prompt.PromptListener();
         Prompt prompt = new Prompt(this, promptListener, title, msg);        
         prompt.openBlocking();
+        setState(origState);
         return promptListener.getEnteredValue();
     }
 
     /**
-     * Convience function for opening the window in blocking mode so it waits for the
+     * Opens in a traditional non blocking manor
+     */
+    public void open() {
+        BusyIndicator.showWhile(getDisplay(), new Runnable() {
+            public void run() {
+                getDisplay().syncExec(new Runnable() {
+                    public void run() {
+                        performOpenAction();
+                    }
+                });
+            }
+        });
+    }
+    /**
+     * Convenience function for opening the window in blocking mode so it waits for the
      * window to beforeClose, this is useful when simulating dialogs and PRIMARY_MODAL
      */
     public void openBlocking() {
-        open();
+        BusyIndicator.showWhile(getDisplay(), new Runnable() {
+            public void run() {
+                getDisplay().syncExec(new Runnable() {
+                    public void run() {
+                        performOpenAction();
+                    }
+                });
+            }
+        });
+
         while( !isDisposed() ) {
             try {
                 if(!getShell().getDisplay().readAndDispatch()) getShell().getDisplay().sleep();

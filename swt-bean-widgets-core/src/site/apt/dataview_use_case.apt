@@ -1,0 +1,17 @@
+    ---
+    DataView Use Case - Hibernate SWT Integration Library
+    ---
+    Martin Dale Lyness <martin.lyness@gmail.com>
+    ---
+    2009-11-25
+    ---
+
+DataView Use Case
+
+        The DataView widget is the core component of the hibernate-swt library. This widget provides
+        the bread and butter of rapid prototyped hibernate DAO (Data Access Object) enabled SWT applications.
+        Being the core feature, DataViews are designed to be easily and quickly integrated into
+        any SWT GUI application. The following diagram gives a quick high-level view of how a developer
+        would use the DataView feature:
+
+[images/hibernate-swt-use-case.png] SWT Developer using the DataView component to build his SWT Dialog

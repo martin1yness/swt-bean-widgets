@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.magnetstreet.swt</groupId>
+  <artifactId>swt-bean-widgets</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>SWT JavaBeans Widget Library (Aggregate)</name>
+
+  <parent>
+    <groupId>com.magnetstreet.swt</groupId>
+    <artifactId>swt-bean-widgets-super-pom</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>swt-bean-widgets-super-pom</relativePath>
+  </parent>
+
+  <modules>
+    <module>swt-bean-widgets-super-pom</module>
+    <module>swt-bean-annotations</module>
+    <module>swt-bean-widgets-core</module>
+    <module>swt-bean-widgets-example</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <org.eclipse.swt.version>3.6.2-win32</org.eclipse.swt.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.magnetstreet.swt</groupId>
+      <artifactId>swt-bean-widgets-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.magnetstreet.swt</groupId>
+      <artifactId>swt-bean-annotations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+</project>

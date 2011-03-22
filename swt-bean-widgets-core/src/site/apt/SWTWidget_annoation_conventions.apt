@@ -1,0 +1,21 @@
+    ---
+    SWTWidget Annotation and DataView Convensions
+    ---
+    Martin Dale Lyness <martin.lyness@gmail.com>
+    ---
+    2009-11-30
+    ---
+
+    In the effort of designing a toolset that would emphasize convension over configuration
+    the annoations and DataView layouts are built to handle most tasks following a best
+    practices standard. Not wanting to limit configurability for custom solutions additonal
+    data will be added to the meta data caputred by the annotation as requested and observed
+    as necessary.
+
+Bean Annotating Conventions
+    Below are the conventions to consider while annotating your hibernate DAOs with the
+    SWTWidget meta data.
+* Ordering
+    The ordering of properties is very important as this will impact the ordering a dataview
+    layout will place the widgets. Layouts follow the top down and left to right layout patterns
+    placing properties defined first first.

@@ -1,0 +1,232 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.magnetstreet.swt</groupId>
+  <artifactId>swt-bean-widgets-super-pom</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>swt-bean-widgets super pom extension</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <description>
+    Library to integrate SWT and JavaBeans style GUIs and/or provide tools
+    for RAD (Rapid Application Development). These tools will be geared toward data entry
+    enterprise applications focusing on CRUD (Create, Read, Update, and Delete) with some
+    added application features like: validation, layout management, usability widget features,
+    etc...
+  </description>
+  <url>https://github.com/martin1yness/swt-bean-widgets</url>
+  <licenses>
+    <license>
+      <name>Creative Commons</name>
+      <url>http://www.creativecommons.org</url>
+      <distribution>repo</distribution>
+      <comments>Free to use, modify, and distribute. Just provide appropriate credit.</comments>
+    </license>
+  </licenses>
+  <organization>
+    <name>MagnetStreet</name>
+    <url>http://www.magnetstreet.com</url>
+  </organization>
+  <issueManagement>
+    <system>GitHub's Issue Tracker</system>
+    <url>https://github.com/martin1yness/swt-bean-widgets/issues</url>
+  </issueManagement>
+  <scm>
+    <connection>scm:git:https://martin1yness@github.com/martin1yness/swt-bean-widgets.git</connection>
+    <developerConnection>scm:git:git@github.com:martin1yness/swt-bean-widgets.git</developerConnection>
+    <url>https://github.com/martin1yness/swt-bean-widgets</url>
+  </scm>
+  <developers>
+    <developer>
+      <name>Martin Dale Lyness</name>
+      <url>http://martin-lyness.com</url>
+      <email>martin.lyness@gmail.com</email>
+      <organization>MagnetStreet</organization>
+      <organizationUrl>http://magnetstreet.com</organizationUrl>
+      <roles>
+        <role>Creator</role>
+        <role>Project Manager</role>
+        <role>Lead Developer</role>
+      </roles>
+      <timezone>CST</timezone>
+    </developer>
+  </developers>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>swt-bean-widgets-deploy-snapshots</id>
+      <uniqueVersion>true</uniqueVersion>
+      <url>${swt-bean-widgets.snapshot.deploy.url}</url>
+    </snapshotRepository>
+    <repository>
+      <id>swt-bean-widgets-deploy-releases</id>
+      <uniqueVersion>false</uniqueVersion>
+      <url>${swt-bean-widgets.release.deploy.url}</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.magnetstreet.swt</groupId>
+        <artifactId>swt-bean-annotations</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.magnetstreet.swt</groupId>
+        <artifactId>swt-bean-widgets-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse</groupId>
+        <artifactId>swt</artifactId>
+        <version>3.6.2-win32</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>1.0-beta-7</version>
+      </extension>
+    </extensions>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>aspectj-maven-plugin</artifactId>
+          <version>1.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>buildnumber-maven-plugin</artifactId>
+          <version>1.0-beta-4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.0-beta-3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.0.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <reportPlugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+              <version>2.2</version>
+              <configuration>
+                <dependencyDetailsEnabled>true</dependencyDetailsEnabled>
+                <dependencyLocationsEnabled>true</dependencyLocationsEnabled>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>2.7</version>
+            </plugin>
+          </reportPlugins>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Implementation-Build>${project.version}</Implementation-Build>
+              <Built-On>${maven.build.timestamp}</Built-On>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>xeyvn-release</id>
+      <name>Xeyvn Technologies' Maven 3 Releases Repository</name>
+      <url>http://maven3.xeyvn.com/releases/</url>
+      <layout>default</layout>
+    </repository>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+      <id>xeyvn-snapshot</id>
+      <name>Xeyvn Technologies' Maven 3 Snapshots Repository</name>
+      <url>http://maven3.xeyvn.com/snapshots/</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+</project>

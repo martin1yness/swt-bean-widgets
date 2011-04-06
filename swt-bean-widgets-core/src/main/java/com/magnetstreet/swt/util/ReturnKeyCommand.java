@@ -8,7 +8,9 @@ package com.magnetstreet.swt.util;
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @version 0.1.0
  * @since 6/29/2009
+ * @deprecated This is achievable through the Selection listener on a text field
  */
+@Deprecated
 public abstract class ReturnKeyCommand<T> {
 	private int runCount;
 	private T returnValue;

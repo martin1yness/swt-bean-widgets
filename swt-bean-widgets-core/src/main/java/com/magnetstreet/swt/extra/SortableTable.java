@@ -11,7 +11,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * This is a simple wrapper of the Table SWT gui
@@ -77,7 +80,7 @@ public class SortableTable {
 
     /**
      * Defines a simple BigDecimal comparison algorithm which can be swapped for columns
-     * that will only ever contain integers.
+     * that will only ever contain BigDecimal values.
      */
     public static class BigDecimalComparisonAlgorithm implements TableColumnComparator {
         private int colToCompare;
@@ -98,6 +101,35 @@ public class SortableTable {
 				return -1 * v;
 			return v;
 		}
+    }
+
+    /**
+     * Defines a simple Date comparison algorithm which can be used for columns that have
+     * data always formatted in some standard date form (defined by the user at construction).
+     */
+    public static class DateComparisonAlgorithm implements TableColumnComparator {
+        private int colToCompare;
+		private boolean reverseOrder;
+        private DateFormat formatter;
+		public DateComparisonAlgorithm(int col, boolean reverse, String dateFormat) {
+			colToCompare = col;
+			reverseOrder = reverse;
+            formatter = new SimpleDateFormat(dateFormat);
+		}
+        public void setReverseBit(boolean reverse) { this.reverseOrder = reverse; }
+        @Override public int compare(TableItem a, TableItem b) {
+            int v = 0;
+            try {
+                Date dateA = (Date)formatter.parse(a.getText());
+                Date dateB = (Date)formatter.parse(b.getText());
+                v = dateA.compareTo(dateB);
+            } catch(Throwable t) {
+                log.error("Unable to sort table by date on col '"+colToCompare+"' exception thrown.", t);
+            }
+            if(reverseOrder)
+                return -1 * v;
+            return v;
+        }
     }
 	
 	/**

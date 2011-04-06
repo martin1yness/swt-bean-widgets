@@ -1,5 +1,6 @@
 package com.magnetstreet.swt.extra;
 
+import com.magnetstreet.swt.util.DateUtil;
 import com.magnetstreet.swt.util.TableColumnComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -111,6 +112,9 @@ public class SortableTable {
         private int colToCompare;
 		private boolean reverseOrder;
         private DateFormat formatter;
+        public DateComparisonAlgorithm(int col, boolean reverse) {
+            this(col, reverse, DateUtil.defaultDateFormat.toPattern());
+        }
 		public DateComparisonAlgorithm(int col, boolean reverse, String dateFormat) {
 			colToCompare = col;
 			reverseOrder = reverse;

@@ -85,6 +85,14 @@ public abstract class
         }, "Opens the hot key help dialog.");
     }
 
+    public void registerGlobalHotKey(int key, int modifier, Runnable action, String description) {
+        hotKeyManager.registerHotKey(key, modifier, action, description);
+    }
+
+    public void removeGlobalHotKey(int key, int modifier) {
+        hotKeyManager.removeHotKey(key, modifier);
+    }
+
     /**
      * Convience function for opening window
      */

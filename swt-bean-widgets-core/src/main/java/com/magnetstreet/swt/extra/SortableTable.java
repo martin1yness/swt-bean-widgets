@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -111,9 +110,11 @@ public class SortableTable {
     public static class DateComparisonAlgorithm implements TableColumnComparator {
         private int colToCompare;
 		private boolean reverseOrder;
-        private DateFormat formatter;
+        private SimpleDateFormat formatter;
         public DateComparisonAlgorithm(int col, boolean reverse) {
-            this(col, reverse, DateUtil.defaultDateFormat.toPattern());
+            colToCompare = col;
+			reverseOrder = reverse;
+            formatter = DateUtil.defaultDateFormat;
         }
 		public DateComparisonAlgorithm(int col, boolean reverse, String dateFormat) {
 			colToCompare = col;
@@ -124,8 +125,8 @@ public class SortableTable {
         @Override public int compare(TableItem a, TableItem b) {
             int v = 0;
             try {
-                Date dateA = (Date)formatter.parse(a.getText());
-                Date dateB = (Date)formatter.parse(b.getText());
+                Date dateA = (Date)formatter.parse(a.getText(colToCompare));
+                Date dateB = (Date)formatter.parse(b.getText(colToCompare));
                 v = dateA.compareTo(dateB);
             } catch(Throwable t) {
                 log.error("Unable to sort table by date on col '"+colToCompare+"' exception thrown.", t);

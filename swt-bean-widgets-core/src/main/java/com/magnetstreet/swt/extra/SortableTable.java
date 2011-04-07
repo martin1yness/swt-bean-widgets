@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
+import javax.swing.text.TabExpander;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -270,4 +271,8 @@ public class SortableTable {
 		tbl.select(oldSelectionIndex);
 		tbl.setRedraw(true);
 	}
+
+    public Table getTable() {
+        return tbl;
+    }
 }

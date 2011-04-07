@@ -316,6 +316,10 @@ public abstract class
         getShell().setText(""+title);
     }
 
+    public void setSize(int width, int height) {
+        getParent().setSize(width, height);
+    }
+
     /**
      * Sets the default window Icon for windows globally
      * @param path A path to the icon image

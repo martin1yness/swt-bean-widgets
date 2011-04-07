@@ -48,7 +48,7 @@ public abstract class
 
     private java.util.List<WindowListener> listeners = new LinkedList<WindowListener>();
     private STATE state = STATE.NEW;
-    protected HotKeyManager hotKeyManager;
+    protected static HotKeyManager hotKeyManager;
     protected static Image windowIcon;
 
     public Window() {
@@ -73,16 +73,17 @@ public abstract class
                 close();
             }
         });
-        hotKeyManager = new HotKeyManager(getDisplay());
+        if(hotKeyManager==null) {
+            hotKeyManager = new HotKeyManager(getDisplay());
+            hotKeyManager.registerHotKey('/', SWT.SHIFT|SWT.CTRL, new Runnable() {
+                public void run() {
+                    hotKeyManager.showHotkeyHelpDialog();
+                }
+            }, "Opens the hot key help dialog.");
+        }
         initGUI();
         applyWidgetActionListeners();
         defineHotkeys();
-
-        hotKeyManager.registerHotKey('/', SWT.SHIFT|SWT.CTRL, new Runnable() {
-            public void run() {
-                hotKeyManager.showHotkeyHelpDialog();
-            }
-        }, "Opens the hot key help dialog.");
     }
 
     public void registerGlobalHotKey(int key, int modifier, Runnable action, String description) {

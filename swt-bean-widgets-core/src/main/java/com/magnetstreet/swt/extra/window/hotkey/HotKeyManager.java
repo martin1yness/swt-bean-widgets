@@ -27,7 +27,7 @@ import java.util.Map;
 public class HotKeyManager {
     private static Log log = LogFactory.getLog(HotKeyManager.class);
     private Display display;
-    private Map<Integer, HotKey> hotKeyMap = new HashMap<Integer, HotKey>();
+    private Map<String, HotKey> hotKeyMap = new HashMap<String, HotKey>();
 
     /**
      * Constructor attaches hot key manager to a display
@@ -52,10 +52,10 @@ public class HotKeyManager {
     public void registerHotKey(int key, int modifier, Runnable action, String description) {
         log.trace("Registering Hotkey: " + key +" mod:" + modifier);
         HotKey hkey = new HotKey(key, modifier, action, description);
-        if( hotKeyMap.containsKey(hkey.hashCode()) )
+        if( hotKeyMap.containsKey(key+"|"+modifier) )
             throw new DuplicateHotKeyDefinitionExcpetion("Attempted to add duplicate global hot key listener. " + key + " - mod: " + modifier);
 
-        hotKeyMap.put(hkey.hashCode(), new HotKey(key, modifier, action, description));
+        hotKeyMap.put(key+"|"+modifier, new HotKey(key, modifier, action, description));
         display.addFilter(SWT.KeyUp, hkey.listener);
     }
     
@@ -65,7 +65,7 @@ public class HotKeyManager {
      * @param modifier
      */
     public void removeHotKey(int key, int modifier) {
-        HotKey hkey = hotKeyMap.get(new HotKey(key, modifier, new Runnable(){public void run(){}}, "").hashCode());
+        HotKey hkey = hotKeyMap.get(key+"|"+modifier);
         if(hkey == null) return;
         display.removeFilter(SWT.KeyUp, hkey.listener);
         hotKeyMap.remove(hkey);

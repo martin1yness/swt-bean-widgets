@@ -39,7 +39,4 @@ public class HotKey {
         }
         return false;
     }
-    @Override public int hashCode() {
-        return (23 * key + modifier);
-    }
 }

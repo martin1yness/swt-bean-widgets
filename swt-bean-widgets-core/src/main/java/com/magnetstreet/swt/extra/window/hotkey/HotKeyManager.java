@@ -68,7 +68,7 @@ public class HotKeyManager {
         HotKey hkey = hotKeyMap.get(key+"|"+modifier);
         if(hkey == null) return;
         display.removeFilter(SWT.KeyUp, hkey.listener);
-        hotKeyMap.remove(hkey);
+        hotKeyMap.remove(key+"|"+modifier);
     }
 
     /**

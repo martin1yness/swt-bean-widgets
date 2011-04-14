@@ -151,7 +151,7 @@ public class VisualInputText extends Text {
 	private void addReturnKeyEventHandler() {
 		addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent evt) {
-				if(evt.keyCode == 13 && returnKeyCommandEnabled && returnKeyCommand instanceof ReturnKeyCommand<?>)
+				if( (evt.keyCode == SWT.CR || evt.keyCode == SWT.KEYPAD_CR) && returnKeyCommandEnabled && returnKeyCommand instanceof ReturnKeyCommand<?>)
 					returnKeyCommand.run();					
 			}
 		});

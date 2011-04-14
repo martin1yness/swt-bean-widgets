@@ -1,5 +1,6 @@
 package com.magnetstreet.swt.beanwidget.combo;
 
+import com.magnetstreet.swt.util.KeyEventUtil;
 import com.magnetstreet.swt.util.ReturnKeyCommand;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -117,14 +118,13 @@ public class QuickSearchCombo extends Combo {
 					search = "";
 				lastKeyStrokeTime = System.currentTimeMillis();
 				
-				if(arg0.keyCode == 13 && returnKeyCommandEnabled && returnKeyCommand instanceof ReturnKeyCommand<?>) {
+				if( (arg0.keyCode == SWT.CR || arg0.keyCode == SWT.KEYPAD_CR)
+                        && returnKeyCommandEnabled && returnKeyCommand instanceof ReturnKeyCommand<?>) {
 					returnKeyCommand.run();
 					return;
 				}
-				
-				char c = (char)arg0.keyCode;
-				
-				switch(c) {
+
+				switch(arg0.keyCode) {
 					case SWT.ESC:
 						search = "";
 						break;
@@ -136,15 +136,19 @@ public class QuickSearchCombo extends Combo {
 							search = search.substring(0, search.length()-1);
 						}catch(StringIndexOutOfBoundsException e) { search = ""; }
 						break;
-					case (char) SWT.ARROW_DOWN:
+					case SWT.ARROW_DOWN:
 						setVisible(true);
 						selectNext();
 						break;
-					case (char) SWT.ARROW_UP:
+					case SWT.ARROW_UP:
 						setVisible(true);
 						selectPrevious();
 					default:
-						search += c;
+                        if(KeyEventUtil.isNormalAsciiKey(arg0.keyCode)) {
+						    search += arg0.character;
+                        } else if(KeyEventUtil.convertKeypadNumberIfNumLock(arg0.stateMask, arg0.keyCode) != -1) {
+                            search += KeyEventUtil.convertKeypadNumberIfNumLock(arg0.stateMask, arg0.keyCode);
+                        }
 				}
 				
 			}
@@ -156,7 +160,7 @@ public class QuickSearchCombo extends Combo {
 	 * not go past the first item. 
 	 */
 	private void selectPrevious() {
-		int prev = this.getSelectionIndex() - 1;
+		int prev = this.getSelectionIndex();
 		select( (prev < 0) ? 0 : prev );
 		search = "";
 	}
@@ -166,7 +170,7 @@ public class QuickSearchCombo extends Combo {
 	 * not go past last item.
 	 */
 	private void selectNext() {
-		int next = this.getSelectionIndex() + 1;
+		int next = this.getSelectionIndex();
 		select( (next > getItems().length) ? getItems().length : next );
 		search = "";
 	}

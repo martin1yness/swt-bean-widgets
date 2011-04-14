@@ -431,7 +431,9 @@ public abstract class
      * Builds a packed Shell around the given composite instance for simple
      * GUI testing.
      * @param clazz The composite class that should be constructed, must extend {net.sourceforge.hibernateswt.widget.window.Window}
+     * @deprecated Not very useful to save a few lines of code, often windows are too unique to use anyway
      */
+    @Deprecated
     protected static void testGUI(Class<? extends Window> clazz) {
         try {
             Window inst = null;

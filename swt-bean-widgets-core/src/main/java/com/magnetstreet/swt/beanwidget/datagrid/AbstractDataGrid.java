@@ -11,11 +11,25 @@ import com.magnetstreet.swt.util.TableColumnComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.DragDetectListener;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.HelpListener;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseWheelListener;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -55,6 +69,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
         super(composite, i);
         initialize();
     }
+
     /**
      * Initializes the data grid table and component layout.
      */
@@ -312,5 +327,149 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
      */
     public void clearDataFilters() {
         dataGridFilters.clear();
+    }
+
+
+    /***********
+     *  Table Listener Delegated methods...
+     */
+    @Override
+    public void addControlListener(ControlListener controlListener) {
+        dataGridTable.addControlListener(controlListener);
+    }
+
+    @Override
+    public void addDragDetectListener(DragDetectListener dragDetectListener) {
+        dataGridTable.addDragDetectListener(dragDetectListener);
+    }
+
+    @Override
+    public void addFocusListener(FocusListener focusListener) {
+        dataGridTable.addFocusListener(focusListener);
+    }
+
+    @Override
+    public void addHelpListener(HelpListener helpListener) {
+        dataGridTable.addHelpListener(helpListener);
+    }
+
+    @Override
+    public void addKeyListener(KeyListener keyListener) {
+        dataGridTable.addKeyListener(keyListener);
+    }
+
+    @Override
+    public void addMenuDetectListener(MenuDetectListener menuDetectListener) {
+        dataGridTable.addMenuDetectListener(menuDetectListener);
+    }
+
+    @Override
+    public void addMouseListener(MouseListener mouseListener) {
+        dataGridTable.addMouseListener(mouseListener);
+    }
+
+    @Override
+    public void addMouseTrackListener(MouseTrackListener mouseTrackListener) {
+        dataGridTable.addMouseTrackListener(mouseTrackListener);
+    }
+
+    @Override
+    public void addMouseMoveListener(MouseMoveListener mouseMoveListener) {
+        dataGridTable.addMouseMoveListener(mouseMoveListener);
+    }
+
+    @Override
+    public void addMouseWheelListener(MouseWheelListener mouseWheelListener) {
+        dataGridTable.addMouseWheelListener(mouseWheelListener);
+    }
+
+    @Override
+    public void addPaintListener(PaintListener paintListener) {
+        dataGridTable.addPaintListener(paintListener);
+    }
+
+    @Override
+    public void addTraverseListener(TraverseListener traverseListener) {
+        dataGridTable.addTraverseListener(traverseListener);
+    }
+
+    @Override
+    public void addListener(int i, Listener listener) {
+        dataGridTable.addListener(i, listener);
+    }
+
+    @Override
+    public void addDisposeListener(DisposeListener disposeListener) {
+        dataGridTable.addDisposeListener(disposeListener);
+    }
+
+    @Override
+    public void removeControlListener(ControlListener controlListener) {
+        dataGridTable.removeControlListener(controlListener);
+    }
+
+    @Override
+    public void removeDragDetectListener(DragDetectListener dragDetectListener) {
+        dataGridTable.removeDragDetectListener(dragDetectListener);
+    }
+
+    @Override
+    public void removeFocusListener(FocusListener focusListener) {
+        dataGridTable.removeFocusListener(focusListener);
+    }
+
+    @Override
+    public void removeHelpListener(HelpListener helpListener) {
+        dataGridTable.removeHelpListener(helpListener);
+    }
+
+    @Override
+    public void removeKeyListener(KeyListener keyListener) {
+        dataGridTable.removeKeyListener(keyListener);
+    }
+
+    @Override
+    public void removeMenuDetectListener(MenuDetectListener menuDetectListener) {
+        dataGridTable.removeMenuDetectListener(menuDetectListener);
+    }
+
+    @Override
+    public void removeMouseTrackListener(MouseTrackListener mouseTrackListener) {
+        dataGridTable.removeMouseTrackListener(mouseTrackListener);
+    }
+
+    @Override
+    public void removeMouseListener(MouseListener mouseListener) {
+        dataGridTable.removeMouseListener(mouseListener);
+    }
+
+    @Override
+    public void removeMouseMoveListener(MouseMoveListener mouseMoveListener) {
+        dataGridTable.removeMouseMoveListener(mouseMoveListener);
+    }
+
+    @Override
+    public void removeMouseWheelListener(MouseWheelListener mouseWheelListener) {
+        dataGridTable.removeMouseWheelListener(mouseWheelListener);
+    }
+
+    @Override
+    public void removePaintListener(PaintListener paintListener) {
+        dataGridTable.removePaintListener(paintListener);
+    }
+
+    @Override
+    public void removeTraverseListener(TraverseListener traverseListener) {
+        dataGridTable.removeTraverseListener(traverseListener);
+    }
+
+    @Override
+    public void removeListener(int i, Listener listener) {
+        dataGridTable.removeListener(i, listener);
+    }
+
+    @Override
+    public void removeDisposeListener(DisposeListener disposeListener) {
+        dataGridTable.removeDisposeListener(disposeListener);
     }
 }

@@ -4,8 +4,6 @@ import com.magnetstreet.swt.annotation.SWTEntity;
 import com.magnetstreet.swt.annotation.SWTWidget;
 import com.magnetstreet.swt.beanwidget.callback.SaveBeanCallback;
 import com.magnetstreet.swt.beanwidget.listener.SingleAndDblClickListener;
-
-import java.util.logging.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Shell;
@@ -39,7 +37,6 @@ import static junit.framework.Assert.assertEquals;
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class DataGridSaveCallbackTest {
-    private static Log log = LogFactory.getLog(DataGridSaveCallbackTest.class);
     @SWTEntity
     static class TestBean implements Serializable {
         @SWTWidget(labelText = "Id")
@@ -89,7 +86,6 @@ public class DataGridSaveCallbackTest {
                     editableDataGrid = DataGridFactory.getInstance().getEditableDataGrid(beans, null, shell, SWT.NONE);
                     editableDataGrid.setSaveBeanCallback(new SaveBeanCallback<TestBean>() {
                         public TestBean doCallback(TestBean testBean) {
-                            log.debug("Executing save bean callback.");
                             saveCount.incrementAndGet();
                             try {
                                 ByteArrayOutputStream bos = new ByteArrayOutputStream();

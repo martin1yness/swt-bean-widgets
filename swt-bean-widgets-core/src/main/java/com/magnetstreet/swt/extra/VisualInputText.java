@@ -1,14 +1,18 @@
 package com.magnetstreet.swt.extra;
 
 import com.magnetstreet.swt.util.ReturnKeyCommand;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
+
+import java.util.logging.Logger;
 
 /**
  * Visual Input Text Widget
@@ -26,8 +30,9 @@ import org.eclipse.swt.widgets.*;
  * @version 0.1.0
  * @since 6/29/2009
  */
-public class VisualInputText extends Text {
-    private Log log = LogFactory.getLog(VisualInputText.class);
+public class
+        VisualInputText extends Text {
+    private Logger logger = Logger.getLogger(VisualInputText.class.getSimpleName());
 	private boolean autoClearDefaultText = true;
 	private boolean autoRefillDefaultText = true;
 	private boolean returnKeyCommandEnabled = true;
@@ -121,7 +126,7 @@ public class VisualInputText extends Text {
 		addReturnKeyEventHandler();
 		setReturnKeyCommand(new ReturnKeyCommand<Integer>() {
 			@Override public Integer command() {
-				log.warn("No return key command defined for widget, please disable feature on widget or define action.");
+				logger.warning("No return key command defined for widget, please disable feature on widget or define action.");
                 return null;
 			}
 		});

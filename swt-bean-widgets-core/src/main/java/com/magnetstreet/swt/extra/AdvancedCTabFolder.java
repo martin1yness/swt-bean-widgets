@@ -1,12 +1,17 @@
 package com.magnetstreet.swt.extra;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Widget;
+
+import java.util.logging.Logger;
 
 /**
  * The Jaguar CTabFolder Implementation
@@ -20,7 +25,7 @@ import org.eclipse.swt.widgets.*;
  * @version 0.1.0
  */
 public class AdvancedCTabFolder extends CTabFolder {
-    private Log log = LogFactory.getLog(AdvancedCTabFolder.class.getName());
+    private Logger logger = Logger.getLogger(AdvancedCTabFolder.class.getSimpleName());
 
     private KeyAdapter ka = new KeyAdapter() {
         public void keyPressed(KeyEvent evnt) { }
@@ -63,7 +68,7 @@ public class AdvancedCTabFolder extends CTabFolder {
                 Integer reqTabNum = new Integer(""+(char)event.keyCode);
                 if(getItemCount() < reqTabNum) return;
 
-                log.warn("Selection line removed because of compile error in some version of SWT.");
+                logger.warning("Selection line removed because of compile error in some version of SWT.");
                 //if(event.widget == getSelf() || checkChildren(event.widget, getChildren())) setSelection(reqTabNum - 1);
             }
         });

@@ -1,7 +1,6 @@
 package com.magnetstreet.swt.extra;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -21,6 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ExternalFileLauncherLink
@@ -30,7 +31,7 @@ import java.util.Arrays;
  * @since Oct 1, 2009
  */
 public class ExternalFileLauncherLink extends Composite {
-    private Log log = LogFactory.getLog(ExternalFileLauncherLink.class);
+    private Logger logger = Logger.getLogger(ExternalFileLauncherLink.class.getSimpleName());
     private String fileLocation;
     private String fileDescription;
     private String fileType;
@@ -147,7 +148,7 @@ public class ExternalFileLauncherLink extends Composite {
             Process p = Runtime.getRuntime().exec(new String[]{"iexplore", fp.getAbsolutePath()+"."+fileType});
             p.waitFor();
         } catch (IOException e) {
-            log.error("Unable to open linked file.", e);
+            logger.log(Level.SEVERE,"Unable to open linked file.", e);
         } catch (InterruptedException e) {
             log.info("Open file process iterrupted.", e);
         }
@@ -157,7 +158,7 @@ public class ExternalFileLauncherLink extends Composite {
 }
 
 class BareBonesBrowserLaunch {
-    private static Log log = LogFactory.getLog(BareBonesBrowserLaunch.class);
+    private static Logger logger = Logger.getLogger(BareBonesBrowserLaunch.class.getSimpleName());
     static final String[] browsers = { "google-chrome", "firefox", "opera",
             "epiphany", "konqueror", "conkeror", "midori", "kazehakase", "mozilla" };
     static final String errMsg = "Error attempting to launch web browser";
@@ -192,7 +193,7 @@ class BareBonesBrowserLaunch {
                 }
             }
             catch (Exception e) {
-                log.error(errMsg+"\n"+e.toString(), e);
+                logger.log(Level.SEVERE, errMsg + "\n" + e.toString(), e);
             }
         }
     }

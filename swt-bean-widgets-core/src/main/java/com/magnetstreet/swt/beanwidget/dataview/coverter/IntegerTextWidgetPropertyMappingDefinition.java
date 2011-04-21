@@ -1,12 +1,12 @@
 package com.magnetstreet.swt.beanwidget.dataview.coverter;
 
 import com.magnetstreet.swt.WidgetPropertyMappingDefinition;
-import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
 import com.magnetstreet.swt.beanwidget.dataview.AbstractDataView;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
+
+import java.util.logging.Logger;
 
 /**
  * StringTextConverter
@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Text;
  * @since Nov 30, 2009
  */
 public class IntegerTextWidgetPropertyMappingDefinition extends WidgetPropertyMappingDefinition<Text, Integer> {
-    private Log log = LogFactory.getLog(IntegerTextWidgetPropertyMappingDefinition.class);
+    private Logger logger = Logger.getLogger(IntegerTextWidgetPropertyMappingDefinition.class.getSimpleName());
     /**
      * {@inheritDoc}
      */

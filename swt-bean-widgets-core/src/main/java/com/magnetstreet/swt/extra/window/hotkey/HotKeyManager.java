@@ -3,11 +3,11 @@ package com.magnetstreet.swt.extra.window.hotkey;
 import com.magnetstreet.swt.extra.window.hotkey.exception.DuplicateHotKeyDefinitionExcpetion;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Hot Key Manager
@@ -25,7 +25,7 @@ import java.util.Map;
  * @since Aug 6, 2009
  */
 public class HotKeyManager {
-    private static Log log = LogFactory.getLog(HotKeyManager.class);
+    private static Logger logger = Logger.getLogger(HotKeyManager.class.getSimpleName());
     private Display display;
     private Map<String, HotKey> hotKeyMap = new HashMap<String, HotKey>();
 
@@ -50,7 +50,7 @@ public class HotKeyManager {
      * @param action
      */
     public void registerHotKey(int key, int modifier, Runnable action, String description) {
-        log.trace("Registering Hotkey: " + key +" mod:" + modifier);
+        logger.log(Level.FINEST, "Registering Hotkey: " + key + " mod:" + modifier);
         HotKey hkey = new HotKey(key, modifier, action, description);
         if( hotKeyMap.containsKey(key+"|"+modifier) )
             throw new DuplicateHotKeyDefinitionExcpetion("Attempted to add duplicate global hot key listener. " + key + " - mod: " + modifier);

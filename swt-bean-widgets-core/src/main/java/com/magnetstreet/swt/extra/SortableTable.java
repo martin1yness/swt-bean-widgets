@@ -2,8 +2,6 @@ package com.magnetstreet.swt.extra;
 
 import com.magnetstreet.swt.util.DateUtil;
 import com.magnetstreet.swt.util.TableColumnComparator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -15,6 +13,8 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This is a simple wrapper of the Table SWT gui
@@ -26,7 +26,7 @@ import java.util.Date;
  * @version 0.1.0
  */
 public class SortableTable {
-    private static Log log = LogFactory.getLog(SortableTable.class);
+    private static Logger logger = Logger.getLogger(SortableTable.class.getSimpleName());
 
 	private Table tbl;
 	private SortedColumn[] sortedCols;
@@ -70,7 +70,7 @@ public class SortableTable {
             try {
 			    v = new Integer(a.getText(colToCompare)).compareTo(new Integer(b.getText(colToCompare)));
             } catch(NumberFormatException nfe) {
-                log.error("Attempted to use integer comparison while sorting column with values: " + a.getText(colToCompare) +", "+b.getText(colToCompare), nfe);
+                logger.log(Level.SEVERE, "Attempted to use integer comparison while sorting column with values: " + a.getText(colToCompare) + ", " + b.getText(colToCompare), nfe);
             }
 			if(reverseOrder)
 				return -1 * v;
@@ -95,7 +95,7 @@ public class SortableTable {
             try {
 			    v = new BigDecimal(a.getText(colToCompare)).compareTo(new BigDecimal(b.getText(colToCompare)));
             } catch(NumberFormatException nfe) {
-                log.error("Attempted to use BigDecimal comparison while sorting column with values: " + a.getText(colToCompare) +", "+b.getText(colToCompare), nfe);
+                logger.log(Level.SEVERE, "Attempted to use BigDecimal comparison while sorting column with values: " + a.getText(colToCompare) + ", " + b.getText(colToCompare), nfe);
             }
 			if(reverseOrder)
 				return -1 * v;
@@ -129,7 +129,7 @@ public class SortableTable {
                 Date dateB = (Date)formatter.parse(b.getText(colToCompare));
                 v = dateA.compareTo(dateB);
             } catch(Throwable t) {
-                log.error("Unable to sort table by date on col '"+colToCompare+"' exception thrown.", t);
+                logger.log(Level.SEVERE, "Unable to sort table by date on col '" + colToCompare + "' exception thrown.", t);
             }
             if(reverseOrder)
                 return -1 * v;
@@ -230,7 +230,7 @@ public class SortableTable {
         sortByColumn(colIndex, !sortedCols[colIndex].direction);
     }
 	public void sortByColumn(int colIndex, boolean direction) {
-        log.debug("Sorting by column: "+colIndex+", reverse: " + direction);
+        logger.logp(Level.FINER, "SortableTable", "sortByColumn", "Sorting by column: "+colIndex+", reverse: " + direction);
         // Set current col for return to using classes
         currentSortCol = sortedCols[colIndex];
 		// set sort direction

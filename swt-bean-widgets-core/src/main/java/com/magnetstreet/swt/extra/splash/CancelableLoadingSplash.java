@@ -1,8 +1,6 @@
 package com.magnetstreet.swt.extra.splash;
 
 import com.magnetstreet.swt.extra.AnimatedGif;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -19,6 +17,7 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 /**
  * CancelableLoadingSplash
@@ -28,7 +27,7 @@ import java.io.InputStream;
  * @since Oct 12, 2009
  */
 public class CancelableLoadingSplash extends Composite {
-    private static Log log = LogFactory.getLog(CancelableLoadingSplash.class);
+    private static Logger log = Logger.getLogger(CancelableLoadingSplash.class.getSimpleName());
     private static String splashImgLoc = "images/indetermLoadingSplash.gif";
     public InputStream loadingGifImage = AnimatedGif.class.getClassLoader().getResourceAsStream(splashImgLoc);
 
@@ -102,7 +101,7 @@ public class CancelableLoadingSplash extends Composite {
                         splashComposite.statusTextCLabel.setText("Cancelling... Hard beforeClose in " + (start + splashComposite.cancelWaitTimeout - System.currentTimeMillis() )/1000 +"s");
                     }
                     if(!tasks[i].isAlive()) break;
-                    log.warn("Forced a hard beforeClose of loading task '"+tasks[i].getName()+"'");
+                    log.warning("Forced a hard beforeClose of loading task '" + tasks[i].getName() + "'");
                     tasks[i].stop();
                 }
             }

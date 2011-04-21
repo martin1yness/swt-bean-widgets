@@ -3,8 +3,6 @@ package com.magnetstreet.swt.beanwidget.dataview;
 import com.magnetstreet.swt.WidgetPropertyMappingDefinition;
 import com.magnetstreet.swt.annotation.SWTEntity;
 import com.magnetstreet.swt.annotation.SWTWidget;
-import com.magnetstreet.swt.exception.BeanAnnotationException;
-import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
 import com.magnetstreet.swt.beanwidget.dataview.coverter.BigDecimalGenericSpinnerWidgetPropertyMappingDefinition;
 import com.magnetstreet.swt.beanwidget.dataview.coverter.CalendarDateTimePopoutWidgetPropertyMappingDefinition;
 import com.magnetstreet.swt.beanwidget.dataview.coverter.CollectionDataGridWidgetPropertyMappingDefinition;
@@ -12,8 +10,8 @@ import com.magnetstreet.swt.beanwidget.dataview.coverter.DefaultTextWidgetProper
 import com.magnetstreet.swt.beanwidget.dataview.coverter.IntegerTextWidgetPropertyMappingDefinition;
 import com.magnetstreet.swt.beanwidget.dataview.coverter.StringTextWidgetPropertyMappingDefinition;
 import com.magnetstreet.swt.beanwidget.dataview.layout.BaseLayout;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.magnetstreet.swt.exception.BeanAnnotationException;
+import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FormAttachment;
@@ -33,6 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * DataViewBase
@@ -42,7 +42,7 @@ import java.util.TreeSet;
  * @since Dec 14, 2009
  */
 public class DynamicDataView extends AbstractDataView {
-    private Log log = LogFactory.getLog(DynamicDataView.class);
+    private Logger logger = Logger.getLogger(DynamicDataView.class.getSimpleName());
     
     protected BaseLayout layout;
     /**
@@ -53,7 +53,7 @@ public class DynamicDataView extends AbstractDataView {
         for(DynamicWidget widget: widgetSet) {
             if(widget.beanProperty.equals(beanProperty)) return widget.widget;
         }
-        log.warn("Could not find widget for bean property. DataView could be uninitialized or the bean property could have never been annotated. "+beanProperty.getName());
+        logger.warning("Could not find widget for bean property. DataView could be uninitialized or the bean property could have never been annotated. " + beanProperty.getName());
         return null;
     }
 
@@ -135,9 +135,9 @@ public class DynamicDataView extends AbstractDataView {
                 dw.beanProperty.set(viewDataObject, dw.widgetPropertyMappingDefinition.convertWidgetToProperty(dw.widget));
             } catch(ViewDataBeanValidationException vdbve) {
                 errorMap.put(dw.widget, vdbve.getMessage());
-                log.info("Validation exception: " + vdbve.getMessage(), vdbve);
+                logger.log(Level.INFO, "Validation exception: " + vdbve.getMessage(), vdbve);
             } catch (Exception e) {
-                log.error("Unable to update bean property("+dw.label.getText()+"), bean will be out of sync with data view widgets.", e);
+                logger.log(Level.SEVERE, "Unable to update bean property(" + dw.label.getText() + "), bean will be out of sync with data view widgets.", e);
             }
         }
     }
@@ -154,7 +154,7 @@ public class DynamicDataView extends AbstractDataView {
                 Object propertyValue = dw.beanProperty.get(viewDataObject);
                 if(propertyValue!=null) dw.widgetPropertyMappingDefinition.convertPropertyToWidget(propertyValue, dw.widget);
             } catch (Exception e) {
-                log.error("Unable to access bean property("+dw.label.getText()+") to update widgets, beans will be out of sync with data views.", e);
+                logger.log(Level.SEVERE, "Unable to access bean property(" + dw.label.getText() + ") to update widgets, beans will be out of sync with data views.", e);
             }
         }
     }
@@ -191,7 +191,7 @@ public class DynamicDataView extends AbstractDataView {
                     memberControlMap.put(field, dw);
                     widgetSet.add(dw);
                 } catch(ClassCastException cce) {
-                    log.error(cce);
+                    logger.log(Level.SEVERE, "Unable to cast object.", cce);
                 }
             }
         }
@@ -225,7 +225,7 @@ public class DynamicDataView extends AbstractDataView {
     protected void buildDynamicWidgetCollection(DynamicWidget dynamicWidget, SWTWidget annotation, Field property) {
         SWTEntity propAnno = property.getType().getAnnotation(SWTEntity.class);
         if(propAnno == null) {
-            log.error("Unable to build a SWT widget collection from non SWTEntity annotated objects. Bean property: " +property.getName());
+            logger.log(Level.SEVERE, "Unable to build a SWT widget collection from non SWTEntity annotated objects. Bean property: " + property.getName());
             buildDynamicWidget(dynamicWidget, annotation, property);
             return;
         }

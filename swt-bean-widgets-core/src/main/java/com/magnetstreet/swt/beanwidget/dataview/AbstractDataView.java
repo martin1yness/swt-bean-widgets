@@ -1,20 +1,25 @@
 package com.magnetstreet.swt.beanwidget.dataview;
 
 import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Abstract Data View
@@ -25,7 +30,7 @@ import java.util.HashSet;
  * @param <T>
  */
 public abstract class AbstractDataView<T> extends org.eclipse.swt.widgets.Composite implements DataView<T> {
-	private Log log = LogFactory.getLog(AbstractDataView.class);
+	private Logger logger = Logger.getLogger(AbstractDataView.class.getSimpleName());
     
 	protected T viewDataObject;
 
@@ -132,7 +137,7 @@ public abstract class AbstractDataView<T> extends org.eclipse.swt.widgets.Compos
 	 */
 	public void toggleWidgetsEditable() {
         boolean enabled = enableEditingWidget.getSelection();
-		log.debug("Set "+ getClass().getName() +" widgets editable: " + enabled);
+		logger.logp(Level.FINER, "AbstractDataView", "toggleWidgetsEditable", "Set " + getClass().getName() + " widgets editable: " + enabled);
 		toggleEnabledAllWidgets(this, enabled);
         enableEditingWidget.redraw();
 	}
@@ -242,7 +247,7 @@ public abstract class AbstractDataView<T> extends org.eclipse.swt.widgets.Compos
             clone.setViewDataObject(null);
             return clone;
         } catch (CloneNotSupportedException e) {
-            log.error(e);
+            logger.log(Level.SEVERE, "Clone Error", e);
             return null;
         }
     }

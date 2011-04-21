@@ -1,16 +1,22 @@
 package com.magnetstreet.swt.extra;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Animated Gif
@@ -21,7 +27,7 @@ import java.io.InputStream;
  * @since Oct 12, 2009
  */
 public class AnimatedGif extends Composite {
-    private Log log = LogFactory.getLog(AnimatedGif.class);
+    private Logger logger = Logger.getLogger(AnimatedGif.class.getSimpleName());
 
     protected GC compositelGC;
     protected Color compositeBackground;
@@ -158,7 +164,7 @@ public class AnimatedGif extends Composite {
                                 }
                             } catch (SWTException ex) {
                                 if(!ex.getMessage().contains("Widget is disposed"))
-                                    log.error("Widget is disposed! Possible bug in class.", ex);
+                                    logger.log(Level.SEVERE, "Widget is disposed! Possible bug in class.", ex);
                             } finally {
                                 if (offScreenImage != null && !offScreenImage.isDisposed()) offScreenImage.dispose();
                                 if (offScreenImageGC != null && !offScreenImageGC.isDisposed()) offScreenImageGC.dispose();
@@ -170,7 +176,7 @@ public class AnimatedGif extends Composite {
                     animateThread.start();
                 }
             } catch (SWTException ex) {
-                log.error("There was an error loading the GIF", ex);
+                logger.log(Level.SEVERE, "There was an error loading the GIF", ex);
             }
         }
     }

@@ -1,12 +1,10 @@
 package com.magnetstreet.swt.beanwidget.datagrid;
 
-import com.magnetstreet.swt.exception.InvalidGridViewSetupException;
-import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
 import com.magnetstreet.swt.beanwidget.callback.SaveBeanCallback;
 import com.magnetstreet.swt.beanwidget.dataview.DataView;
 import com.magnetstreet.swt.beanwidget.listener.SingleAndDblClickListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.magnetstreet.swt.exception.InvalidGridViewSetupException;
+import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -22,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * AbstractEditableDataGrid
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since Dec 17, 2009
  */
 public abstract class AbstractEditableDataGrid<T> extends AbstractDataGrid<T> implements EditableDataGrid<T> {
-    private static Log log = LogFactory.getLog(AbstractEditableDataGrid.class);
+    private static Logger logger = Logger.getLogger(AbstractEditableDataGrid.class.getSimpleName());
 
     private Map<T, DataView<T>> dataGridViews = new ConcurrentHashMap<T, DataView<T>>();
     protected boolean editable;
@@ -40,7 +40,7 @@ public abstract class AbstractEditableDataGrid<T> extends AbstractDataGrid<T> im
     protected FocusListener activeTableFocusListener;
     protected SaveBeanCallback<T> saveBeanCallback = new SaveBeanCallback<T>() {
         @Override public T doCallback(T bean) {
-            log.warn("Using default save bean callback object, bean is NOT saved.");
+            logger.warning("Using default save bean callback object, bean is NOT saved.");
             return bean;
         }
     };
@@ -58,7 +58,7 @@ public abstract class AbstractEditableDataGrid<T> extends AbstractDataGrid<T> im
 
     protected AbstractEditableDataGrid(Composite composite, int i) {
         super(composite, i);
-        log.debug("Creating " + this.getClass().getSimpleName());
+        logger.logp(Level.FINER, "AbstractEditableDataGrid", "Constructor" , "Creating " + this.getClass().getSimpleName());
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class AbstractEditableDataGrid<T> extends AbstractDataGrid<T> im
                 handleRowDblClickEvent(mouseEvent);
                 if(preActivatedControl!=null) {
                     while(preActivatedControl.locked.get()) {
-                        try { Thread.sleep(50); } catch (InterruptedException e) { log.warn("Interrupted while waiting on lock for pre activated control so it can be cleaned up.", e); }
+                        try { Thread.sleep(50); } catch (InterruptedException e) { logger.log(Level.WARNING, "Interrupted while waiting on lock for pre activated control so it can be cleaned up.", e); }
                     }
                     preActivatedControl = null;
                 }
@@ -134,7 +134,7 @@ public abstract class AbstractEditableDataGrid<T> extends AbstractDataGrid<T> im
      * @param event
      */
     protected void handlePreSingleClickEvent(MouseEvent event) {
-        log.debug("Triggered pre-single click event handler");
+        logger.logp(Level.FINER, "AbstractEditableDataGrid", "handlePreSingleClickEvent", "Triggered pre-single click event handler");
         if(preActivatedControl != null || getSelectedBeans()==null || getSelectedBeans().size() > 1 || !dataGridTable.isFocusControl() )
             return;
         preActivatedControl = new ActiveControl();
@@ -179,11 +179,11 @@ public abstract class AbstractEditableDataGrid<T> extends AbstractDataGrid<T> im
      * @param event The mouse event used to get click coords
      */
     protected void handleRowSingleClickEvent(MouseEvent event) {
-        log.debug("Triggered single click event handler");
+        logger.logp(Level.FINER, "AbstractEditableDataGrid", "handleRowSingleClickEvent", "Triggered single click event handler");
         if(activeControl != null || preActivatedControl==null || getSelectedBeans()==null || getSelectedBeans().size() > 1 || !dataGridTable.isFocusControl() )
             return;
         while(preActivatedControl.locked.get()) {
-            try { Thread.sleep(50); } catch (InterruptedException e) { log.warn("Interrupted while waiting for pre activation control to load.", e); }
+            try { Thread.sleep(50); } catch (InterruptedException e) { logger.log(Level.WARNING,"Interrupted while waiting for pre activation control to load.", e); }
         }
         showUnderlyingControl(preActivatedControl.tableItem, preActivatedControl.columnIndex, preActivatedControl.rowIndex);
         preActivatedControl = null;
@@ -214,25 +214,25 @@ public abstract class AbstractEditableDataGrid<T> extends AbstractDataGrid<T> im
                 }
                 activeControl = null;
             } catch(ViewDataBeanValidationException e) {
-                log.warn(e);
+                logger.log(Level.WARNING, "Unknown Exception deactivating control...", e);
                 if(activeControl.dataView.getValidationErrorMap().containsKey(activeControl.control))
                     activeControl.control.setBackground(getDisplay().getSystemColor(SWT.COLOR_RED));
                 activeControl.dataView.showInputErrors();
                 activeControl.dataView.resetViewDataObject();
             } catch (Throwable t) {
-                log.error("Unknown problem deactivating active control.", t);
+                logger.log(Level.SEVERE, "Unknown problem deactivating active control.", t);
             }
         }
     }
 
     private void showUnderlyingControl(TableItem item, int col, int row) {
         if(dataGridColumns[col].editable != true) {
-            log.warn("The field you attempted to edit has been marked as being uneditable.");
+            logger.warning("The field you attempted to edit has been marked as being uneditable.");
             return;
         }
         T bean = (T)item.getData();
         if(!dataGridViews.containsKey(bean)) {
-            log.error("Data view for given table item doesn't exist: "+item+", (col:"+col+",row:"+row+")");
+            logger.log(Level.SEVERE, "Data view for given table item doesn't exist: " + item + ", (col:" + col + ",row:" + row + ")");
             return;
         }
         DataView<T> view = dataGridViews.get(bean);
@@ -266,7 +266,7 @@ public abstract class AbstractEditableDataGrid<T> extends AbstractDataGrid<T> im
             try {
                 return saveBeanCallback.doCallback((T)activeControl.tableItem.getData());
             } catch (Exception e) {
-                log.error("Unable to execute save bean callback.", e);
+                logger.log(Level.SEVERE, "Unable to execute save bean callback.", e);
             }
         }
         return null;

@@ -2,8 +2,6 @@ package com.magnetstreet.swt.beanwidget.combo;
 
 import com.magnetstreet.swt.util.KeyEventUtil;
 import com.magnetstreet.swt.util.ReturnKeyCommand;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -11,6 +9,8 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+
+import java.util.logging.Logger;
 
 /**
  * Quick Search Combo
@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
  * @since June 29, 2009
  */
 public class QuickSearchCombo extends Combo {
-    private Log log = LogFactory.getLog(QuickSearchCombo.class);
+    private Logger logger = Logger.getLogger("QuickSearchCombo");
 
 	private ReturnKeyCommand<?> returnKeyCommand;
 	private boolean returnKeyCommandEnabled = true;
@@ -72,7 +72,7 @@ public class QuickSearchCombo extends Combo {
 		setReturnKeyCommand(new ReturnKeyCommand<Integer>() {
 			@Override
 			public Integer command() {
-                log.warn("Undefined Return Key Command, disable the return key feature or define an action on widget.");
+                logger.warning("Undefined Return Key Command, disable the return key feature or define an action on widget.");
                 return null;
 			}
 		});

@@ -4,8 +4,6 @@
 package com.magnetstreet.swt.extra.window;
 
 import com.magnetstreet.swt.extra.window.hotkey.HotKeyManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -21,6 +19,8 @@ import org.eclipse.swt.widgets.Shell;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * JaguarComposite
@@ -44,7 +44,7 @@ public abstract class
     private static String glblTitlePrefix, glblTitlePostfix;
 
     public enum STATE { OPENED, OPENING, HIDDEN, CLOSED, NEW, USER }
-    private Log log = LogFactory.getLog(Window.class);
+    private Logger logger = Logger.getLogger("Window");
 
     private java.util.List<WindowListener> listeners = new LinkedList<WindowListener>();
     private STATE state = STATE.NEW;
@@ -101,7 +101,7 @@ public abstract class
         switch(state) {
             case OPENED:
                 RuntimeException re = new RuntimeException("Cannot open a window multiple times, each instance can only be opened once! This window's state is already in OPENED.");
-                log.error("Cannot open a window multiple times.", re);
+                logger.log(Level.SEVERE,"Cannot open a window multiple times.", re);
                 alert("Error", re.getMessage());
                 break;
             case HIDDEN:
@@ -109,14 +109,14 @@ public abstract class
                 break;
             case CLOSED:
                 String msg = "This window instance had been closed and the SWT widget disposed, a new instance is required to open it again.";
-                log.error("Already closed", new RuntimeException(msg));
+                logger.log(Level.SEVERE,"Already closed", new RuntimeException(msg));
                 alert("Bug", msg);
                 break;
             case USER:
-                log.warn("Windows is in an intermediate state awaiting input from the user, open command ignored.");
+                logger.warning("Windows is in an intermediate state awaiting input from the user, open command ignored.");
                 break;
             case OPENING:
-                log.warn("Window already in opening state, will NOT try to re-open!");
+                logger.warning("Window already in opening state, will NOT try to re-open!");
                 break;
             default:
                 try {
@@ -134,14 +134,14 @@ public abstract class
 
                     postInitGUI();
 
-                    getShell().open();
-                    log.debug("Took "+(System.currentTimeMillis() - start)+"ms to load Window("+this.getClass().getSimpleName()+")");
+                    getShell().open();                    
+                    logger.logp(Level.FINER, "Window", "performOpenAction", "Took "+(System.currentTimeMillis() - start)+"ms to load Window("+this.getClass().getSimpleName()+")");
                     setState(STATE.OPENED);
                     redraw();
                     getShell().forceFocus();
                     getInitialFocusWidget().forceFocus();
                 } catch(Exception e) {
-                    log.error("Unknown exception caught while opening window.", e);
+                    logger.log(Level.SEVERE,"Unknown exception caught while opening window.", e);
                     setState(STATE.CLOSED);
                 }
         }
@@ -173,7 +173,7 @@ public abstract class
                     localColorScheme.applyScheme(control);
             }
         } catch (Throwable e) {
-            log.error("Cannot apply color scheme.", e);
+            logger.log(Level.SEVERE,"Cannot apply color scheme.", e);
         }
     }
 
@@ -261,7 +261,7 @@ public abstract class
             try {
                 if(!getShell().getDisplay().readAndDispatch()) getShell().getDisplay().sleep();
             } catch(Throwable e) {
-                log.fatal("Window crashed while in blocking open mode.", e);
+                logger.log(Level.SEVERE,"Window crashed while in blocking open mode.", e);
             }
         }
     }
@@ -341,7 +341,7 @@ public abstract class
         if(beforeClose()) {
             setState(STATE.CLOSED);
             if(!getShell().isDisposed()) getShell().dispose();
-            else log.warn("Shell already disposed! This is not necessary of the beforeClose() function.");
+            else logger.warning("Shell already disposed! This is not necessary of the beforeClose() function.");
             liveWindows.remove(this);
             return true;
         }

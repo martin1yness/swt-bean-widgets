@@ -8,8 +8,6 @@ import com.magnetstreet.swt.beanwidget.listener.SingleAndDblClickListener;
 import com.magnetstreet.swt.exception.InvalidGridViewSetupException;
 import com.magnetstreet.swt.extra.SortableTable;
 import com.magnetstreet.swt.util.TableColumnComparator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeListener;
@@ -40,6 +38,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * AbstractDataGrid
@@ -51,7 +51,7 @@ import java.util.Set;
  * @since Jul 28, 2009
  */
 public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<T> {
-    private static Log log = LogFactory.getLog(AbstractDataGrid.class);
+    private static Logger log = Logger.getLogger(AbstractDataGrid.class.getSimpleName());
 
     protected SortableTable dataGridTableSortWrapper;
     protected Table dataGridTable;
@@ -202,7 +202,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
      * @param event The mouse event used to get click coords
      */
     protected void handleRowDblClickEvent(MouseEvent event) {
-        log.debug("Triggered double click event handler");
+        log.logp(Level.FINER, "AbstractDataGrid", "handleRowDblClickEvent", "Triggered double click event handler");
         List<T> beans = getSelectedBeans();
         if(beans == null || beans.size() == 0) return;
         DataView<T> view = null;
@@ -211,7 +211,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
                 Constructor cons = staticDataViewImpl.getConstructor(Composite.class, int.class);
                 view = (DataView<T>)cons.newInstance(this, SWT.NONE);
             } catch (Exception e) {
-                log.error(e);
+                log.log(Level.SEVERE, "Unable to construct dataview", e);
             }
         } else {
             if(popupDataViewDialog == null)

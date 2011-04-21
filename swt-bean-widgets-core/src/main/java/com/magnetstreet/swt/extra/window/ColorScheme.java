@@ -1,13 +1,14 @@
 package com.magnetstreet.swt.extra.window;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ColorScheme
@@ -18,7 +19,7 @@ import java.util.HashMap;
  * @since Sep 7, 2010
  */
 public class ColorScheme {
-    private Log logger = LogFactory.getLog(ColorScheme.class);
+    private Logger logger = Logger.getLogger(ColorScheme.class.getSimpleName());
     private String name;
 
     private Image defaultBackgroundImage;
@@ -42,7 +43,7 @@ public class ColorScheme {
         try {
             return new Image(Display.getDefault(), this.getClass().getClassLoader().getResourceAsStream(location));
         } catch(Throwable t) {
-            logger.error("Unable to create background image from supplied location: " + location, t);
+            logger.log(Level.SEVERE, "Unable to create background image from supplied location: " + location, t);
             return null;
         }
     }

@@ -1,10 +1,10 @@
 package com.magnetstreet.swt.extra.splash;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * LoadingTask
@@ -20,7 +20,7 @@ public abstract class LoadingTask implements Callable<Boolean> {
         public void notifyStatusChange(LoadingTask task, STATUS previous, STATUS current);
     }
 
-    private Log log = LogFactory.getLog("LoadingTask");
+    private Logger logger = Logger.getLogger("LoadingTask");
     protected String name, description;
     protected Long expectedTime;
 
@@ -95,7 +95,7 @@ public abstract class LoadingTask implements Callable<Boolean> {
             else
                 updateStatus(LoadingTask.STATUS.ERROR);
             error = t;
-            log.warn("Unable to complete loading action.", t);
+            logger.log(Level.WARNING, "Unable to complete loading action.", t);
             return false;
         }
         return true;

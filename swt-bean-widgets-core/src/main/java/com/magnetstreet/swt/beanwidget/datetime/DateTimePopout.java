@@ -1,7 +1,6 @@
 package com.magnetstreet.swt.beanwidget.datetime;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -11,7 +10,13 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+
+import java.util.logging.Logger;
 
 /**
  * Date Time Popout
@@ -25,7 +30,7 @@ import org.eclipse.swt.widgets.*;
  */
 public class DateTimePopout extends DateTime {
     public static volatile boolean popoutOpen = false;
-    private Log log = LogFactory.getLog(DateTimePopout.class);
+    private Logger logger = Logger.getLogger(DateTimePopout.class.getSimpleName());
     private long lastClicked = 0;
 
     public static void main(String[] args) {
@@ -54,7 +59,7 @@ public class DateTimePopout extends DateTime {
                 lastClicked = System.currentTimeMillis();
                 if(dbl > 600) return;
                 if(popoutOpen) {
-                    log.warn("Datetime widget is already popped out, it will not honor this request to open the calendar view again until the other popout is closed.");
+                    logger.warning("Datetime widget is already popped out, it will not honor this request to open the calendar view again until the other popout is closed.");
                     return;
                 }
                 popoutOpen = true;

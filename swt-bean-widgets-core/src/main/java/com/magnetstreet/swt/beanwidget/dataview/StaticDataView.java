@@ -2,8 +2,6 @@ package com.magnetstreet.swt.beanwidget.dataview;
 
 import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
 import com.magnetstreet.swt.util.EditableDataGridUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.widgets.Button;
@@ -14,6 +12,8 @@ import org.eclipse.swt.widgets.Label;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * StaticDataView
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Deprecated
 public abstract class StaticDataView<T> extends AbstractDataView<T> {
-    private Log log = LogFactory.getLog(StaticDataView.class);
+    private Logger logger = Logger.getLogger(StaticDataView.class.getSimpleName());
 
     protected StaticDataView(Composite arg0, int arg1) {
         super(arg0, arg1);
@@ -81,7 +81,7 @@ public abstract class StaticDataView<T> extends AbstractDataView<T> {
         try {
             return (Control)controlField.get(this);
         } catch (IllegalAccessException e) {
-            log.error(e);
+            logger.log(Level.SEVERE, "Unable to access control field.", e);
             return null;
         }
     }

@@ -1,13 +1,8 @@
 package com.magnetstreet.swt.beanwidget.datagrid2;
 
-import com.magnetstreet.swt.viewers.ColumnHeaderProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.EditingSupport;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -24,17 +19,6 @@ public interface DataGrid<T> {
     public void refresh();
 
     /**
-     * Defines how a column bound to the given property should be sorted when the user chooses to sort by that
-     * column. The comparator should function as defined in the Java 1.6 spec.
-     * @param property The String name of the property in the bean class that should consider the comparator
-     *        when sorted by
-     * @param comparator The Comparator to execute when sorted by the particular bean property
-     */
-    public void bindSorter(String property, Comparator<T> comparator);
-    public void bindSorter(Field property, Comparator<T> comparator);
-    public void bindSorter(Method getter, Comparator<T> comparator);
-
-    /**
      * Adds a data bean filter which will filter out display results that would normally
      * be all displayed.
      * @param property String name of the property in the bean class that should be filtered on
@@ -48,35 +32,12 @@ public interface DataGrid<T> {
     public void bindFilter(Method getter, Callable<String> valueGetter);
 
     /**
-     * Defines how a column can providing editing support to each row's cell. Uses the JFaces editing support
-     * interface to define the mapping between the GUI component and the backing object as well as the
-     * control to be used to display the editable column.
-     * @param property The name of the property in the bean to bind this editor
-     * @param editingSupportDef The JFace EditingSupport implementation
+     * Removes the filter applied to a particular property
+     * @param property The property to remove bound filter (if exists)
      */
-    public void bindEditor(String property, EditingSupport editingSupportDef);
-    public void bindEditor(Field property, EditingSupport editingSupportDef);
-    public void bindEditor(Method getter, EditingSupport editingSupportDef);
-
-    /**
-     * Defines how a bean property is displayed in the table cell normally, each viewable column requires
-     * a bound viewer!
-     * @param property The property to bind the column against
-     * @param columnLabelProvider
-     */
-    public void bindViewer(String property, ColumnLabelProvider columnLabelProvider);
-    public void bindViewer(Field property, ColumnLabelProvider columnLabelProvider);
-    public void bindViewer(Method getter, ColumnLabelProvider columnLabelProvider);
-
-    /**
-     * Defines the header and column properties for a particular field, for every header defined
-     * there is an expected viewer bound to the same property.
-     * @param property The property to bind the column header to
-     * @param columnHeaderProvider The column definition including header title
-     */
-    public void bindHeader(String property, ColumnHeaderProvider columnHeaderProvider);
-    public void bindHeader(Field property, ColumnHeaderProvider columnHeaderProvider);
-    public void bindHeader(Method getter, ColumnHeaderProvider columnHeaderProvider);
+    public void unbindFilter(String property);
+    public void unbindFilter(Field property);
+    public void unbindFilter(Method getter);
 
     /**
      * @return The bean(s) associated with the row(s) selected in the table

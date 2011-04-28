@@ -138,17 +138,53 @@ public class AbstractDataGrid<T> extends Composite implements DataGrid<T> {
         tableViewer.refresh();
     }
 
-    @Override public void bindSorter(String property, Comparator<T> comparator) {
+    /**
+     * Defines how a column bound to the given property should be sorted when the user chooses to sort by that
+     * column. The comparator should function as defined in the Java 1.6 spec.
+     * @param property The String name of the property in the bean class that should consider the comparator
+     *        when sorted by
+     * @param comparator The Comparator to execute when sorted by the particular bean property
+     */
+    protected void bindSorter(String property, Comparator<T> comparator) {
         if(initialized)
             throw new RuntimeException("Cannot bind after the data grid has been initialized.");
         sortingDefinitions.put(property, comparator);
     }
-    @Override public void bindSorter(Field property, Comparator<T> comparator) {
-        bindSorter(property.getName(), comparator);
+    /**
+     * Defines how a column can providing editing support to each row's cell. Uses the JFaces editing support
+     * interface to define the mapping between the GUI component and the backing object as well as the
+     * control to be used to display the editable column.
+     * @param property The name of the property in the bean to bind this editor
+     * @param editingSupportDef The JFace EditingSupport implementation
+     */
+    protected void bindEditor(String property, EditingSupport editingSupportDef) {
+        if(initialized)
+            throw new RuntimeException("Cannot bind after the data grid has been initialized.");
+        cellEditorDefinitions.put(property, editingSupportDef);
     }
-    @Override public void bindSorter(Method getter, Comparator<T> comparator) {
-        bindSorter(BeanUtil.getPropertyNameFromGetter(getter), comparator);
+    /**
+     * Defines how a bean property is displayed in the table cell normally, each viewable column requires
+     * a bound viewer!
+     * @param property The property to bind the column against
+     * @param columnLabelProvider
+     */
+    protected void bindViewer(String property, ColumnLabelProvider columnLabelProvider) {
+        if(initialized)
+            throw new RuntimeException("Cannot bind after the data grid has been initialized.");
+        columnDefinitions.put(property, columnLabelProvider);
     }
+    /**
+     * Defines the header and column properties for a particular field, for every header defined
+     * there is an expected viewer bound to the same property.
+     * @param property The property to bind the column header to
+     * @param columnHeaderProvider The column definition including header title
+     */
+    protected void bindHeader(String property, ColumnHeaderProvider columnHeaderProvider) {
+        if(initialized)
+            throw new RuntimeException("Cannot bind after the data grid has been initialized.");
+        columnHeaderDefinitions.put(property, columnHeaderProvider);
+    }
+
 
     @Override public void bindFilter(String property, Callable<String> valueGetter) {
         filterDefinitions.put(property, valueGetter);
@@ -160,40 +196,14 @@ public class AbstractDataGrid<T> extends Composite implements DataGrid<T> {
         bindFilter(BeanUtil.getPropertyNameFromGetter(getter), valueGetter);
     }
 
-    @Override public void bindEditor(String property, EditingSupport editingSupportDef) {
-        if(initialized)
-            throw new RuntimeException("Cannot bind after the data grid has been initialized.");
-        cellEditorDefinitions.put(property, editingSupportDef);
+    @Override public void unbindFilter(String property) {
+        filterDefinitions.remove(property);
     }
-    @Override public void bindEditor(Field property, EditingSupport editingSupportDef) {
-        bindEditor(property.getName(), editingSupportDef);
+    @Override public void unbindFilter(Field property) {
+        unbindFilter(property.getName());
     }
-    @Override public void bindEditor(Method getter, EditingSupport editingSupportDef) {
-        bindEditor(BeanUtil.getPropertyNameFromGetter(getter), editingSupportDef);
-    }
-
-    @Override public void bindViewer(String property, ColumnLabelProvider columnLabelProvider) {
-        if(initialized)
-            throw new RuntimeException("Cannot bind after the data grid has been initialized.");
-        columnDefinitions.put(property, columnLabelProvider);
-    }
-    @Override public void bindViewer(Field property, ColumnLabelProvider columnLabelProvider) {
-        bindViewer(property.getName(), columnLabelProvider);
-    }
-    @Override public void bindViewer(Method getter, ColumnLabelProvider columnLabelProvider) {
-        bindViewer(BeanUtil.getPropertyNameFromGetter(getter), columnLabelProvider);
-    }
-
-    @Override public void bindHeader(String property, ColumnHeaderProvider columnHeaderProvider) {
-        if(initialized)
-            throw new RuntimeException("Cannot bind after the data grid has been initialized.");
-        columnHeaderDefinitions.put(property, columnHeaderProvider);
-    }
-    @Override public void bindHeader(Field property, ColumnHeaderProvider columnHeaderProvider) {
-        bindHeader(property.getName(), columnHeaderProvider);
-    }
-    @Override public void bindHeader(Method getter, ColumnHeaderProvider columnHeaderProvider) {
-        bindHeader(BeanUtil.getPropertyNameFromGetter(getter), columnHeaderProvider);
+    @Override public void unbindFilter(Method getter) {
+        unbindFilter(BeanUtil.getPropertyNameFromGetter(getter));
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTableColumn;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -77,6 +78,18 @@ public class OrderManualWithFiltersWindowSWTBotTest {
     @BeforeClass
     public static void setupSwtBot() {
         bot = new SWTBot();
+    }
+
+    @Before
+    public void setDefaultConfiguration() {
+        bot.textWithLabel("ID:").setText("");
+        bot.textWithLabel("Item(s):").setText("");
+        bot.spinnerWithLabel("Discount:").setSelection(0);
+        bot.spinnerWithLabel("Cost:").setSelection(0);
+        bot.checkBox().deselect();
+        bot.table().header("Paid?").click();
+        bot.table().header("ID").click();
+        bot.table().header("ID").click();
     }
 
     @Test public void testFilters() throws InterruptedException {

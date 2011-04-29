@@ -133,6 +133,19 @@ public class OrderManualWithFiltersWindowSWTBotTest {
         assertThat(columns.get(4), is("Paid?"));
     }
 
+    @Test public void testCurrencyValidator() throws Exception {
+        SWTBotTable tbl = bot.table();
+        tbl.click(0,3);
+        bot.text("50").setText("666");
+        tbl.click(0,0);
+        assertThat(tbl.cell(0,3), is("666"));
+
+        tbl.click(0,3);
+        bot.text("666").setText("2t");
+        tbl.click(0,0);
+        assertThat(tbl.cell(0,3), is("666"));
+    }
+
     @Ignore(value = "Wait until SWTBot supports drag and drop to write test for this.")
     @Test public void testReOrderColumnAndSort() throws Exception {
         SWTBotTable tbl = bot.table();

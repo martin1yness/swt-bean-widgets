@@ -1,4 +1,4 @@
-package com.magnetstreet.swt.viewers;
+package com.magnetstreet.swt.beanwidget.datagrid2.sorter;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;

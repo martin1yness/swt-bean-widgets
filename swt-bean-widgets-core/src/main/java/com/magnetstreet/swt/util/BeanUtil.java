@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +43,26 @@ public class BeanUtil {
             r += "ERROR: " + t.getMessage();
         }
         return r;
+    }
+
+    public static void setFieldChainValueWithSetter(Object baseObject, String fieldNameChain, Object value) {
+        int last = fieldNameChain.lastIndexOf(".");
+        if(last != -1)
+            baseObject = getFieldChainValueWithGetters(fieldNameChain.subSequence(0, last), fieldNameChain);
+        try {
+            setFieldValueWithSetter(baseObject, fieldNameChain.substring((last==-1)?0:last), value);
+        } catch (Throwable e) {
+            log.log(Level.SEVERE, "Unable to set value.", e);
+        }
+    }
+
+    public static void setFieldValueWithSetter(Object obj, String fieldName, Object value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = getSetterMethodForField(obj, getSetterMethodNameForField(fieldName), value.getClass());
+        method.invoke(obj, value);
+    }
+
+    public static Method getSetterMethodForField(Object obj, String fieldName, Class type) throws NoSuchMethodException {
+        return obj.getClass().getDeclaredMethod(fieldName, type);
     }
 
     public static Object getFieldChainValueWithGetters(Object baseObject, String fieldNameChain) {
@@ -82,14 +104,30 @@ public class BeanUtil {
     }
 
     public static Method getGetterMethodForField(Object obj, String fieldName) throws NoSuchMethodException {
-        return obj.getClass().getDeclaredMethod(getGetterMethodNameForField(obj, fieldName));
+        return obj.getClass().getDeclaredMethod(getGetterMethodNameForField(fieldName));
     }
 
     public static String getGetterMethodNameForField(Object obj, Field field) {
-        return getGetterMethodNameForField(obj, field.getName());
+        return getGetterMethodNameForField(field.getName());
     }
 
-    public static String getGetterMethodNameForField(Object obj, String fieldName) {
+    public static String getGetterMethodNameForField(String fieldName) {
         return "get"+fieldName.substring(0, 1).toUpperCase()+fieldName.substring(1);
+    }
+
+    public static String getSetterMethodNameForField(String fieldName) {
+        return "set"+fieldName.substring(0, 1).toUpperCase()+fieldName.substring(1);
+    }
+
+
+
+    public static List<Method> getMethodsNamed(String methodName, Object obj) {
+        Method[] methods = obj.getClass().getDeclaredMethods();
+        List<Method> methodList = new LinkedList<Method>();
+        for(Method method: methods) {
+            if(method.getName().equals(methodName))
+                methodList.add(method);
+        }
+        return methodList;
     }
 }

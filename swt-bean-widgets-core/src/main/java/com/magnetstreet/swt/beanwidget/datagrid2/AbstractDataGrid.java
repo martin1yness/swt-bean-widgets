@@ -1,11 +1,12 @@
 package com.magnetstreet.swt.beanwidget.datagrid2;
 
+import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
+import com.magnetstreet.swt.beanwidget.datagrid2.sorter.TableViewComparator;
 import com.magnetstreet.swt.util.BeanUtil;
-import com.magnetstreet.swt.viewers.ColumnHeaderProvider;
-import com.magnetstreet.swt.viewers.TableViewComparator;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -51,6 +52,7 @@ public class AbstractDataGrid<T> extends Composite implements DataGrid<T> {
     protected Map<String, ColumnLabelProvider> columnDefinitions = new LinkedHashMap<String, ColumnLabelProvider>();
     protected Map<String, Callable<String>> filterDefinitions = new LinkedHashMap<String, Callable<String>>();
     protected Map<String, EditingSupport> cellEditorDefinitions = new LinkedHashMap<String, EditingSupport>();
+    protected Map<String, ICellEditorValidator> cellEditorValidatorDefinitions = new LinkedHashMap<String, ICellEditorValidator>();
     protected Map<String, Comparator<T>> sortingDefinitions = new LinkedHashMap<String, Comparator<T>>();
 
     protected Map<String, TableViewerColumn> tableViewerColumnMap = new LinkedHashMap<String, TableViewerColumn>();

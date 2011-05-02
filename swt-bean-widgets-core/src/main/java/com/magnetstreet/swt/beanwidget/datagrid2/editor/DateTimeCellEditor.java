@@ -43,4 +43,9 @@ public class DateTimeCellEditor extends CellEditor {
     @Override public void activate() {
         ((DateTimePopout)getControl()).showPopout();
     }
+
+    @Override public void deactivate() {
+        ((DateTimePopout)getControl()).hidePopout();
+        super.deactivate();
+    }
 }

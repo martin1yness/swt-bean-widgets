@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * OrderManualWithFiltersWindowSWTBotTest
@@ -163,6 +164,10 @@ public class OrderManualWithFiltersWindowSWTBotTest {
 
         tbl.click(0,0);
         assertThat(tbl.getTableItem(0).getText(5), is("09/09/2000"));
+        try {
+            bot.dateTime();
+            fail("Date time is still retrievable, it was supposed to be destroyed.");
+        } catch(Throwable t) { }
     }
 
     @Ignore(value = "Wait until SWTBot supports drag and drop to write test for this.")

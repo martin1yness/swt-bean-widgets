@@ -1,5 +1,7 @@
 package com.magnetstreet.swt.beanwidget.datagrid2;
 
+import org.eclipse.jface.viewers.IDoubleClickListener;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -38,6 +40,13 @@ public interface DataGrid<T> {
     public void unbindFilter(String property);
     public void unbindFilter(Field property);
     public void unbindFilter(Method getter);
+
+    /**
+     * Allows for a double click action to invoke a custom listener. Often used to create dialogs that
+     * provide details about the selected item in the table.
+     * @param listener
+     */
+    public void addDoubleClickListener(IDoubleClickListener listener);
 
     /**
      * @return The bean(s) associated with the row(s) selected in the table

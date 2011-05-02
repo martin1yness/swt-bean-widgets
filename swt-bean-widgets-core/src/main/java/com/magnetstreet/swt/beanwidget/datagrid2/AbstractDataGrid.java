@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ICellEditorValidator;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -217,6 +218,8 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
     @Override public void unbindFilter(Method getter) {
         unbindFilter(BeanUtil.getPropertyNameFromGetter(getter));
     }
+
+    @Override public void addDoubleClickListener(IDoubleClickListener listener) {tableViewer.addDoubleClickListener(listener);}
 
     @Override
     public List<T> getSelectedBeans() {

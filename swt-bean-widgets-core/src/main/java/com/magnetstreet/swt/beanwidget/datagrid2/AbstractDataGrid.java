@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 4/27/11
  */
-public class AbstractDataGrid<T> extends Composite implements DataGrid<T> {
+public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<T> {
     private Logger logger = Logger.getLogger(AbstractDataGrid.class.getSimpleName());
 
     private boolean initialized = false;
@@ -88,6 +88,8 @@ public class AbstractDataGrid<T> extends Composite implements DataGrid<T> {
         super(composite, SWT.NONE);
         tableStyle = i;
         tableViewer = new TableViewer(this, tableStyle|SWT.FULL_SELECTION);
+        preInit();
+        initialize();
     }
 
     protected void generateViewerColumns() {
@@ -115,6 +117,12 @@ public class AbstractDataGrid<T> extends Composite implements DataGrid<T> {
             tableViewerColumnMap.put(property, columnViewer);
         }
     }
+
+    /**
+     * Method invoked before the class is initialized after instantiation. All pre-creation tasks must be completed
+     * in this method or an Exception will likely be encountered.
+     */
+    protected abstract void preInit();
 
     protected void initialize() {
         generateViewerColumns();

@@ -16,7 +16,6 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -39,13 +38,14 @@ import java.util.List;
 public class OrderManualDataGrid extends AbstractDataGrid<Order> {
     public OrderManualDataGrid(Composite composite, int i) {
         super(composite, i);
+    }
 
+    @Override protected void preInit() {
         createIdBinds();
         createItemsBinds();
         createDiscountTotalBinds();
         createTotalCostBinds();
         createPaidBinds();
-        initialize();
     }
 
     protected void createIdBinds() {

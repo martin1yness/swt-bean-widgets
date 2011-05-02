@@ -12,13 +12,13 @@ import org.eclipse.swt.graphics.Image;
 public abstract class ColumnHeaderProvider extends ColumnLabelProvider {
     public abstract String getTitle();
 
-    public abstract String getTooltip();
+    public String getTooltip() { return getTitle(); }
 
-    public abstract int getWidth();
+    public int getWidth() { return getTitle() == null ? 1 : getTitle().length() * 5; }
 
-    public abstract boolean isResizable();
+    public boolean isResizable() { return true; }
 
-    public abstract boolean isMoveable();
+    public boolean isMoveable() { return false; }
 
-    public abstract Image getImage();
+    public Image getImage() { return null; }
 }

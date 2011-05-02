@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,6 +36,7 @@ public class DateTimePopout extends DateTime {
     public static AtomicBoolean popoutOpen = new AtomicBoolean(false);
     private Logger logger = Logger.getLogger(DateTimePopout.class.getSimpleName());
     private long lastClicked = 0;
+    private Shell dialog;
 
     public static void main(String[] args) {
         Shell s = new Shell(Display.getDefault(), SWT.SHELL_TRIM);
@@ -59,7 +62,7 @@ public class DateTimePopout extends DateTime {
             logger.warning("Datetime widget is already popped out, it will not honor this request to open the calendar view again until the other popout is closed.");
             return;
         }
-        final Shell dialog = new Shell (getShell(), SWT.ON_TOP);
+        dialog = new Shell (getShell(), SWT.ON_TOP);
         dialog.setLocation(getXCoordPosition(), getYCoordPosition());
         dialog.setLayout (new FormLayout());
 
@@ -84,17 +87,29 @@ public class DateTimePopout extends DateTime {
         okLData.right = new FormAttachment(100,100,0);
         okLData.bottom = new FormAttachment(100,100,0);
         ok.setLayoutData(okLData);
-        ok.addSelectionListener (new SelectionAdapter() {
-            public void widgetSelected (SelectionEvent e) {
+        ok.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                dialog.close();
+            }
+        });
+        dialog.addListener(SWT.Close, new Listener() {
+            public void handleEvent(Event event) {
                 DateTimeUtil.copyDateTime(calendar, getSelf());
                 DateTimeUtil.copyDateTime(time, getSelf());
                 popoutOpen.set(false);
-                dialog.close ();
+                event.doit = true;
             }
         });
         dialog.setDefaultButton (ok);
         dialog.pack ();
         dialog.open ();
+    }
+
+    public void hidePopout() {
+        if(dialog!=null && !dialog.isDisposed()) {
+            dialog.close();
+        }
+        dialog = null;
     }
 
     protected int getXCoordPosition() {

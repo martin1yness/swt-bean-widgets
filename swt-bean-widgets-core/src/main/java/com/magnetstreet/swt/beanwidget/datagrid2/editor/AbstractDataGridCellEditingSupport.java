@@ -41,12 +41,15 @@ public abstract class AbstractDataGridCellEditingSupport extends EditingSupport 
         return getControlValue(element);
     }
     @Override protected void setValue(Object element, Object value) {
-        validator.hideError();
-        if(cellEditor.isValueValid()) {
-            setModelValue(element, value);
-            getViewer().refresh();
-            return;
+        if(validator!=null) {
+            validator.hideError();
+            if(!cellEditor.isValueValid()) {
+                validator.showError(cellEditor);
+                return;
+            }
         }
-        validator.showError(cellEditor);
+        setModelValue(element, value);
+        getViewer().refresh();
     }
+    @Override protected boolean canEdit(Object element) { return true; }
 }

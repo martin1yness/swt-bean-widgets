@@ -33,7 +33,10 @@ import java.util.logging.Logger;
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @version 0.1.0 Aug 6, 2009
  * @since Aug 6, 2009
+ * @deprecated Features are provided by different facilities supported by the eclipse team, this class will no longer
+ *             be maintained
  */
+@Deprecated
 public abstract class
         Window extends Composite {
     private static Set<Window> liveWindows = new HashSet<Window>();   // Solves GOTCHA with locally created windows that disappear after opening and exiting function

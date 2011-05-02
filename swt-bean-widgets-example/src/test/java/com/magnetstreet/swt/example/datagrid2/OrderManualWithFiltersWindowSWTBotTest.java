@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotDateTime;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTableColumn;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -69,7 +71,9 @@ public class OrderManualWithFiltersWindowSWTBotTest {
             else
                 o.setPaid(true);
             o.setCustomer(new CustomerRecord());
-
+            Calendar placedOn = Calendar.getInstance();
+            placedOn.set(1999, 11, 24);
+            o.setPlacedOn(placedOn);
             orders.add(o);
         }
         return orders;
@@ -131,6 +135,7 @@ public class OrderManualWithFiltersWindowSWTBotTest {
         assertThat(columns.get(2), is("Discount"));
         assertThat(columns.get(3), is("Total"));
         assertThat(columns.get(4), is("Paid?"));
+        assertThat(columns.get(5), is("Date"));
     }
 
     @Test public void testCurrencyValidator() throws Exception {
@@ -144,6 +149,20 @@ public class OrderManualWithFiltersWindowSWTBotTest {
         bot.text("666").setText("2t");
         tbl.click(0,0);
         assertThat(tbl.cell(0,3), is("666"));
+    }
+
+    @Test public void testDateTimePopoutCustomCellEditor() throws Exception {
+        SWTBotTable tbl = bot.table();
+        assertThat(tbl.getTableItem(0).getText(5), is("12/24/1999"));
+
+        tbl.click(0,5);
+        SWTBotDateTime dateTime = bot.dateTime();
+        Calendar placedOn = Calendar.getInstance();
+        placedOn.set(2000, 8, 9);
+        dateTime.setDate(placedOn.getTime());
+
+        tbl.click(0,0);
+        assertThat(tbl.getTableItem(0).getText(5), is("09/09/2000"));
     }
 
     @Ignore(value = "Wait until SWTBot supports drag and drop to write test for this.")

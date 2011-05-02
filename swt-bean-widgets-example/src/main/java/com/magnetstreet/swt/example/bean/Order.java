@@ -4,6 +4,7 @@ import com.magnetstreet.swt.annotation.SWTEntity;
 import com.magnetstreet.swt.annotation.SWTWidget;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -27,6 +28,7 @@ public class Order {
     private BigDecimal totalCost;
     @SWTWidget(labelText = "Payment Recieved:")
     private boolean paid;
+    private Calendar placedOn;
     private CustomerRecord customer;
 
     public Integer getId() {
@@ -58,6 +60,12 @@ public class Order {
     }
     public void setPaid(boolean paid) {
         this.paid = paid;
+    }
+    public Calendar getPlacedOn() {
+        return placedOn;
+    }
+    public void setPlacedOn(Calendar placedOn) {
+        this.placedOn = placedOn;
     }
     public CustomerRecord getCustomer() {
         return customer;

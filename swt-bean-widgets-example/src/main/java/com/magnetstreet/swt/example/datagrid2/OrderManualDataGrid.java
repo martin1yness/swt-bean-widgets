@@ -2,6 +2,7 @@ package com.magnetstreet.swt.example.datagrid2;
 
 import com.magnetstreet.swt.beanwidget.datagrid2.AbstractDataGrid;
 import com.magnetstreet.swt.beanwidget.datagrid2.editor.AbstractDataGridCellEditingSupport;
+import com.magnetstreet.swt.beanwidget.datagrid2.editor.DateTimeCellEditor;
 import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
 import com.magnetstreet.swt.beanwidget.datagrid2.validator.AbstractTooltipDataGridCellValidator;
 import com.magnetstreet.swt.beanwidget.datagrid2.validator.IDataGridCellValidator;
@@ -26,6 +27,8 @@ import org.eclipse.swt.widgets.ToolTip;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 
@@ -46,6 +49,7 @@ public class OrderManualDataGrid extends AbstractDataGrid<Order> {
         createDiscountTotalBinds();
         createTotalCostBinds();
         createPaidBinds();
+        createdPlacedOnBinds();
     }
 
     protected void createIdBinds() {
@@ -252,6 +256,48 @@ public class OrderManualDataGrid extends AbstractDataGrid<Order> {
             @Override protected void setValue(Object o, Object o1) {
                 ((Order)o).setPaid((Boolean)o1);
                 tableViewer.refresh();
+            }
+        });
+    }
+
+    protected void createdPlacedOnBinds() {
+        bindHeader("placedOn", new ColumnHeaderProvider() {
+            //"Paid?", "The Order's Unique Identifier", 50, true, true, null))
+            @Override public String getTitle() { return "Date"; }
+            @Override public String getTooltip() { return "The Order's Unique Identifier"; }
+            @Override public int getWidth() { return 50; }
+            @Override public boolean isResizable() { return true; }
+            @Override public boolean isMoveable() { return true; }
+            @Override public Image getImage() { return null; }
+        });
+        bindViewer("placedOn", new ColumnLabelProvider() {
+            @Override public String getText(Object element) {
+                if(((Order)element).getPlacedOn() == null)
+                    return "";
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                return sdf.format(((Order) element).getPlacedOn().getTime());
+            }
+        });
+        bindSorter("placedOn", new Comparator<Order>() {
+            @Override public int compare(Order o1, Order o2) {
+                return o1.getPlacedOn().compareTo(o2.getPlacedOn());
+            }
+        });
+        bindEditor("placedOn", new AbstractDataGridCellEditingSupport(tableViewer) {
+            @Override protected CellEditor instantiateCellEditor(Table composite) {
+                return new DateTimeCellEditor(tableViewer.getTable(), SWT.DATE|SWT.MEDIUM);
+            }
+            @Override protected IDataGridCellValidator instantiateValidator() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+            @Override protected Object getControlValue(Object modelObject) {
+                return ((Order) modelObject).getPlacedOn();
+            }
+            @Override protected void setModelValue(Object modelObject, Object newValidValueFromControl) {
+                ((Order)modelObject).setPlacedOn((Calendar)newValidValueFromControl);
+            }
+            @Override protected boolean canEdit(Object o) {
+                return true;
             }
         });
     }

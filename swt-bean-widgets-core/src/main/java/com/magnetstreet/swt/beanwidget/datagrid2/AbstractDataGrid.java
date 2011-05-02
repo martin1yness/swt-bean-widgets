@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -86,6 +87,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
 
     public AbstractDataGrid(Composite composite, int i) {
         super(composite, SWT.NONE);
+        setLayout(new FillLayout());
         tableStyle = i;
         tableViewer = new TableViewer(this, tableStyle|SWT.FULL_SELECTION);
         preInit();

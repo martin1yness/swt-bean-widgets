@@ -7,7 +7,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -147,7 +146,6 @@ public class OrderManualWithFiltersWindow extends ApplicationWindow {
             fd.right = new FormAttachment(100,100,-5);
             fd.bottom = new FormAttachment(100,100,-5);
             orderManualDataGrid.setLayoutData(fd);
-            orderManualDataGrid.setLayout(new FillLayout());
         }
 
         bindFilters();

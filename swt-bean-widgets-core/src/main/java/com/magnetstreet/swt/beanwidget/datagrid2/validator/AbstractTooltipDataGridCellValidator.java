@@ -3,6 +3,7 @@ package com.magnetstreet.swt.beanwidget.datagrid2.validator;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolTip;
 
 /**
@@ -20,6 +21,7 @@ public abstract class AbstractTooltipDataGridCellValidator<K> implements IDataGr
     @Override public void showError(CellEditor editor) {
         if(errorShowing) return;
         this.editor = editor;
+        this.editor.getControl().setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
         validationErrorTooltip = new ToolTip(editor.getControl().getShell(), SWT.BALLOON | SWT.ICON_ERROR);
         validationErrorTooltip.setAutoHide(true);
         validationErrorTooltip.setText("Validation Error");
@@ -31,6 +33,7 @@ public abstract class AbstractTooltipDataGridCellValidator<K> implements IDataGr
 
     @Override public void hideError() {
         if(!errorShowing) return;
+        this.editor.getControl().setBackground(null);
         validationErrorTooltip.setVisible(false);
         validationErrorTooltip.dispose();
         errorShowing = false;

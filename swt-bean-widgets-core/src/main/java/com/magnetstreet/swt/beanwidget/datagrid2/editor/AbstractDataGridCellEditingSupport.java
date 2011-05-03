@@ -6,8 +6,6 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,12 +63,15 @@ public abstract class AbstractDataGridCellEditingSupport<T,K> extends EditingSup
                 @Override public void applyEditorValue() {
                     setValueChanged((K) cellEditor.getValue());
                 }
-                @Override public void cancelEditor() { changed.set(false); }
+                @Override public void cancelEditor() {
+                    changed.set(false);
+                    validator.hideError();
+                }
                 @Override public void editorValueChanged(boolean oldValidState, boolean newValidState) {
                     if(validator.isValid(cellEditor.getValue()) == null)
-                        cellEditor.getControl().setBackground(null);
+                        validator.hideError();
                     else
-                        cellEditor.getControl().setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+                        validator.showError(cellEditor);
                 }
             });
             validator = instantiateValidator();

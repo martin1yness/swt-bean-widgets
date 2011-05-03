@@ -35,8 +35,8 @@ import java.util.logging.Logger;
 public class DateTimePopout extends DateTime {
     public static AtomicBoolean popoutOpen = new AtomicBoolean(false);
     private Logger logger = Logger.getLogger(DateTimePopout.class.getSimpleName());
-    private long lastClicked = 0;
-    private Shell dialog;
+    protected long lastClicked = 0;
+    protected Shell dialog;
 
     public static void main(String[] args) {
         Shell s = new Shell(Display.getDefault(), SWT.SHELL_TRIM);
@@ -112,6 +112,9 @@ public class DateTimePopout extends DateTime {
         dialog = null;
     }
 
+    public Shell getPopout() {
+        return dialog;
+    }
     protected int getXCoordPosition() {
         int x = getLocation().x;
         Control parent = getParent();

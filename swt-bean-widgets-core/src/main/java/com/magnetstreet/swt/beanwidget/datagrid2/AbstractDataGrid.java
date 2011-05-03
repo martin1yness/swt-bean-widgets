@@ -232,6 +232,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
     }
 
     @Override public void setBeans(Collection<T> beans) { this.beans = beans; }
+    @Override public Collection<T> getBeans() { return this.beans; }
     @Override public void addBean(T bean) { this.beans.add(bean); }
     @Override public void removeBean(T bean) { this.beans.remove(bean); }
     @Override public void removeAllBeans() { this.beans = new ArrayList<T>(); }

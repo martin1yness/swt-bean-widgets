@@ -60,6 +60,10 @@ public interface DataGrid<T> {
      */
     public List<T> getSelectedBeans();
     /**
+     * @return All beans added to the grid
+     */
+    public Collection<T> getBeans();
+    /**
      * Used to populate the data grid in a batch
      * @param beans
      */

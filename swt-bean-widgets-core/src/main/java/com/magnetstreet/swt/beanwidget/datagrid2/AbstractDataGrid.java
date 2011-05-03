@@ -95,6 +95,8 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
         initialize();
     }
 
+    @Override public TableViewer getTableViewer() { return tableViewer; }
+
     protected void generateViewerColumns() {
         for(final String property: columnHeaderDefinitions.keySet()) {
             ColumnHeaderProvider headerProvider = columnHeaderDefinitions.get(property);

@@ -1,6 +1,7 @@
 package com.magnetstreet.swt.beanwidget.datagrid2;
 
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.TableViewer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -40,6 +41,12 @@ public interface DataGrid<T> {
     public void unbindFilter(String property);
     public void unbindFilter(Field property);
     public void unbindFilter(Method getter);
+
+    /**
+     * Allows direct access to the underlying JFace implementation this library builds upon.
+     * @return The TableViewer used to create the data grid.
+     */
+    public TableViewer getTableViewer();
 
     /**
      * Allows for a double click action to invoke a custom listener. Often used to create dialogs that

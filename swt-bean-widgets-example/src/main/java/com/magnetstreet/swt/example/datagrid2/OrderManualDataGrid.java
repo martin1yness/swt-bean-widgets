@@ -15,14 +15,9 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolTip;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -31,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * OrderManualDataGrid
@@ -39,6 +35,8 @@ import java.util.List;
  * @since 4/27/11
  */
 public class OrderManualDataGrid extends AbstractDataGrid<Order> {
+    public AtomicInteger discountTotalSaveCount = new AtomicInteger(0);
+
     public OrderManualDataGrid(Composite composite, int i) {
         super(composite, i);
     }
@@ -122,52 +120,36 @@ public class OrderManualDataGrid extends AbstractDataGrid<Order> {
                 return o1.getDiscountTotal().compareTo(o2.getDiscountTotal());
             }
         });
-        bindEditor("discountTotal", new EditingSupport(tableViewer) {
-            @Override protected CellEditor getCellEditor(Object o) {
-                final CellEditor editor = new TextCellEditor(tableViewer.getTable());
-                ((Text)editor.getControl()).addVerifyListener(new VerifyListener() {
-                    private ToolTip toolTip;
-                    @Override
-                    public void verifyText(VerifyEvent e) {
-                        if(toolTip!=null && !toolTip.isDisposed())
-                            toolTip.dispose();
+        bindEditor("discountTotal", new AbstractDataGridCellEditingSupport<Order,String>(this) {
+            @Override protected CellEditor instantiateCellEditor(Table composite) {
+                return new TextCellEditor(tableViewer.getTable());
+            }
+            @Override protected IDataGridCellValidator instantiateValidator() {
+                return new AbstractTooltipDataGridCellValidator<String>() {
+                    @Override public String isValid(Object value) {
                         try {
-                            Number number = NumberFormat.getNumberInstance().parse(e.text);
+                            Number number = NumberFormat.getNumberInstance().parse((String)value);
+                            return null;
                         } catch (ParseException nfe) {
-                            Display.getCurrent().asyncExec(new Runnable() {
-                                public void run() {
-                                    int x = getShell().getLocation().x + getLocation().x + editor.getControl().getBounds().width + editor.getControl().getLocation().x;
-                                    int y = getShell().getLocation().y + getLocation().y + tableViewer.getTable().getHeaderHeight() + tableViewer.getTable().getItemHeight() + editor.getControl().getLocation().y;
-                                    toolTip = new ToolTip(getShell(), SWT.BALLOON | SWT.ICON_ERROR);
-                                    toolTip.setAutoHide(true);
-                                    toolTip.setText("Invalid Character");
-                                    toolTip.setMessage("Acceptable BigDecimals Only!");
-                                    toolTip.setLocation(x, y);
-                                    toolTip.setVisible(true);
-                                }
-                            });
+                            return "Unable to parse number: " + nfe.getMessage();
                         }
-                        e.doit = true;
                     }
-                });
-                return editor;
+                };
             }
-            @Override protected boolean canEdit(Object o) {
-                return true;
+            @Override protected String getControlValue(Order modelObject) {
+                return modelObject.getDiscountTotal().toString();
             }
-            @Override protected Object getValue(Object o) {
-                return ((Order)o).getDiscountTotal().toString();
-            }
-            @Override protected void setValue(Object o, Object o1) {
+            @Override protected void setModelValue(Order modelObject, String newValidValueFromControl) {
+                discountTotalSaveCount.incrementAndGet();
                 try {
-                    Number number = NumberFormat.getNumberInstance().parse((String)o1);
-                    System.out.println("Setting to: " + number.toString());
-                    ((Order)o).setDiscountTotal(new BigDecimal(number.toString()));
+                    Number number = NumberFormat.getNumberInstance().parse(newValidValueFromControl);
+                    modelObject.setDiscountTotal(new BigDecimal(number.toString()));
                     tableViewer.refresh();
                 } catch (ParseException e) {
-                    System.out.println("Error parsing input: " + o1);
+                    System.out.println("Error parsing input: " + newValidValueFromControl);
                 }
             }
+            @Override protected boolean canEdit(Object o) { return true; }
         });
     }
 
@@ -191,7 +173,7 @@ public class OrderManualDataGrid extends AbstractDataGrid<Order> {
                 return o1.getTotalCost().compareTo(o2.getTotalCost());
             }
         });
-        bindEditor("totalCost", new AbstractDataGridCellEditingSupport(tableViewer) {
+        bindEditor("totalCost", new AbstractDataGridCellEditingSupport<Order,String>(this) {
             @Override protected IDataGridCellValidator instantiateValidator() {
                 return new AbstractTooltipDataGridCellValidator() {
                     @Override public String isValid(Object value) {
@@ -207,11 +189,11 @@ public class OrderManualDataGrid extends AbstractDataGrid<Order> {
             @Override protected CellEditor instantiateCellEditor(Table composite) {
                 return new TextCellEditor(((TableViewer)getViewer()).getTable());
             }
-            @Override protected Object getControlValue(Object modelObject) {
-                return ((Order)modelObject).getTotalCost().toString();
+            @Override protected String getControlValue(Order modelObject) {
+                return modelObject.getTotalCost().toString();
             }
-            @Override protected void setModelValue(Object modelObject, Object newValidValueFromControl) {
-                ((Order)modelObject).setTotalCost(new BigDecimal((String)newValidValueFromControl));
+            @Override protected void setModelValue(Order modelObject, String newValidValueFromControl) {
+                ((Order)modelObject).setTotalCost(new BigDecimal(newValidValueFromControl));
             }
             @Override protected boolean canEdit(Object element) { return true; }
         });
@@ -283,18 +265,18 @@ public class OrderManualDataGrid extends AbstractDataGrid<Order> {
                 return o1.getPlacedOn().compareTo(o2.getPlacedOn());
             }
         });
-        bindEditor("placedOn", new AbstractDataGridCellEditingSupport(tableViewer) {
+        bindEditor("placedOn", new AbstractDataGridCellEditingSupport<Order,Calendar>(this) {
             @Override protected CellEditor instantiateCellEditor(Table composite) {
                 return new DateTimeCellEditor(tableViewer.getTable(), SWT.DATE|SWT.MEDIUM);
             }
             @Override protected IDataGridCellValidator instantiateValidator() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
-            @Override protected Object getControlValue(Object modelObject) {
-                return ((Order) modelObject).getPlacedOn();
+            @Override protected Calendar getControlValue(Order modelObject) {
+                return modelObject.getPlacedOn();
             }
-            @Override protected void setModelValue(Object modelObject, Object newValidValueFromControl) {
-                ((Order)modelObject).setPlacedOn((Calendar)newValidValueFromControl);
+            @Override protected void setModelValue(Order modelObject, Calendar newValidValueFromControl) {
+                modelObject.setPlacedOn(newValidValueFromControl);
             }
             @Override protected boolean canEdit(Object o) {
                 return true;

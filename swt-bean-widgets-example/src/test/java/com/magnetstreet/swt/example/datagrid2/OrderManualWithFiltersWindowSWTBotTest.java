@@ -95,6 +95,8 @@ public class OrderManualWithFiltersWindowSWTBotTest {
         bot.table().header("Paid?").click();
         bot.table().header("ID").click();
         bot.table().header("ID").click();
+
+        inst.orderManualDataGrid.discountTotalSaveCount.set(0);
     }
 
     @Test public void testFilters() throws InterruptedException {
@@ -126,6 +128,10 @@ public class OrderManualWithFiltersWindowSWTBotTest {
         tbl.select(0);
 
         assertThat(tbl.cell(0, 2), is("666"));
+
+        tbl.click(0, 2);
+        bot.text("666").setText("50");
+        tbl.click(0, 0);
     }
 
     @Test public void testColumnDefaultOrder() throws Exception {
@@ -150,6 +156,11 @@ public class OrderManualWithFiltersWindowSWTBotTest {
         bot.text("666").setText("2t");
         tbl.click(0,0);
         assertThat(tbl.cell(0,3), is("666"));
+
+        tbl.click(0,3);
+        bot.text("666").setText("50");
+        tbl.click(0,0);
+        assertThat(tbl.cell(0,3), is("50"));
     }
 
     @Test public void testDateTimePopoutCustomCellEditor() throws Exception {
@@ -168,6 +179,22 @@ public class OrderManualWithFiltersWindowSWTBotTest {
             bot.dateTime();
             fail("Date time is still retrievable, it was supposed to be destroyed.");
         } catch(Throwable t) { }
+    }
+
+    @Test public void testHasNotChangedFeatureDoesntTriggerUpdateOnModel() throws Exception {
+        SWTBotTable tbl = bot.table();
+        assertThat(tbl.cell(0,2), is("50"));
+        tbl.click(0,2);
+        bot.text("50").setText("50");
+        tbl.click(0,0);
+        assertThat(tbl.cell(0,2), is("50"));
+        assertThat(inst.orderManualDataGrid.discountTotalSaveCount.get(), is(0));
+
+        tbl.click(0,2);
+        bot.text("50").setText("51");
+        tbl.click(0,0);
+        assertThat(tbl.cell(0,2), is("51"));
+        assertThat(inst.orderManualDataGrid.discountTotalSaveCount.get(), is(1));
     }
 
     @Ignore(value = "Wait until SWTBot supports drag and drop to write test for this.")

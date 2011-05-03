@@ -1,46 +1,91 @@
 package com.magnetstreet.swt.beanwidget.datagrid2.editor;
 
+import com.magnetstreet.swt.beanwidget.datagrid2.DataGrid;
 import com.magnetstreet.swt.beanwidget.datagrid2.validator.IDataGridCellValidator;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * AbstractDataGridCellEditingSupport
  *
+ * <T> is the model object type
+ * <K> is this cell editor's return type (usually String or Integer). Must implement Comparable
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 4/28/11
  */
-public abstract class AbstractDataGridCellEditingSupport extends EditingSupport {
+public abstract class AbstractDataGridCellEditingSupport<T,K> extends EditingSupport {
     private Logger logger = Logger.getLogger(AbstractDataGridCellEditingSupport.class.getSimpleName());
 
     protected IDataGridCellValidator validator;
     protected CellEditor cellEditor;
 
-    public AbstractDataGridCellEditingSupport(TableViewer viewer) {
-        super(viewer);
+    protected K cachedValue;
+
+    protected AtomicBoolean changed = new AtomicBoolean(false);
+
+    public AbstractDataGridCellEditingSupport(DataGrid<T> dataGrid) {
+        super(dataGrid.getTableViewer());
     }
 
     protected abstract CellEditor instantiateCellEditor(Table composite);
     protected abstract IDataGridCellValidator instantiateValidator();
-    protected abstract Object getControlValue(Object modelObject);
-    protected abstract void setModelValue(Object modelObject, Object newValidValueFromControl);
+    protected abstract K getControlValue(T modelObject);
+    protected abstract void setModelValue(T modelObject, K newValidValueFromControl);
 
-    @Override protected CellEditor getCellEditor(Object element) {
+    protected void setValueChanged(K newValue) {
+        if(newValue == null) {
+            changed.set(false);
+            return;
+        }
+
+        if(cachedValue == null && newValue != null)
+            changed.set(true);
+        if(cachedValue == null)
+            changed.set(false);
+        changed.set(((Comparable<K>)cachedValue).compareTo(newValue) != 0);
+    }
+
+    public boolean getChanged() {
+        return changed.get();
+    }
+
+    @Override protected synchronized CellEditor getCellEditor(Object element) {
         if(cellEditor == null) {
             cellEditor = instantiateCellEditor(((TableViewer) getViewer()).getTable());
+            cellEditor.addListener(new ICellEditorListener() {
+                @Override public void applyEditorValue() {
+                    setValueChanged((K) cellEditor.getValue());
+                }
+                @Override public void cancelEditor() { changed.set(false); }
+                @Override public void editorValueChanged(boolean oldValidState, boolean newValidState) {
+                    if(validator.isValid(cellEditor.getValue()) == null)
+                        cellEditor.getControl().setBackground(null);
+                    else
+                        cellEditor.getControl().setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+                }
+            });
             validator = instantiateValidator();
             cellEditor.setValidator(validator);
         }
         return cellEditor;
     }
     @Override protected Object getValue(Object element) {
-        return getControlValue(element);
+        cachedValue = getControlValue((T)element);
+        return cachedValue;
     }
     @Override protected void setValue(Object element, Object value) {
+        if( !getChanged() ) {
+            return;
+        }
         if(validator!=null) {
             validator.hideError();
             if(!cellEditor.isValueValid()) {
@@ -48,8 +93,12 @@ public abstract class AbstractDataGridCellEditingSupport extends EditingSupport 
                 return;
             }
         }
-        setModelValue(element, value);
-        getViewer().refresh();
+        try {
+            setModelValue((T)element, (K)value);
+            getViewer().refresh();
+        } catch(Throwable t) {
+            logger.log(Level.WARNING, "Table setter method was unable to save inputted data to the backing object.", t);
+        }
     }
     @Override protected boolean canEdit(Object element) { return true; }
 }

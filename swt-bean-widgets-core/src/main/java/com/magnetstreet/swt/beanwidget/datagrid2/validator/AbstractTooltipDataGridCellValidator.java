@@ -8,10 +8,11 @@ import org.eclipse.swt.widgets.ToolTip;
 /**
  * AbstractTooltipDataGridCellValidator
  *
+ * <K> The editor control's return type (usually String or Integer)
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 4/29/11
  */
-public abstract class AbstractTooltipDataGridCellValidator implements IDataGridCellValidator {
+public abstract class AbstractTooltipDataGridCellValidator<K> implements IDataGridCellValidator {
     protected ToolTip validationErrorTooltip;
     protected boolean errorShowing = false;
     protected CellEditor editor;

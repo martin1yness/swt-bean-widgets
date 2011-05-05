@@ -144,7 +144,6 @@ public class OrderManualDataGrid extends AbstractDataGrid<Order> {
                 try {
                     Number number = NumberFormat.getNumberInstance().parse(newValidValueFromControl);
                     modelObject.setDiscountTotal(new BigDecimal(number.toString()));
-                    tableViewer.refresh();
                 } catch (ParseException e) {
                     System.out.println("Error parsing input: " + newValidValueFromControl);
                 }

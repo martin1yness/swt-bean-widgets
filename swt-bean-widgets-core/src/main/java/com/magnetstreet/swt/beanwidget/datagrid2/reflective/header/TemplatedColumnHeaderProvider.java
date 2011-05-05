@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Image;
  * @since 5/5/11
  */
 public class TemplatedColumnHeaderProvider<T> extends ColumnHeaderProvider {
-    public final int AVG_CHAR_WIDTH = 5;
+    public final int AVG_CHAR_WIDTH = 10;
 
     protected String title = "";
     protected String tooltip = "";

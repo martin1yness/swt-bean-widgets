@@ -22,6 +22,7 @@ public class Order {
     private Integer id;
     @SWTWidget(labelText = "Items:")
     private List<OrderItem> items;
+    private Division division;
     @SWTWidget(labelText = "Discount:")
     private BigDecimal discountTotal;
     @SWTWidget(labelText = "Total:")
@@ -42,6 +43,12 @@ public class Order {
     }
     public void setItems(List<OrderItem> items) {
         this.items = items;
+    }
+    public Division getDivision() {
+        return division;
+    }
+    public void setDivision(Division division) {
+        this.division = division;
     }
     public BigDecimal getDiscountTotal() {
         return discountTotal;

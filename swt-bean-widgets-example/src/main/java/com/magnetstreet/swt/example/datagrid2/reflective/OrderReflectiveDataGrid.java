@@ -4,11 +4,12 @@ import com.magnetstreet.swt.beanwidget.datagrid2.reflective.ReflectiveDataGrid;
 import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.BigDecimalEditingSupport;
 import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.BooleanEditingSupport;
 import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.CalendarEditingSupport;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.SelectableObjectEditingSupport;
 import com.magnetstreet.swt.beanwidget.datagrid2.reflective.header.TemplatedColumnHeaderProvider;
 import com.magnetstreet.swt.beanwidget.datagrid2.reflective.viewer.TemplatedColumnLabelProvider;
+import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
-import com.magnetstreet.swt.util.DateUtil;
 import org.eclipse.swt.widgets.Composite;
 
 import java.text.SimpleDateFormat;
@@ -30,6 +31,7 @@ public class OrderReflectiveDataGrid extends ReflectiveDataGrid<Order> {
     @Override protected void preInit() {
         defineColumn_ID();
         defineColumn_Items();
+        defineColumn_Division();
         defineColumn_DiscountTotal();
         defineColumn_TotalCost();
         defineColumn_Paid();
@@ -56,6 +58,36 @@ public class OrderReflectiveDataGrid extends ReflectiveDataGrid<Order> {
             }
         });
         bindSorter("items", getDefaultColumnSorterComparable("items"));
+    }
+
+
+
+    protected void defineColumn_Division() {
+        bindColumnWithDefaults("division", true);
+        bindViewer("division", new TemplatedColumnLabelProvider<Order>() {
+            @Override protected String doGetText(String propertyName, Order modelObject) {
+                return modelObject.getDivision().getName();
+            }
+        });
+        bindEditor("division", new SelectableObjectEditingSupport<Order, Division>("division", this) {
+            @Override protected Division[] getSelectables() {
+                Division[] divisions = new Division[3];
+                divisions[0] = new Division();
+                divisions[0].setId(1);
+                divisions[0].setName("Division A");
+                divisions[1] = new Division();
+                divisions[1].setId(2);
+                divisions[1].setName("Division B");
+                divisions[2] = new Division();
+                divisions[2].setId(3);
+                divisions[2].setName("Division C");
+
+                return divisions;
+            }
+            @Override protected String selectableToString(Division obj) {
+                return obj.getName();
+            }
+        });
     }
 
     protected void defineColumn_DiscountTotal() {

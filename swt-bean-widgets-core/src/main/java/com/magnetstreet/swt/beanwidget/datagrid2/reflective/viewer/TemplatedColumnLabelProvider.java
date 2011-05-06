@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 
 /**
  * TemplatedColumnLabelProvider
@@ -13,10 +14,12 @@ import org.eclipse.swt.graphics.Image;
  * @since 5/5/11
  */
 public abstract class TemplatedColumnLabelProvider<T> extends ColumnLabelProvider {
-    protected String propertyName;
-    protected Font font;
-    protected Color color, background, foreground;
-    protected Image image;
+    protected String propertyName, toolTipText;
+    protected Font font, toolTipFont;
+    protected Color color, background, foreground, toolTipBackgroundColor, toolTipForegroundColor;
+    protected Image image, toolTipImage;
+    protected Point toolTipShift;
+    protected int toolTipTimeDisplayed, toolTipDisplayDelayTime, toolTipStyle;
 
     public TemplatedColumnLabelProvider() {
         super();
@@ -39,6 +42,15 @@ public abstract class TemplatedColumnLabelProvider<T> extends ColumnLabelProvide
     protected Color doGetBackground(String propertyName, T modelObject) { return background; }
     protected Color doGetForeground(String propertyName, T modelObject) { return foreground; }
     protected Image doGetImage(String propertyName, T modelObject) { return image; }
+    protected Image doGetToolTipImage(String propertyName, T modelObject) { return toolTipImage; }
+    protected Color doGetToolTipBackgroundColor(String propertyName, T modelObject) { return toolTipBackgroundColor; }
+    protected Color doGetToolTipForegroundColor(String propertyName, T modelObject) { return toolTipForegroundColor; }
+    protected Font doGetToolTipFont(String propertyName, T modelObject) { return toolTipFont; }
+    protected Point doGetToolTipShift(String propertyName, T modelObject) { return toolTipShift; }
+    protected int doGetToolTipTimeDisplayed(String propertyName, T modelObject) { return toolTipTimeDisplayed; }
+    protected int doGetToolTipDisplayDelayTime(String propertyName, T modelObject) { return toolTipDisplayDelayTime; }
+    protected int doGetToolTipStyle(String propertyName, T modelObject) { return toolTipStyle; }
+    protected String doGetToolTipText(String propertyName, T modelObject) { return doGetText(propertyName, modelObject); }
     protected String doGetText(String propertyName, T modelObject) {
         Object property = BeanUtil.getFieldValueWithGetter(modelObject, propertyName);
         if(property == null)
@@ -61,6 +73,36 @@ public abstract class TemplatedColumnLabelProvider<T> extends ColumnLabelProvide
     @Override final public String getText(Object element) {
         return doGetText(propertyName, (T)element);
     }
+
+
+    @Override final public String getToolTipText(Object element) {
+        return doGetToolTipText(propertyName, (T)element);
+    }
+    @Override final public Image getToolTipImage(Object object) {
+        return doGetToolTipImage(propertyName, (T)object);
+    }
+    @Override final public Color getToolTipBackgroundColor(Object object) {
+        return doGetToolTipBackgroundColor(propertyName, (T)object);
+    }
+    @Override final public Color getToolTipForegroundColor(Object object) {
+        return doGetToolTipForegroundColor(propertyName, (T)object);
+    }
+    @Override final public Font getToolTipFont(Object object) {
+        return doGetToolTipFont(propertyName, (T)object);
+    }
+    @Override final public Point getToolTipShift(Object object) {
+        return doGetToolTipShift(propertyName, (T)object);
+    }
+    @Override final public int getToolTipTimeDisplayed(Object object) {
+        return doGetToolTipTimeDisplayed(propertyName, (T)object);
+    }
+    @Override final public int getToolTipDisplayDelayTime(Object object) {
+        return doGetToolTipDisplayDelayTime(propertyName, (T)object);
+    }
+    @Override final public int getToolTipStyle(Object object) {
+        return doGetToolTipStyle(propertyName, (T)object);
+    }
+
 
     final public void setPropertyName(String propertyName) {
         this.propertyName = propertyName;

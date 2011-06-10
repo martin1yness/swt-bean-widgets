@@ -5,13 +5,13 @@
   <groupId>com.magnetstreet.swt</groupId>
   <artifactId>swt-bean-widgets-core</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0</version>
+  <version>1.0-SNAPSHOT</version>
   <name>SWT JavaBean programmatic GUI builder library.</name>
 
   <parent>
     <groupId>com.magnetstreet.swt</groupId>
     <artifactId>swt-bean-widgets-super-pom</artifactId>
-    <version>0.1.0</version>
+    <version>1.0-SNAPSHOT</version>
     <relativePath>../swt-bean-widgets-super-pom</relativePath>
   </parent>
 

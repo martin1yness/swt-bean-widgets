@@ -137,7 +137,6 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
         tableViewer.addFilter(defaultViewerFilter);
         tableViewer.setComparator(defaultSorter);
 
-        tableViewer.getControl().setLayoutData(new FillLayout());
         initialized = true;
     }
 

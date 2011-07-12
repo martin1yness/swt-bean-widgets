@@ -4,9 +4,12 @@ import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.SWTKeyLookup;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCCombo;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotDateTime;
@@ -224,6 +227,20 @@ public class OrderReflectiveWithFiltersWindowTest {
         combo.setSelection(2);
         tbl.click(0,0);
         assertThat(tbl.cell(0,2), is("Division C"));
+    }
+
+    @Test public void testCancelOutOfEditingCombo_noExceptionThrown() throws Exception {
+        SWTBotTable tbl = bot.table();
+        assertThat(tbl.cell(0,2), is("Division A"));
+        tbl.click(0, 2);
+        bot.ccomboBox().setSelection("Division B");
+        bot.ccomboBox().pressShortcut(KeyStroke.getInstance(SWTKeyLookup.ESC_NAME));
+        try {
+            bot.shell("Error");
+            fail("Found error dialog's OK button.");
+        } catch (WidgetNotFoundException t) { }
+        tbl.click(0, 1);
+        assertThat(tbl.cell(0,2), is("Division A"));
     }
 
     @Ignore(value = "Wait until SWTBot supports drag and drop to write test for this.")

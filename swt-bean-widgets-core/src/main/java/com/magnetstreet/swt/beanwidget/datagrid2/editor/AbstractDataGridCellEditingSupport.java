@@ -65,13 +65,16 @@ public abstract class AbstractDataGridCellEditingSupport<T,K> extends EditingSup
                 }
                 @Override public void cancelEditor() {
                     changed.set(false);
-                    validator.hideError();
+                    if(validator!=null)
+                        validator.hideError();
                 }
                 @Override public void editorValueChanged(boolean oldValidState, boolean newValidState) {
-                    if(validator.isValid(cellEditor.getValue()) == null)
-                        validator.hideError();
-                    else
-                        validator.showError(cellEditor);
+                    if(validator!=null) {
+                        if(validator.isValid(cellEditor.getValue()) == null)
+                            validator.hideError();
+                        else
+                            validator.showError(cellEditor);
+                    }
                 }
             });
             validator = instantiateValidator();

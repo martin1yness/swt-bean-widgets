@@ -16,7 +16,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -138,13 +137,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
         tableViewer.addFilter(defaultViewerFilter);
         tableViewer.setComparator(defaultSorter);
 
-        GridData gridData = new GridData();
-        gridData.verticalAlignment = GridData.FILL;
-        gridData.horizontalSpan = 2;
-        gridData.grabExcessHorizontalSpace = true;
-        gridData.grabExcessVerticalSpace = true;
-        gridData.horizontalAlignment = GridData.FILL;
-        tableViewer.getControl().setLayoutData(gridData);
+        tableViewer.getControl().setLayoutData(new FillLayout());
         initialized = true;
     }
 

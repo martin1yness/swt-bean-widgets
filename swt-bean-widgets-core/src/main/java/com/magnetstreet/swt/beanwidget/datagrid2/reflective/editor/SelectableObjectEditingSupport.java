@@ -5,6 +5,7 @@ import com.magnetstreet.swt.beanwidget.datagrid2.validator.IDataGridCellValidato
 import com.magnetstreet.swt.util.BeanUtil;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
 
 import java.util.logging.Level;
@@ -36,9 +37,11 @@ public abstract class SelectableObjectEditingSupport<T, CT> extends AbstractTemp
         for(int i=0; i<objectArr.length; i++)
             objStrs[i] = selectableToString(objectArr[i]);
 
-        return new ComboBoxCellEditor(composite, objStrs);
+        return new ComboBoxCellEditor(composite, objStrs, SWT.READ_ONLY);
     }
-    @Override protected IDataGridCellValidator instantiateValidator() { return null; }
+    @Override protected IDataGridCellValidator instantiateValidator() {
+        return null;
+    }
     @Override protected Integer getControlValue(T modelObject) {
         if(objectArr==null) {
             objectArr = getSelectables();
@@ -55,7 +58,7 @@ public abstract class SelectableObjectEditingSupport<T, CT> extends AbstractTemp
         } catch(Throwable t) {
             logger.log(Level.WARNING, "Unable to set value of combo.", t);
         }
-        return null;
+        return cachedValue;
     }
     @Override protected void setModelValue(T modelObject, Integer newValidValueFromControl) {
         try {

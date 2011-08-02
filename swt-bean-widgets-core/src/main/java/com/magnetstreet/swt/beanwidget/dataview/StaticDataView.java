@@ -1,5 +1,6 @@
 package com.magnetstreet.swt.beanwidget.dataview;
 
+import com.magnetstreet.swt.beanwidget.dataview.layout.util.FormLayoutUtil;
 import com.magnetstreet.swt.exception.ViewDataBeanValidationException;
 import com.magnetstreet.swt.util.EditableDataGridUtil;
 import org.eclipse.swt.SWT;
@@ -29,11 +30,15 @@ import java.util.logging.Logger;
 @Deprecated
 public abstract class StaticDataView<T> extends AbstractDataView<T> {
     private Logger logger = Logger.getLogger(StaticDataView.class.getSimpleName());
+    protected FormLayoutUtil formLayoutUtil;
 
     protected StaticDataView(Composite arg0, int arg1) {
         super(arg0, arg1);
     }
 
+    @Override protected void preInitGUI() {
+        formLayoutUtil = new FormLayoutUtil(this);
+    }
     /**
      * Default widget creator, dynamically creates widgets without any
      * layout information, override or add layouts later.

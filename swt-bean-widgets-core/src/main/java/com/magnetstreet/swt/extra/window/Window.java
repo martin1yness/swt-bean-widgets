@@ -224,11 +224,10 @@ public abstract class
     protected String prompt(String title, String msg) {
         STATE origState = getState();
         setState(STATE.USER);
-        Prompt.PromptListener promptListener = new Prompt.PromptListener();
-        Prompt prompt = new Prompt(this, promptListener, title, msg);        
-        prompt.openBlocking();
+        Prompt prompt = new Prompt(getShell(), title, msg);
+        prompt.open();
         setState(origState);
-        return promptListener.getEnteredValue();
+        return prompt.getReturnCode() == org.eclipse.jface.window.Window.OK ? prompt.getUserInput() : null;
     }
 
     /**

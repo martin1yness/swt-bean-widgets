@@ -29,7 +29,8 @@ public class StringEditingSupport<T> extends AbstractTemplatedDataGridCellEditin
         return null;
     }
     @Override protected String getControlValue(T modelObject) {
-        return BeanUtil.getFieldValueWithGetter(modelObject, propertyName).toString();
+        Object val = BeanUtil.getFieldValueWithGetter(modelObject, propertyName);
+        return val == null ? "" : val.toString();
     }
     @Override protected void setModelValue(T modelObject, String newValidValueFromControl) {
         try {

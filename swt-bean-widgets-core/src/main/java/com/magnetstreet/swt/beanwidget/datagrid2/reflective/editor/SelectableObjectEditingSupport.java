@@ -50,7 +50,7 @@ public abstract class SelectableObjectEditingSupport<T, CT> extends AbstractTemp
 
         try {
             CT obj = (CT)BeanUtil.getFieldValueWithGetter(modelObject, propertyName);
-            String referencedStr = selectableToString(obj);
+            String referencedStr = obj == null ? "" : selectableToString(obj);
             for(int i=0; i<objStrs.length; i++) {
                 if( objStrs[i].equals(referencedStr) )
                     return i;

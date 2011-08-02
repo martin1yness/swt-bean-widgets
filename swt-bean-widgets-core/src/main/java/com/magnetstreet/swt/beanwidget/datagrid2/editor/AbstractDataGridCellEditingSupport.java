@@ -40,16 +40,12 @@ public abstract class AbstractDataGridCellEditingSupport<T,K> extends EditingSup
     protected abstract void setModelValue(T modelObject, K newValidValueFromControl);
 
     protected void setValueChanged(K newValue) {
-        if(newValue == null) {
+        if(newValue == null)
             changed.set(false);
-            return;
-        }
-
-        if(cachedValue == null && newValue != null)
+        else if(cachedValue == null)
             changed.set(true);
-        if(cachedValue == null)
-            changed.set(false);
-        changed.set(((Comparable<K>)cachedValue).compareTo(newValue) != 0);
+        else
+            changed.set(((Comparable<K>)cachedValue).compareTo(newValue) != 0);
     }
 
     public boolean getChanged() {

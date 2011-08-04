@@ -190,6 +190,6 @@ public class QuickSearchCombo extends Combo {
 				return;
 			}
 		}
-		select(0);
+		//select(0); // This causes jumping back to the first item if the last key was bad, should leave at last match!
 	}
 }

@@ -86,13 +86,33 @@
       <dependency>
         <groupId>org.eclipse</groupId>
         <artifactId>swt</artifactId>
-        <version>3.6.2-win32</version>
+        <version>3.7-win32</version>
       </dependency>
 
       <dependency>
         <groupId>org.eclipse</groupId>
         <artifactId>jfaces</artifactId>
-        <version>3.6.2</version>
+        <version>3.7.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse</groupId>
+        <artifactId>core-commands</artifactId>
+        <version>3.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse</groupId>
+        <artifactId>equinox-common</artifactId>
+        <version>3.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse</groupId>
+        <artifactId>jface-databinding</artifactId>
+        <version>1.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse</groupId>
+        <artifactId>jface-text</artifactId>
+        <version>3.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.swtbot</groupId>

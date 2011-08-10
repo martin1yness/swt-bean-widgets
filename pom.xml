@@ -25,7 +25,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.eclipse.swt.version>3.6.2-win32</org.eclipse.swt.version>
+    <org.eclipse.swt.version>3.7-win32</org.eclipse.swt.version>
   </properties>
 
   <dependencies>

@@ -1,5 +1,6 @@
 package com.magnetstreet.swt.beanwidget.datagrid2;
 
+import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TableViewer;
 
@@ -29,10 +30,25 @@ public interface DataGrid<T> {
      * @param valueGetter The callable which will return the string to match against the table's label provider for
      *        each row. In the case of Text/Combo widgets the 'getText()' method, the callable is used to allow
      *        for advanced custom functionality with special widgets and conversions that maybe needed.
+     * @deprecated This filter type forces the use of Regular Expressions, a more generic filter is provided with
+     *             the ColumnFilter interface.
      */
-    public void bindFilter(String property, Callable<String> valueGetter);
-    public void bindFilter(Field property, Callable<String> valueGetter);
-    public void bindFilter(Method getter, Callable<String> valueGetter);
+    @Deprecated public void bindFilter(String property, Callable<String> valueGetter);
+    @Deprecated public void bindFilter(Field property, Callable<String> valueGetter);
+    @Deprecated public void bindFilter(Method getter, Callable<String> valueGetter);
+
+    /**
+     * Adds a data bean filter which will filter out display results that would normally
+     * be all displayed.
+     * @param property String name of the property in the bean class that should be filtered on
+     *        using the given filter.
+     * @param valueGetter The callable which will return the string to match against the table's label provider for
+     *        each row. In the case of Text/Combo widgets the 'getText()' method, the callable is used to allow
+     *        for advanced custom functionality with special widgets and conversions that maybe needed.
+     */
+    public void bindFilter(String property, ColumnFilter valueGetter);
+    public void bindFilter(Field property, ColumnFilter valueGetter);
+    public void bindFilter(Method getter, ColumnFilter valueGetter);
 
     /**
      * Removes the filter applied to a particular property

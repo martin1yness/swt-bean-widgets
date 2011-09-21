@@ -1,5 +1,6 @@
 package com.magnetstreet.swt.beanwidget.datagrid2;
 
+import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
 import com.magnetstreet.swt.beanwidget.datagrid2.sorter.TableViewComparator;
 import com.magnetstreet.swt.util.BeanUtil;
@@ -51,7 +52,8 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
 
     protected Map<String, ColumnHeaderProvider> columnHeaderDefinitions = new LinkedHashMap<String, ColumnHeaderProvider>();
     protected Map<String, ColumnLabelProvider> columnDefinitions = new LinkedHashMap<String, ColumnLabelProvider>();
-    protected Map<String, Callable<String>> filterDefinitions = new LinkedHashMap<String, Callable<String>>();
+    protected Map<String, Callable<String>> legacyRegexFilterDefinitions = new LinkedHashMap<String, Callable<String>>();
+    protected Map<String, ColumnFilter> filterDefinitions = new LinkedHashMap<String, ColumnFilter>();
     protected Map<String, EditingSupport> cellEditorDefinitions = new LinkedHashMap<String, EditingSupport>();
     protected Map<String, ICellEditorValidator> cellEditorValidatorDefinitions = new LinkedHashMap<String, ICellEditorValidator>();
     protected Map<String, Comparator<T>> sortingDefinitions = new LinkedHashMap<String, Comparator<T>>();
@@ -69,16 +71,30 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
         }
     };
 
-    protected ViewerFilter defaultViewerFilter = new ViewerFilter() {
+    protected ViewerFilter legacyRegexViewerFilter = new ViewerFilter() {
         @Override public boolean select(Viewer viewer, Object o, Object o1) {
-            for(String property: filterDefinitions.keySet()) {
+            for(String property: legacyRegexFilterDefinitions.keySet()) {
                 try {
-                    String filterValue = filterDefinitions.get(property).call();
+                    String filterValue = legacyRegexFilterDefinitions.get(property).call();
                     String recordValue = columnDefinitions.get(property).getText(o1);
                     if(!recordValue.matches(filterValue))
                         return false;
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, "Unexepect exception while retrieving filter data.", e);
+                }
+            }
+            return true;
+        }
+    };
+
+    protected ViewerFilter defaultViewerFilter = new ViewerFilter() {
+        @Override public boolean select(Viewer viewer, Object parentElement, Object element) {
+            for(String property: filterDefinitions.keySet()) {
+                try {
+                    Object propertyValue = BeanUtil.getFieldChainValueWithGetters(element, property);
+                    return filterDefinitions.get(property).checkModelProperty(propertyValue);
+                } catch (Throwable t) {
+                    logger.log(Level.SEVERE, "Unexepect exception while retrieving filter data.", t);
                 }
             }
             return true;
@@ -134,6 +150,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
         tableViewer.setContentProvider(new ArrayContentProvider());
+        tableViewer.addFilter(legacyRegexViewerFilter);
         tableViewer.addFilter(defaultViewerFilter);
         tableViewer.setComparator(defaultSorter);
 
@@ -194,7 +211,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
 
 
     @Override public void bindFilter(String property, Callable<String> valueGetter) {
-        filterDefinitions.put(property, valueGetter);
+        legacyRegexFilterDefinitions.put(property, valueGetter);
     }
     @Override public void bindFilter(Field property, Callable<String> valueGetter) {
         bindFilter(property.getName(), valueGetter);
@@ -203,8 +220,18 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
         bindFilter(BeanUtil.getPropertyNameFromGetter(getter), valueGetter);
     }
 
+    @Override public void bindFilter(String property, ColumnFilter valueGetter) {
+        filterDefinitions.put(property, valueGetter);
+    }
+    @Override public void bindFilter(Field property, ColumnFilter valueGetter) {
+        bindFilter(property.getName(), valueGetter);
+    }
+    @Override public void bindFilter(Method getter, ColumnFilter valueGetter) {
+        bindFilter(BeanUtil.getPropertyNameFromGetter(getter), valueGetter);
+    }
+
     @Override public void unbindFilter(String property) {
-        filterDefinitions.remove(property);
+        legacyRegexFilterDefinitions.remove(property);
     }
     @Override public void unbindFilter(Field property) {
         unbindFilter(property.getName());

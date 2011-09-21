@@ -42,13 +42,17 @@ public class FormLayoutUtil {
     }
 
     private CLabel initLabelLayout(CLabel label) {
+        return initLabelLayout(label, 33);
+    }
+
+    private CLabel initLabelLayout(CLabel label, int widthPercent) {
         FormData fdLabel = new FormData();
         if(initializedLabels.size()==0)
             fdLabel.top = new FormAttachment(0,100,2);
         else
             fdLabel.top = new FormAttachment(initializedLabels.getLast(), 2);
         fdLabel.left = new FormAttachment(0,100,2);
-        fdLabel.right = new FormAttachment(33,100,0);
+        fdLabel.right = new FormAttachment(widthPercent,100,0);
         label.setLayoutData(fdLabel);
         return label;
     }
@@ -81,13 +85,17 @@ public class FormLayoutUtil {
     }
 
     public void initComponentLayout(CLabel label, Control...controls) {
+        initComponentLayout(label, 33, controls);
+    }
+
+    public void initComponentLayout(CLabel label, int labelPercent, Control...controls) {
         if(initializedLabels==null)
             initializedLabels = new LinkedList<CLabel>();
 
-        Control left = initLabelLayout(label);
-        int perc = Math.round(66 / controls.length);
+        Control left = initLabelLayout(label, labelPercent);
+        int perc = Math.round((100-labelPercent) / controls.length);
         for(int i=1; i<=controls.length; i++) {
-            left = initControlLayout(controls[i-1], left, 33+(perc*i));
+            left = initControlLayout(controls[i-1], left, labelPercent+(perc*i));
         }
 
         initializedLabels.addLast(label);

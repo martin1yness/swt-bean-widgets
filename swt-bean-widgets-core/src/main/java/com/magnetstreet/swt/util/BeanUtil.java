@@ -117,8 +117,13 @@ public class BeanUtil {
     }
 
     public static String getGetterMethodNameForField(Object obj, Field field) {
-        if(field.getType() == Boolean.class || field.getType() == boolean.class)
-            return "is"+field.getName().substring(0, 1).toUpperCase()+field.getName().substring(1);
+        if(field.getType() == Boolean.class || field.getType() == boolean.class) {
+            String isGetterName = "is"+field.getName().substring(0, 1).toUpperCase()+field.getName().substring(1);
+            try {
+                obj.getClass().getDeclaredMethod(isGetterName);
+                return isGetterName;
+            } catch(NoSuchMethodException nsme) { }
+        }
         return "get"+field.getName().substring(0, 1).toUpperCase()+field.getName().substring(1);
     }
 

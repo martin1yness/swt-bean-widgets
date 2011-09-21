@@ -7,6 +7,9 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * TemplatedColumnLabelProvider
  *
@@ -14,6 +17,8 @@ import org.eclipse.swt.graphics.Point;
  * @since 5/5/11
  */
 public abstract class TemplatedColumnLabelProvider<T> extends ColumnLabelProvider {
+    private Logger logger = Logger.getLogger(TemplatedColumnLabelProvider.class.getName());
+
     protected String propertyName, toolTipText;
     protected Font font, toolTipFont;
     protected Color color, background, foreground, toolTipBackgroundColor, toolTipForegroundColor;
@@ -52,10 +57,13 @@ public abstract class TemplatedColumnLabelProvider<T> extends ColumnLabelProvide
     protected int doGetToolTipStyle(String propertyName, T modelObject) { return toolTipStyle; }
     protected String doGetToolTipText(String propertyName, T modelObject) { return doGetText(propertyName, modelObject); }
     protected String doGetText(String propertyName, T modelObject) {
-        Object property = BeanUtil.getFieldValueWithGetter(modelObject, propertyName);
-        if(property == null)
+        try {
+            Object property = BeanUtil.getFieldChainValueWithGetters(modelObject, propertyName);
+            return "" + property.toString();
+        } catch(Throwable t) {
+            logger.log(Level.WARNING, "Unabel to retrieve property '"+propertyName+"' from model.", t);
             return "";
-        return "" + BeanUtil.getFieldValueWithGetter(modelObject, propertyName);
+        }
     }
 
     @Override final public Font getFont(Object element) {

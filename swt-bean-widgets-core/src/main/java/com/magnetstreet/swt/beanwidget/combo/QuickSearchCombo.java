@@ -65,7 +65,7 @@ public class QuickSearchCombo extends Combo {
 	/**
 	 * Implement custom functionality.
 	 */
-	private void init() {
+	protected void init() {
 		setupJaguarColors();
 		createFocusUnfocusListeners();
 		createKeyEventListeners();

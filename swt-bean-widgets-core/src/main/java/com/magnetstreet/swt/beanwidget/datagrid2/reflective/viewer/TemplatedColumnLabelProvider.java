@@ -61,7 +61,7 @@ public abstract class TemplatedColumnLabelProvider<T> extends ColumnLabelProvide
             Object property = BeanUtil.getFieldChainValueWithGetters(modelObject, propertyName);
             return "" + property.toString();
         } catch(Throwable t) {
-            logger.log(Level.WARNING, "Unabel to retrieve property '"+propertyName+"' from model.", t);
+            logger.log(Level.FINEST, "Unabe to retrieve property '"+propertyName+"' from model.", t);
             return "";
         }
     }

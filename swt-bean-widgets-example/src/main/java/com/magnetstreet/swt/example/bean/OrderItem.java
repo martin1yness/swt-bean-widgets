@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * @since Jan 6, 2010
  */
 @SWTEntity(defaultCollectionType = SWTEntity.Type.DATA_GRID)
-public class OrderItem {
+public class OrderItem implements Comparable<OrderItem>{
     private Integer id;
     @SWTWidget(labelText = "Product:")
     private String productName;
@@ -54,5 +54,8 @@ public class OrderItem {
     }
     public void setOrder(Order order) {
         this.order = order;
+    }
+    @Override public int compareTo(OrderItem o) {
+        return getId().compareTo(o.getId());
     }
 }

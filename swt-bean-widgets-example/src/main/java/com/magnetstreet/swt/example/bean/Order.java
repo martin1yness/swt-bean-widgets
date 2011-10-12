@@ -17,7 +17,8 @@ import java.util.List;
  * @since Jan 6, 2010
  */
 @SWTEntity(defaultCollectionType = SWTEntity.Type.DATA_GRID)
-public class Order {
+public class Order implements Comparable<Order>
+{
     @SWTWidget(labelText = "ID:", readOnly = true)
     private Integer id;
     @SWTWidget(labelText = "Items:")
@@ -79,5 +80,8 @@ public class Order {
     }
     public void setCustomer(CustomerRecord customer) {
         this.customer = customer;
+    }
+    @Override public int compareTo(Order o) {
+        return getId().compareTo(o.getId());
     }
 }

@@ -142,4 +142,26 @@ public class BeanUtil {
         }
         return methodList;
     }
+
+
+    public static Class getCollectionGenericType(Class<Collection> c) {
+        return c.getClass().getTypeParameters()[0].getGenericDeclaration();
+    }
+    public static Method getGetterMethodForChainValue(Class baseObjectClass, String fieldNameChain) throws NoSuchMethodException, NoSuchFieldException {
+        if(Collection.class.isAssignableFrom(baseObjectClass))
+            baseObjectClass = getCollectionGenericType(baseObjectClass);
+        String[] chain = fieldNameChain.split("[.]");
+        if(chain.length == 1)
+            return getGetterMethodForField(baseObjectClass, chain[0]);
+
+        return getGetterMethodForChainValue(getPropertyType(baseObjectClass, chain[0]), fieldNameChain.substring(chain[0].length() + 1));
+    }
+    public static Class getPropertyType(Class baseClass, String fieldName) throws NoSuchFieldException {
+        if(Collection.class.isAssignableFrom(baseClass))
+            baseClass = getCollectionGenericType(baseClass);
+        return baseClass.getDeclaredField(fieldName).getType();
+    }
+    public static Method getGetterMethodForField(Class obj, String fieldName) throws NoSuchMethodException, NoSuchFieldException {
+        return obj.getDeclaredMethod(getGetterMethodNameForField(fieldName, obj.getDeclaredField(fieldName)));
+    }
 }

@@ -142,4 +142,14 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         assertThat(it.next(), is(OrderItem.class));
         assertThat(it.next(), is(OrderItem.class));
     }
+
+    @Test public void testContextMenuOnSelectExecutesActionToSelectPositionNumberInSelectionCount() throws Exception {
+        bot.tree().expandNode(bot.tree().cell(0, 0));
+        bot.tree().select(bot.tree().getTreeItem(bot.tree().cell(0, 0)),
+                bot.tree().getTreeItem(bot.tree().cell(0, 0)).getItems()[0],
+                bot.tree().getTreeItem(bot.tree().cell(0, 0)).getItems()[1]);
+        bot.tree().getTreeItem(bot.tree().cell(5,0)).contextMenu("Select: 1").click();
+        assertThat(bot.tree().selectionCount(), is(1));
+        assertThat(bot.tree().getTreeItem(bot.tree().cell(0,0)).isSelected(), is(true));
+    }
 }

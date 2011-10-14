@@ -2,20 +2,24 @@ package com.magnetstreet.swt.example.datatreegrid;
 
 import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
 import com.magnetstreet.swt.beanwidget.datatreegrid.AbstractDataTreeGrid;
+import com.magnetstreet.swt.beanwidget.datatreegrid.contextmenu.ContextMenuAction;
 import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TreeNode;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.TreeItem;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 
 /**
@@ -34,6 +38,23 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
         defineColumn_description();
         defineColumn_quantity();
         defineColumn_cost();
+
+        defineContextMenu();
+    }
+
+    protected void defineContextMenu() {
+        bindContextMenuAction(new ContextMenuAction() {
+            @Override public String getText() {
+                Collection selectedModelObjs = getSelectedContextModel();
+                if(selectedModelObjs!=null)
+                    return "Select: " + selectedModelObjs.size();
+                return "Select: 0";
+            }
+            @Override public void run() {
+                TreeItem treeItem = ((TreeViewer) getViewer()).getTree().getItem(getSelectedBeans().size()-1);
+                ((TreeViewer) getViewer()).getTree().setSelection(treeItem);
+            }
+        });
     }
 
     protected void defineColumn_id() {
@@ -126,6 +147,9 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
 
     protected TreeNode createOrderToOrderItemTreeNode(Order bean) {
         TreeNode parent = new TreeNode(bean);
+        parent.setChildren(recursiveGenerateChildrenTreeNodes(parent, "items"));
+        return parent;
+        /*TreeNode parent = new TreeNode(bean);
         if(bean.getItems()!=null && bean.getItems().size()>0) {
             TreeNode[] children = new TreeNode[bean.getItems().size()];
             int i=0;
@@ -135,7 +159,7 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
             }
             parent.setChildren(children);
         }
-        return parent;
+        return parent;*/
     }
 
     public static void main(String[] args) {
@@ -143,7 +167,7 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
             @Override protected Control createContents(Composite parent) {
                 Composite container = new Composite(parent, SWT.EMBEDDED);
                 container.setLayout(new FillLayout());
-                OrderDataTreeGrid orderDataTreeGrid = new OrderDataTreeGrid(container, SWT.NONE) {
+                OrderDataTreeGrid orderDataTreeGrid = new OrderDataTreeGrid(container, SWT.MULTI) {
                     @Override protected void preInit() {
                         super.preInit();    //To change body of overridden methods use File | Settings | File Templates.
                     }

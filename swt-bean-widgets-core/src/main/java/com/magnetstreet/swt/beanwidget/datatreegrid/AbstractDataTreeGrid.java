@@ -6,11 +6,14 @@ import com.magnetstreet.swt.beanwidget.datatreegrid.contextmenu.ContextMenuActio
 import com.magnetstreet.swt.beanwidget.datatreegrid.contextmenu.ContextMenuManager;
 import com.magnetstreet.swt.beanwidget.datatreegrid.sorter.DataTreeGridSorter;
 import com.magnetstreet.swt.util.BeanUtil;
+import com.magnetstreet.swt.util.SWTUtil;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ICellEditorValidator;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.jface.viewers.TreeNodeContentProvider;
 import org.eclipse.jface.viewers.TreeSelection;
@@ -75,19 +78,15 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     protected ContextMenuManager contextMenuManager = null;
     protected List<ContextMenuAction> contextMenuActions = new LinkedList<ContextMenuAction>();
 
-    protected SortedSet<T> beans = new TreeSet<T>(new Comparator<T>() {
-        @Override public int compare(T o1, T o2) {
-            Comparator<T> comparator = getSortingComparator();
-            if(comparator==null)
-                return o1.compareTo(o2);
-            return comparator.compare(o1, o2);
-        }
-    });
+    protected SortedSet<T> beans = new TreeSet<T>();
 
     public AbstractDataTreeGrid(Composite composite, int i) {
         super(composite, SWT.NONE);
         setLayout(new FillLayout());
-        treeViewer = new TreeViewer(this, SWT.FULL_SELECTION|i);
+        if(SWTUtil.hasStyle(i, SWT.CHECK))
+            treeViewer = new CheckboxTreeViewer(this, SWT.FULL_SELECTION|i);
+        else
+            treeViewer = new TreeViewer(this, SWT.FULL_SELECTION|i);
         preInit();
         initialize();
     }
@@ -210,7 +209,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         contextMenuManager.setRemoveAllWhenShown(true);
         contextMenuManager.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
-                Collection selectedBeans = getSelectedBeans();
+                Collection selectedBeans = getSelectedBeans(Object.class);
                 contextMenuManager.setSelectedContextModel(selectedBeans);
                 for(final ContextMenuAction action: contextMenuActions) {
                     contextMenuManager.add(new ContextMenuAction() {
@@ -266,9 +265,11 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         return nodes;
     }
 
-    private Comparator<T> getSortingComparator() {
-        return null; // todo @todo TODO
+    public void addDoubleClickListener(IDoubleClickListener listener) {
+        treeViewer.addDoubleClickListener(listener);
     }
+
+    public TreeViewer getTreeViewer() { return treeViewer; }
 
     protected void bindHeader(String columnIdentifier, ColumnHeaderProvider headerProvider) {
         if(initialized)
@@ -296,14 +297,51 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         contextMenuActions.add(action);
     }
 
-    @Override public Collection getSelectedBeans() {
-        List<TreeNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
-        Collection modelObjects = new ArrayList(nodes.size());
-        for(TreeNode node: nodes) {
-            modelObjects.add(node.getValue());
+    @Override public Collection<T> getCheckedRootBeans() {
+        if( !SWTUtil.hasStyle(treeViewer.getTree().getStyle(), SWT.CHECK) )
+            throw new RuntimeException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        Collection<T> modelObjects = new ArrayList<T>();
+        Object[] treeNodes = ((CheckboxTreeViewer)treeViewer).getCheckedElements();
+        for(Object treeNode: treeNodes) {
+            modelObjects.add((T)getRootNode((TreeNode)treeNode).getValue());
         }
         return modelObjects;
     }
+    @Override public <V> Collection<V> getCheckedBeans(Class<V> type) {
+        if( !SWTUtil.hasStyle(treeViewer.getTree().getStyle(), SWT.CHECK) )
+            throw new RuntimeException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        Collection<V> modelObjects = new ArrayList<V>();
+        Object[] treeNodes = ((CheckboxTreeViewer)treeViewer).getCheckedElements();
+        for(Object node: treeNodes) {
+            if(type.isAssignableFrom(node.getClass()))
+                modelObjects.add((V)((TreeNode)node).getValue());
+        }
+        return modelObjects;
+    }
+    @Override public Collection<T> getSelectedRootBeans() {
+        List<TreeNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
+        Collection<T> modelObjects = new ArrayList<T>();
+        for(TreeNode node: nodes) {
+            modelObjects.add((T)getRootNode(node).getValue());
+        }
+        return modelObjects;
+    }
+    @Override public <V> Collection<V> getSelectedBeans(Class<V> type) {
+        List<TreeNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
+        Collection<V> modelObjects = new ArrayList<V>(nodes.size());
+        for(TreeNode node: nodes) {
+            if(type.isAssignableFrom(node.getClass()))
+                modelObjects.add((V)node.getValue());
+        }
+        return modelObjects;
+    }
+
+    private TreeNode getRootNode(TreeNode node) {
+        if(node.getParent()==null)
+            return node;
+        return getRootNode(node.getParent());
+    }
+
     @Override public void refresh() {
         treeViewer.setInput(generateTreeNodes());
         treeViewer.refresh();

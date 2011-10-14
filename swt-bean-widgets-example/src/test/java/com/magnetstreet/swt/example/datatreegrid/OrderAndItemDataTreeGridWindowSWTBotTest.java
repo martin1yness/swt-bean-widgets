@@ -47,7 +47,7 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
                         Composite container = new Composite(parent, SWT.EMBEDDED);
                         container.setLayout(new FillLayout());
 
-                        orderDataTreeGrid = new OrderDataTreeGrid(container, SWT.MULTI);
+                        orderDataTreeGrid = new OrderDataTreeGrid(container, SWT.MULTI|SWT.CHECK);
                         orderDataTreeGrid.setBeans(createTestData());
                         orderDataTreeGrid.refresh();
                         return container;
@@ -133,7 +133,26 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         final Collection selectedBeans = new ArrayList();
         Display.getDefault().syncExec(new Runnable() {
             public void run() {
-                selectedBeans.addAll(orderDataTreeGrid.getSelectedBeans());
+                selectedBeans.addAll(orderDataTreeGrid.getSelectedBeans(Object.class));
+            }
+        });
+        assertThat(selectedBeans.size(), is(3));
+        Iterator it = selectedBeans.iterator();
+        assertThat(it.next(), is(Order.class));
+        assertThat(it.next(), is(OrderItem.class));
+        assertThat(it.next(), is(OrderItem.class));
+    }
+
+    @Test public void testGetCheckedObjects() throws Exception {
+        bot.tree().expandNode(bot.tree().cell(0, 0));
+        bot.tree().getTreeItem(bot.tree().cell(0, 0)).check();
+        bot.tree().getTreeItem(bot.tree().cell(0, 0)).getItems()[0].check();
+        bot.tree().getTreeItem(bot.tree().cell(0, 0)).getItems()[1].check();
+
+        final Collection selectedBeans = new ArrayList();
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                selectedBeans.addAll(orderDataTreeGrid.getCheckedBeans(Object.class));
             }
         });
         assertThat(selectedBeans.size(), is(3));

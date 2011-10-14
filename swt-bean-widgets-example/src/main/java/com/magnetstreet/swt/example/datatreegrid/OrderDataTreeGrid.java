@@ -51,7 +51,7 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
                 return "Select: 0";
             }
             @Override public void run() {
-                TreeItem treeItem = ((TreeViewer) getViewer()).getTree().getItem(getSelectedBeans().size()-1);
+                TreeItem treeItem = ((TreeViewer) getViewer()).getTree().getItem(getSelectedBeans(Object.class).size()-1);
                 ((TreeViewer) getViewer()).getTree().setSelection(treeItem);
             }
         });

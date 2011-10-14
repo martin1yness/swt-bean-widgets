@@ -1,5 +1,8 @@
 package com.magnetstreet.swt.beanwidget.datatreegrid;
 
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.TreeViewer;
+
 import java.util.Collection;
 
 /**
@@ -14,7 +17,20 @@ public interface DataTreeGrid<T extends Comparable<T>> {
      */
     public void refresh();
 
-    public Collection<?> getSelectedBeans();
+    /**
+     * Allows for a double click action to invoke a custom listener. Often used to create dialogs that
+     * provide details about the selected item in the table.
+     * @param listener
+     */
+    public void addDoubleClickListener(IDoubleClickListener listener);
+
+    public TreeViewer getTreeViewer();
+
+    public <V> Collection<V> getCheckedBeans(Class<V> type);
+    public Collection<T> getCheckedRootBeans();
+
+    public <V> Collection<V> getSelectedBeans(Class<V> type);
+    public Collection<T> getSelectedRootBeans();
 
     /**
      * Used to populate the data grid in a batch

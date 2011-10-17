@@ -219,6 +219,29 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         }
     }
 
+    public String captureSerializedColumnWidths() {
+        StringBuilder sb = new StringBuilder();
+        for(TreeColumn col: treeViewer.getTree().getColumns()) {
+            sb.append(col.getText());
+            sb.append('=');
+            sb.append(col.getWidth());
+            sb.append(';');
+        }
+        return sb.toString();
+    }
+    public void applySerializedColumnWidths(String widths) {
+        String[] widthsArr = widths.split(";");
+        Map<String,Integer> widthsTable = new HashMap<String, Integer>();
+        for(String widthDef: widthsArr) {
+            String[] widthDefArr = widthDef.split("=");
+            widthsTable.put(widthDefArr[0], Integer.parseInt(widthDefArr[1]));
+        }
+        for(TreeColumn col: treeViewer.getTree().getColumns()) {
+            if(widthsTable.containsKey(col.getText()))
+                col.setWidth(widthsTable.get(col.getText()));
+        }
+    }
+
     private void addContextMenu() {
         if(contextMenuManager==null)
             contextMenuManager = new ContextMenuManager(treeViewer);

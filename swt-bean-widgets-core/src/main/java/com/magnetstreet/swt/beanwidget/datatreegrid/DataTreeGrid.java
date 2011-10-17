@@ -43,6 +43,9 @@ public interface DataTreeGrid<T extends Comparable<T>> {
     public <V> Collection<V> getSelectedBeans(Class<V> type);
     public Collection<T> getSelectedRootBeans();
 
+    public String captureSerializedColumnWidths();
+    public void applySerializedColumnWidths(String widths);
+
     /**
      * Used to populate the data grid in a batch
      * @param beans

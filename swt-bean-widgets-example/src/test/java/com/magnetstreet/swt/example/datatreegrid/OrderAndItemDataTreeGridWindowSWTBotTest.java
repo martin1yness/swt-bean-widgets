@@ -124,7 +124,11 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
     private SWTBot bot;
 
     @Before public void setupSWTBot() {
-        bot = new SWTBot();
+        while(bot==null) {
+            try {
+                bot = new SWTBot();
+            } catch(Throwable t) { }
+        }
     }
 
     @Test public void testCellPopulation() throws InterruptedException {
@@ -198,5 +202,22 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         assertThat(bot.tree().rowCount(), is(100));
         bot.comboBox().setSelection(2);
         assertThat(bot.tree().rowCount(), is(50));
+    }
+
+    @Ignore("Can't get specific columns from SWTBot yet :S, comment out and verify manually.")
+    @Test public void testGetAndSetColumnWidths() throws Exception {
+        final StringBuilder sb = new StringBuilder();
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                sb.append(orderDataTreeGrid.captureSerializedColumnWidths());
+            }
+        });
+        Thread.sleep(2000);
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                orderDataTreeGrid.applySerializedColumnWidths(sb.toString().replaceAll("[0-9]+", "25"));
+            }
+        });
+        Thread.sleep(2000);
     }
 }

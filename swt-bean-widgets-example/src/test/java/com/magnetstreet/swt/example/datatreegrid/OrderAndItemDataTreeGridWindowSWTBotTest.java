@@ -1,12 +1,16 @@
 package com.magnetstreet.swt.example.datatreegrid;
 
+import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -45,11 +49,29 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
                 window = new ApplicationWindow(null) {
                     @Override protected Control createContents(Composite parent) {
                         Composite container = new Composite(parent, SWT.EMBEDDED);
-                        container.setLayout(new FillLayout());
+                        container.setLayout(new RowLayout(SWT.VERTICAL));
+
+                        final Combo divisionComboFilter = new Combo(container, SWT.BORDER|SWT.READ_ONLY);
+                        divisionComboFilter.add("-- ALL --");
+                        divisionComboFilter.add("Division A");
+                        divisionComboFilter.add("Division B");
+                        divisionComboFilter.addModifyListener(new ModifyListener() {
+                            @Override public void modifyText(ModifyEvent e) {
+                                orderDataTreeGrid.refresh();
+                            }
+                        });
 
                         orderDataTreeGrid = new OrderDataTreeGrid(container, SWT.MULTI|SWT.CHECK);
                         orderDataTreeGrid.setBeans(createTestData());
                         orderDataTreeGrid.refresh();
+
+                        orderDataTreeGrid.bindFilter(Order.class, new ColumnFilter<Order>() {
+                            @Override public boolean checkModelProperty(Order modelObjectProperty) {
+                                if(divisionComboFilter.getText().equalsIgnoreCase("-- ALL --"))
+                                    return true;
+                                return modelObjectProperty.getDivision().getName().equals(divisionComboFilter.getText());
+                            }
+                        });
                         return container;
                     }
                 };
@@ -170,5 +192,12 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         bot.tree().getTreeItem(bot.tree().cell(5,0)).contextMenu("Select: 1").click();
         assertThat(bot.tree().selectionCount(), is(1));
         assertThat(bot.tree().getTreeItem(bot.tree().cell(0,0)).isSelected(), is(true));
+    }
+
+    @Test public void testDefaultFilterFeature() throws Exception {
+        assertThat(bot.tree().rowCount(), is(100));
+        bot.comboBox().setSelection(2);
+        Thread.sleep(20000);
+        assertThat(bot.tree().rowCount(), is(50));
     }
 }

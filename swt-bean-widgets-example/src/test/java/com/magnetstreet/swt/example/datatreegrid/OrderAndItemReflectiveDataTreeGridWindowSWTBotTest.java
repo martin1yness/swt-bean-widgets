@@ -38,10 +38,10 @@ import static org.junit.Assert.assertThat;
  * @since 10/12/11
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
-public class OrderAndItemDataTreeGridWindowSWTBotTest {
+public class OrderAndItemReflectiveDataTreeGridWindowSWTBotTest {
     private static Thread t;
     private static ApplicationWindow window;
-    private static OrderDataTreeGrid orderDataTreeGrid;
+    private static OrderReflectiveDataTreeGrid orderDataTreeGrid;
 
     static {
         t = new Thread(new Runnable() {
@@ -61,7 +61,7 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
                             }
                         });
 
-                        orderDataTreeGrid = new OrderDataTreeGrid(container, SWT.MULTI|SWT.CHECK);
+                        orderDataTreeGrid = new OrderReflectiveDataTreeGrid(container, SWT.MULTI|SWT.CHECK);
                         orderDataTreeGrid.setBeans(createTestData());
                         orderDataTreeGrid.refresh();
 

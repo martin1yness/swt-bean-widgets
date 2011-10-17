@@ -69,9 +69,23 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         }
     };
 
+    protected ViewerFilter defaultViewerFilter = new ViewerFilter() {
+        @Override public boolean select(Viewer viewer, Object parentElement, Object element) {
+            Class type =((TreeNode) element).getValue().getClass();
+            if(filterDefinitions.containsKey(type)) {
+                for(ColumnFilter filter: filterDefinitions.get(type).values()) {
+                    if(!filter.checkModelProperty(((TreeNode) element).getValue()))
+                        return false;
+                }
+            }
+            return true;
+        }
+        @Override public boolean isFilterProperty(Object element, String property) { return true; }
+    };
+
     protected Map<String, ColumnHeaderProvider> columnHeaderDefinitions = new LinkedHashMap<String, ColumnHeaderProvider>();
     protected Map<Class, Map<String, ColumnLabelProvider>> columnDefinitions = new HashMap<Class, Map<String, ColumnLabelProvider>>();
-    protected Map<Class, List<ColumnFilter>> filterDefinitions = new HashMap<Class, List<ColumnFilter>>();
+    protected Map<Class, Map<String, ColumnFilter>> filterDefinitions = new HashMap<Class, Map<String, ColumnFilter>>();
     protected Map<Class, Map<String, EditingSupport>> cellEditorDefinitions = new HashMap<Class, Map<String, EditingSupport>>();
     protected Map<Class, Map<String, ICellEditorValidator>> cellEditorValidatorDefinitions = new LinkedHashMap<Class, Map<String, ICellEditorValidator>>();
     protected Map<Class, Map<String, Comparator>> sortingDefinitions = new HashMap<Class, Map<String, Comparator>>();
@@ -80,19 +94,6 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     protected List<ContextMenuAction> contextMenuActions = new LinkedList<ContextMenuAction>();
 
     protected SortedSet<T> beans = new TreeSet<T>();
-
-    protected ViewerFilter defaultViewerFilter = new ViewerFilter() {
-        @Override public boolean select(Viewer viewer, Object parentElement, Object element) {
-            if(filterDefinitions.containsKey(((TreeNode)element).getValue().getClass())) {
-                for(ColumnFilter filter: filterDefinitions.get(((TreeNode)element).getValue().getClass())) {
-                    if(!filter.checkModelProperty(((TreeNode)element).getValue()))
-                        return false;
-                }
-            }
-            return true;
-        }
-        @Override public boolean isFilterProperty(Object element, String property) { return true; }
-    };
 
     public AbstractDataTreeGrid(Composite composite, int i) {
         super(composite, SWT.NONE);
@@ -286,10 +287,10 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
 
     public TreeViewer getTreeViewer() { return treeViewer; }
 
-    public <V> void bindFilter(Class<V> type, ColumnFilter<V> columnFilter) {
-        if(!filterDefinitions.containsKey(type))
-            filterDefinitions.put(type, new LinkedList<ColumnFilter>());
-        filterDefinitions.get(type).add(columnFilter);
+    public <V> void bindFilter(Class<V> modelType, String columnIdentifier, ColumnFilter<V> columnFilter) {
+        if(!filterDefinitions.containsKey(modelType))
+            filterDefinitions.put(modelType, new LinkedHashMap<String, ColumnFilter>());
+        filterDefinitions.get(modelType).put(columnIdentifier, columnFilter);
     }
 
     protected void bindHeader(String columnIdentifier, ColumnHeaderProvider headerProvider) {

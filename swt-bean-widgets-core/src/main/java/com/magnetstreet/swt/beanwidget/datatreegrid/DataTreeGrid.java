@@ -21,11 +21,12 @@ public interface DataTreeGrid<T extends Comparable<T>> {
     /**
      * Allows for after instantiation filters to be added to the table to allow users to modify result set in memory.
      * Usually, a call to #refresh() is desirable after a filter control is updated.
-     * @param type The type class definition the filter is to act upon.
+     * @param modelType The type class definition the filter is to act upon. (Defines tree level)
+     * @param columnIdentifier The identifier used to match bindings of each object to a column.
      * @param columnFilter The typed filter to be used to determine if element should be included in visible tree.
      * @param <V> The type of object the filter is designed to work on, each tree level is of a type.
      */
-    public <V> void bindFilter(Class<V> type, ColumnFilter<V> columnFilter);
+    public <V> void bindFilter(Class<V> modelType, String columnIdentifier, ColumnFilter<V> columnFilter);
 
     /**
      * Allows for a double click action to invoke a custom listener. Often used to create dialogs that

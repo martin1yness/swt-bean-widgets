@@ -220,4 +220,31 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         });
         Thread.sleep(2000);
     }
+
+    @Test public void testUncheckAndCheckAllItems() throws Exception {
+        assertThat(bot.tree().rowCount(), is(100));
+        final Collection<Order> checkedOrders = new ArrayList<Order>();
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                checkedOrders.addAll(orderDataTreeGrid.getCheckedRootBeans());
+            }
+        });
+        assertThat(checkedOrders.size(), is(0));
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                checkedOrders.clear();
+                orderDataTreeGrid.checkAllItems();
+                checkedOrders.addAll(orderDataTreeGrid.getCheckedRootBeans());
+            }
+        });
+        assertThat(checkedOrders.size(), is(100));
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                checkedOrders.clear();
+                orderDataTreeGrid.uncheckAllItems();
+                checkedOrders.addAll(orderDataTreeGrid.getCheckedRootBeans());
+            }
+        });
+        assertThat(checkedOrders.size(), is(0));
+    }
 }

@@ -124,7 +124,11 @@ public class OrderAndItemReflectiveDataTreeGridWindowSWTBotTest {
     private SWTBot bot;
 
     @Before public void setupSWTBot() {
-        bot = new SWTBot();
+        while(bot==null) {
+            try {
+                bot = new SWTBot();
+            } catch(Throwable t) { }
+        }
     }
 
     @Test public void testCellPopulation() throws InterruptedException {
@@ -198,5 +202,9 @@ public class OrderAndItemReflectiveDataTreeGridWindowSWTBotTest {
         assertThat(bot.tree().rowCount(), is(100));
         bot.comboBox().setSelection(2);
         assertThat(bot.tree().rowCount(), is(50));
+    }
+
+    @Test public void testCheckAlluncheckAll() throws Exception {
+
     }
 }

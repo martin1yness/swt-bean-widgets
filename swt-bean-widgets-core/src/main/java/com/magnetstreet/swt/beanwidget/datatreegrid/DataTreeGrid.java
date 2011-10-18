@@ -37,6 +37,9 @@ public interface DataTreeGrid<T extends Comparable<T>> {
 
     public TreeViewer getTreeViewer();
 
+    public void uncheckAllItems();
+    public void checkAllItems();
+
     public <V> Collection<V> getCheckedBeans(Class<V> type);
     public Collection<T> getCheckedRootBeans();
 

@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -340,6 +341,21 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         if(contextMenuManager==null)
             addContextMenu();
         contextMenuActions.add(action);
+    }
+
+    @Override public void uncheckAllItems() {
+        if( !SWTUtil.hasStyle(treeViewer.getTree().getStyle(), SWT.CHECK) )
+            throw new RuntimeException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        for(TreeItem item: ((CheckboxTreeViewer) treeViewer).getTree().getItems()) {
+            item.setChecked(false);
+        }
+    }
+    @Override public void checkAllItems() {
+        if( !SWTUtil.hasStyle(treeViewer.getTree().getStyle(), SWT.CHECK) )
+            throw new RuntimeException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        for(TreeItem item: ((CheckboxTreeViewer) treeViewer).getTree().getItems()) {
+            item.setChecked(true);
+        }
     }
 
     @Override public Collection<T> getCheckedRootBeans() {

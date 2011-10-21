@@ -4,7 +4,7 @@
 
   <groupId>com.magnetstreet.swt</groupId>
   <artifactId>swt-bean-widgets-super-pom</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-beta2</version>
   <packaging>pom</packaging>
 
   <name>swt-bean-widgets super pom extension</name>

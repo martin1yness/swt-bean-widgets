@@ -5,22 +5,12 @@ import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
 import com.magnetstreet.swt.beanwidget.datatreegrid.contextmenu.ContextMenuAction;
 import com.magnetstreet.swt.beanwidget.datatreegrid.contextmenu.ContextMenuManager;
 import com.magnetstreet.swt.beanwidget.datatreegrid.sorter.DataTreeGridSorter;
+import com.magnetstreet.swt.exception.InvalidGridStyleException;
 import com.magnetstreet.swt.util.BeanUtil;
 import com.magnetstreet.swt.util.SWTUtil;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ICellEditorValidator;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.TreeNode;
-import org.eclipse.jface.viewers.TreeNodeContentProvider;
-import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,21 +19,10 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
@@ -94,7 +73,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     protected ContextMenuManager contextMenuManager = null;
     protected List<ContextMenuAction> contextMenuActions = new LinkedList<ContextMenuAction>();
 
-    protected SortedSet<T> beans = new TreeSet<T>();
+    protected List<T> beans = new ArrayList<T>();
 
     public AbstractDataTreeGrid(Composite composite, int i) {
         super(composite, SWT.NONE);
@@ -115,20 +94,20 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
 
     protected void initialize() {
         buildColumns();
-        treeViewer.getTree().setHeaderVisible(true);
-        treeViewer.getTree().setLinesVisible(true);
-        treeViewer.setContentProvider(new TreeNodeContentProvider() {
+        getTreeViewer().getTree().setHeaderVisible(true);
+        getTreeViewer().getTree().setLinesVisible(true);
+        getTreeViewer().setContentProvider(new TreeNodeContentProvider() {
             // Override if necessary
         });
-        treeViewer.setSorter(treeViewerSorter);
-        treeViewer.addFilter(defaultViewerFilter);
+        getTreeViewer().setSorter(treeViewerSorter);
+        getTreeViewer().addFilter(defaultViewerFilter);
         initialized = true;
     }
 
     private void buildColumns() {
         for(final String columnIdentifier: columnHeaderDefinitions.keySet()) {
             ColumnHeaderProvider columnHeaderProvider = columnHeaderDefinitions.get(columnIdentifier);
-            TreeViewerColumn columnViewer = new TreeViewerColumn(treeViewer, SWT.NONE);
+            TreeViewerColumn columnViewer = new TreeViewerColumn(getTreeViewer(), SWT.NONE);
             TreeColumn column = columnViewer.getColumn();
             column.setText(columnHeaderProvider.getTitle());
             column.setWidth(columnHeaderProvider.getWidth());
@@ -137,7 +116,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
             column.addSelectionListener(new SelectionAdapter() {
                 @Override public void widgetSelected(SelectionEvent selectionEvent) {
                     treeViewerSorter.setIdentifier(columnIdentifier);
-                    treeViewer.refresh();
+                    getTreeViewer().refresh();
                 }
             });
             columnViewer.setLabelProvider(new ColumnLabelProvider() {
@@ -222,7 +201,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
 
     public String captureSerializedColumnWidths() {
         StringBuilder sb = new StringBuilder();
-        for(TreeColumn col: treeViewer.getTree().getColumns()) {
+        for(TreeColumn col: getTreeViewer().getTree().getColumns()) {
             sb.append(col.getText());
             sb.append('=');
             sb.append(col.getWidth());
@@ -237,7 +216,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
             String[] widthDefArr = widthDef.split("=");
             widthsTable.put(widthDefArr[0], Integer.parseInt(widthDefArr[1]));
         }
-        for(TreeColumn col: treeViewer.getTree().getColumns()) {
+        for(TreeColumn col: getTreeViewer().getTree().getColumns()) {
             if(widthsTable.containsKey(col.getText()))
                 col.setWidth(widthsTable.get(col.getText()));
         }
@@ -245,7 +224,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
 
     private void addContextMenu() {
         if(contextMenuManager==null)
-            contextMenuManager = new ContextMenuManager(treeViewer);
+            contextMenuManager = new ContextMenuManager(getTreeViewer());
         contextMenuManager.setRemoveAllWhenShown(true);
         contextMenuManager.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
@@ -274,7 +253,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
                 }
             }
         });
-        treeViewer.getControl().setMenu(contextMenuManager.createContextMenu(treeViewer.getControl()));
+        getTreeViewer().getControl().setMenu(contextMenuManager.createContextMenu(getTreeViewer().getControl()));
     }
 
     abstract protected TreeNode createTreeNode(T bean);
@@ -297,16 +276,16 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     }
 
     private TreeNode[] generateTreeNodes() {
-        TreeNode[] nodes = new TreeNode[beans.size()];
+        TreeNode[] nodes = new TreeNode[getBeans().size()];
         int i=0;
-        for(T bean: beans) {
+        for(T bean: getBeans()) {
             nodes[i++] = createTreeNode(bean);
         }
         return nodes;
     }
 
     public void addDoubleClickListener(IDoubleClickListener listener) {
-        treeViewer.addDoubleClickListener(listener);
+        getTreeViewer().addDoubleClickListener(listener);
     }
 
     public TreeViewer getTreeViewer() { return treeViewer; }
@@ -344,43 +323,105 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     }
 
     @Override public void uncheckAllItems() {
-        if( !SWTUtil.hasStyle(treeViewer.getTree().getStyle(), SWT.CHECK) )
-            throw new RuntimeException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
-        for(TreeItem item: ((CheckboxTreeViewer) treeViewer).getTree().getItems()) {
+        if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.CHECK) )
+            throw new InvalidGridStyleException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        List<TreeItem> items = recursiveGetTreeItems(true, ((CheckboxTreeViewer) getTreeViewer()).getTree().getItems(), getBeans().toArray(new Object[getBeans().size()]));
+        for(TreeItem item: items)
             item.setChecked(false);
-        }
     }
     @Override public void checkAllItems() {
-        if( !SWTUtil.hasStyle(treeViewer.getTree().getStyle(), SWT.CHECK) )
-            throw new RuntimeException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
-        for(TreeItem item: ((CheckboxTreeViewer) treeViewer).getTree().getItems()) {
+        if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.CHECK) )
+            throw new InvalidGridStyleException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        List<TreeItem> items = recursiveGetTreeItems(true, ((CheckboxTreeViewer) getTreeViewer()).getTree().getItems(), getBeans().toArray(new Object[getBeans().size()]));
+        for(TreeItem item: items)
             item.setChecked(true);
+    }
+    @Override public void checkBeans(Collection beansToCheck) {
+        if( beansToCheck == null || beansToCheck.size()==0)
+            return;
+        if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.CHECK) )
+            throw new InvalidGridStyleException("DataTreeGrid was not initialized with the SWT.CHECK style, cannot check beans.");
+
+        List<TreeItem> items = recursiveGetTreeItems(true, ((CheckboxTreeViewer) getTreeViewer()).getTree().getItems(), beansToCheck.toArray());
+        for(TreeItem item: items)
+            item.setChecked(true);
+    }
+    @Override public void deselectAllItems() {
+        getTreeViewer().setSelection(new StructuredSelection());
+    }
+    @Override public void selectAllItems() {
+        if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.MULTI) )
+            throw new InvalidGridStyleException("DataTreeGrid was not created with the SWT.MULTI style, cannot select more than one row.");
+        List<TreeItem> treeItems = recursiveGetTreeItems(true, getTreeViewer().getTree().getItems(), getBeans().toArray(new Object[getBeans().size()]));
+        TreeNode[] nodes = new TreeNode[treeItems.size()];
+        for(int i=0; i<treeItems.size(); i++)
+            nodes[i] = (TreeNode)(treeItems.get(i)).getData();
+        getTreeViewer().setSelection(new StructuredSelection(nodes));
+    }
+    @Override public void selectBeans(Collection beansToSelect) {
+        if( beansToSelect == null || beansToSelect.size()==0)
+            return;
+        if( beansToSelect.size() > 1 && !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.MULTI) )
+            throw new InvalidGridStyleException("DataTreeGrid was not created with the SWT.MULTI style, cannot select more than one row.");
+        Set beansToSelectSet = new HashSet();
+        beansToSelectSet.addAll(beansToSelect);
+        beansToSelectSet.addAll(getSelectedBeans());
+        List<TreeItem> treeItems = recursiveGetTreeItems(true, getTreeViewer().getTree().getItems(), beansToSelectSet.toArray());
+        TreeNode[] nodes = new TreeNode[treeItems.size()];
+        for(int i=0; i<treeItems.size(); i++)
+            nodes[i] = (TreeNode)treeItems.get(i).getData();
+        getTreeViewer().setSelection(new StructuredSelection(nodes));
+    }
+    protected List<TreeItem> recursiveGetTreeItems(boolean visibleOnly, TreeItem[] treeItems, Object...beans) {
+        List<TreeItem> items = new ArrayList<TreeItem>();
+        for(TreeItem item: treeItems) {
+            for(Object bean: beans) {
+                if(((TreeNode)item.getData()).getValue().equals(bean)) {
+                    items.add(item);
+                    break;
+                }
+            }
+            if(!visibleOnly || item.getExpanded()) {
+                if(item.getItemCount()>0)
+                    items.addAll(recursiveGetTreeItems(visibleOnly, item.getItems(), beans));
+            }
         }
+        return items;
     }
 
+
     @Override public Collection<T> getCheckedRootBeans() {
-        if( !SWTUtil.hasStyle(treeViewer.getTree().getStyle(), SWT.CHECK) )
-            throw new RuntimeException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.CHECK) )
+            throw new InvalidGridStyleException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
         Collection<T> modelObjects = new ArrayList<T>();
-        Object[] treeNodes = ((CheckboxTreeViewer)treeViewer).getCheckedElements();
+        Object[] treeNodes = ((CheckboxTreeViewer)getTreeViewer()).getCheckedElements();
         for(Object treeNode: treeNodes) {
             modelObjects.add((T)getRootNode((TreeNode)treeNode).getValue());
         }
         return modelObjects;
     }
     @Override public <V> Collection<V> getCheckedBeans(Class<V> type) {
-        if( !SWTUtil.hasStyle(treeViewer.getTree().getStyle(), SWT.CHECK) )
-            throw new RuntimeException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
-        Collection<V> modelObjects = new ArrayList<V>();
-        Object[] treeNodes = ((CheckboxTreeViewer)treeViewer).getCheckedElements();
+        if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.CHECK) )
+            throw new InvalidGridStyleException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        Object[] treeNodes = ((CheckboxTreeViewer)getTreeViewer()).getCheckedElements();
+        Collection<V> modelObjects = new ArrayList<V>(treeNodes.length);
         for(Object node: treeNodes) {
             if(type.isAssignableFrom(node.getClass()))
                 modelObjects.add((V)((TreeNode)node).getValue());
         }
         return modelObjects;
     }
+    @Override public Collection getCheckedBeans() {
+        if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.CHECK) )
+            throw new InvalidGridStyleException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        Object[] treeNodes = ((CheckboxTreeViewer)getTreeViewer()).getCheckedElements();
+        Collection modelObjects = new ArrayList(treeNodes.length);
+        for(Object node: treeNodes)
+            modelObjects.add(((TreeNode)node).getValue());
+        return modelObjects;
+    }
     @Override public Collection<T> getSelectedRootBeans() {
-        List<TreeNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
+        List<TreeNode> nodes = ((TreeSelection) getTreeViewer().getSelection()).toList();
         Collection<T> modelObjects = new ArrayList<T>();
         for(TreeNode node: nodes) {
             modelObjects.add((T)getRootNode(node).getValue());
@@ -388,7 +429,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         return modelObjects;
     }
     @Override public <V> Collection<V> getSelectedBeans(Class<V> type) {
-        List<TreeNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
+        List<TreeNode> nodes = ((TreeSelection) getTreeViewer().getSelection()).toList();
         Collection<V> modelObjects = new ArrayList<V>(nodes.size());
         for(TreeNode node: nodes) {
             if(type.isAssignableFrom(node.getClass()))
@@ -396,6 +437,16 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         }
         return modelObjects;
     }
+    @Override public Collection getSelectedBeans() {
+        List<TreeNode> nodes = ((TreeSelection) getTreeViewer().getSelection()).toList();
+        Collection modelObjects = new ArrayList(nodes.size());
+        for(TreeNode node: nodes) {
+            modelObjects.add(node.getValue());
+        }
+
+        return modelObjects;
+    }
+
 
     private TreeNode getRootNode(TreeNode node) {
         if(node.getParent()==null)
@@ -404,20 +455,21 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     }
 
     @Override public void refresh() {
-        treeViewer.setInput(generateTreeNodes());
-        treeViewer.refresh();
+        getTreeViewer().setInput(generateTreeNodes());
+        getTreeViewer().refresh();
     }
+    protected List<T> getBeans() { return beans; }
     @Override public void setBeans(Collection<T> beans) {
-        this.beans.clear();
-        this.beans.addAll(beans);
+        getBeans().clear();
+        getBeans().addAll(beans);
     }
     @Override public void addBean(T bean) {
-        this.beans.add(bean);
+        getBeans().add(bean);
     }
     @Override public void removeBean(T bean) {
-        this.beans.remove(bean);
+        getBeans().remove(bean);
     }
     @Override public void removeAllBeans() {
-        this.beans.clear();
+        getBeans().clear();
     }
 }

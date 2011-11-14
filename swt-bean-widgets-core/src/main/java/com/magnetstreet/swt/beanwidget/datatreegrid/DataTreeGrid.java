@@ -1,8 +1,10 @@
 package com.magnetstreet.swt.beanwidget.datatreegrid;
 
 import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
+import com.magnetstreet.swt.util.SWTUtil;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
 
 import java.util.Collection;
 
@@ -39,12 +41,39 @@ public interface DataTreeGrid<T extends Comparable<T>> {
 
     public void uncheckAllItems();
     public void checkAllItems();
+    public void deselectAllItems();
+    public void selectAllItems();
 
     public <V> Collection<V> getCheckedBeans(Class<V> type);
+    public Collection getCheckedBeans();
     public Collection<T> getCheckedRootBeans();
 
     public <V> Collection<V> getSelectedBeans(Class<V> type);
+    public Collection getSelectedBeans();
     public Collection<T> getSelectedRootBeans();
+
+    /**
+     * Checks the corresponding TreeItems of the beans supplied. If an empty collection or null value is
+     * given, #uncheckAllItems() is called. Collection can be mixed types that match children elements in the
+     * generated TreeNode tree structure.
+     *
+     *
+     * @param beans Beans to check in the TreeTable
+     * @throws com.magnetstreet.swt.exception.InvalidGridStyleException a RuntimeException when the table was not created
+     *                                                                  with the SWT.CHECK style
+     */
+    public void checkBeans(Collection beans);
+    /**
+     * Selects the corresponding TreeItems of the beans supplied. If an empty collection or null value is
+     * given, #deselectAllItems() is called. Collection can be mixed types that match children elements in the
+     * generated TreeNode tree structure.
+     *
+     *
+     * @param beans Beans to select in the TreeTable
+     * @throws com.magnetstreet.swt.exception.InvalidGridStyleException a RuntimeException when the table was not created
+     *                                                                  with the SWT.MULTI style and the size of beans is larger than one.
+     */
+    public void selectBeans(Collection beans);
 
     public String captureSerializedColumnWidths();
     public void applySerializedColumnWidths(String widths);

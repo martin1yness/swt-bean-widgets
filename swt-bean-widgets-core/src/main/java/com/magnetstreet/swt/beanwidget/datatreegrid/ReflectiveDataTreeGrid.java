@@ -56,7 +56,7 @@ public abstract class ReflectiveDataTreeGrid<T extends Comparable<T>> extends Ab
             rowColumnPropertyMapping = new LinkedHashMap<Class, Map<String, Method>>();
         }
         try {
-            Method getter = propertyName == null ? null : BeanUtil.getGetterMethodForField(type, propertyName);
+            Method getter = propertyName == null ? null : BeanUtil.getGetterMethodForChainValue(type, propertyName);
             if(!rowColumnPropertyMapping.containsKey(type))
                 rowColumnPropertyMapping.put(type, new LinkedHashMap<String, Method>());
             rowColumnPropertyMapping.get(type).put(columnIdentifier, getter);

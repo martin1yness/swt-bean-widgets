@@ -64,6 +64,10 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         @Override public boolean isFilterProperty(Object element, String property) { return true; }
     };
 
+    protected ColumnLabelProvider defaultLabelProvider = new ColumnHeaderProvider() {
+        @Override public String getTitle() { return ""; }
+    };
+
     protected Map<String, ColumnHeaderProvider> columnHeaderDefinitions = new LinkedHashMap<String, ColumnHeaderProvider>();
     protected Map<Class, Map<String, ColumnLabelProvider>> columnDefinitions = new HashMap<Class, Map<String, ColumnLabelProvider>>();
     protected Map<Class, Map<String, ColumnFilter>> filterDefinitions = new HashMap<Class, Map<String, ColumnFilter>>();
@@ -121,80 +125,109 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
                 }
             });
             columnViewer.setLabelProvider(new ColumnLabelProvider() {
-                @Override public String getText(Object element) {
+                @Override
+                public String getText(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getText(((TreeNode) element).getValue());
-                    return "";
+                    return defaultLabelProvider.getText(((TreeNode) element).getValue());
                 }
-                @Override public Color getBackground(Object element) {
+
+                @Override
+                public Color getBackground(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getBackground(((TreeNode) element).getValue());
-                    return super.getBackground(element);
+                    return defaultLabelProvider.getBackground(((TreeNode) element).getValue());
                 }
-                @Override public Font getFont(Object element) {
+
+                @Override
+                public Font getFont(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getFont(((TreeNode) element).getValue());
-                    return super.getFont(element);
+                    return defaultLabelProvider.getFont(((TreeNode) element).getValue());
                 }
-                @Override public Color getForeground(Object element) {
+
+                @Override
+                public Color getForeground(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getForeground(((TreeNode) element).getValue());
-                    return super.getForeground(element);
+                    return defaultLabelProvider.getForeground(((TreeNode) element).getValue());
                 }
-                @Override public Image getImage(Object element) {
+
+                @Override
+                public Image getImage(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getImage(((TreeNode) element).getValue());
-                    return super.getImage(element);
+                    return defaultLabelProvider.getImage(((TreeNode) element).getValue());
                 }
-                @Override public Image getToolTipImage(Object element) {
+
+                @Override
+                public Image getToolTipImage(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipImage(((TreeNode) element).getValue());
-                    return super.getToolTipImage(element);
+                    return defaultLabelProvider.getToolTipImage(((TreeNode) element).getValue());
                 }
-                @Override public String getToolTipText(Object element) {
+
+                @Override
+                public String getToolTipText(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipText(((TreeNode) element).getValue());
-                    return super.getToolTipText(element);
+                    return defaultLabelProvider.getToolTipText(((TreeNode) element).getValue());
                 }
-                @Override public Color getToolTipBackgroundColor(Object element) {
+
+                @Override
+                public Color getToolTipBackgroundColor(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipBackgroundColor(((TreeNode) element).getValue());
-                    return super.getToolTipBackgroundColor(element);
+                    return defaultLabelProvider.getToolTipBackgroundColor(((TreeNode) element).getValue());
                 }
-                @Override public Color getToolTipForegroundColor(Object element) {
+
+                @Override
+                public Color getToolTipForegroundColor(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipForegroundColor(((TreeNode) element).getValue());
-                    return super.getToolTipForegroundColor(element);
+                    return defaultLabelProvider.getToolTipForegroundColor(((TreeNode) element).getValue());
                 }
-                @Override public Font getToolTipFont(Object element) {
+
+                @Override
+                public Font getToolTipFont(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipFont(((TreeNode) element).getValue());
-                    return super.getToolTipFont(element);
+                    return defaultLabelProvider.getToolTipFont(((TreeNode) element).getValue());
                 }
-                @Override public Point getToolTipShift(Object element) {
+
+                @Override
+                public Point getToolTipShift(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipShift(((TreeNode) element).getValue());
-                    return super.getToolTipShift(element);
+                    return defaultLabelProvider.getToolTipShift(((TreeNode) element).getValue());
                 }
-                @Override public boolean useNativeToolTip(Object element) {
+
+                @Override
+                public boolean useNativeToolTip(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).useNativeToolTip(((TreeNode) element).getValue());
-                    return super.useNativeToolTip(element);
+                    return defaultLabelProvider.useNativeToolTip(((TreeNode) element).getValue());
                 }
-                @Override public int getToolTipTimeDisplayed(Object element) {
+
+                @Override
+                public int getToolTipTimeDisplayed(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipTimeDisplayed(((TreeNode) element).getValue());
-                    return super.getToolTipTimeDisplayed(element);
+                    return defaultLabelProvider.getToolTipTimeDisplayed(((TreeNode) element).getValue());
                 }
-                @Override public int getToolTipDisplayDelayTime(Object element) {
+
+                @Override
+                public int getToolTipDisplayDelayTime(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipDisplayDelayTime(((TreeNode) element).getValue());
-                    return super.getToolTipDisplayDelayTime(element);
+                    return defaultLabelProvider.getToolTipDisplayDelayTime(((TreeNode) element).getValue());
                 }
-                @Override public int getToolTipStyle(Object element) {
+
+                @Override
+                public int getToolTipStyle(Object element) {
                     if (columnDefinitions.containsKey(((TreeNode) element).getValue().getClass()) && columnDefinitions.get(((TreeNode) element).getValue().getClass()).containsKey(columnIdentifier))
                         return columnDefinitions.get(((TreeNode) element).getValue().getClass()).get(columnIdentifier).getToolTipStyle(((TreeNode) element).getValue());
-                    return super.getToolTipStyle(element);
+                    return defaultLabelProvider.getToolTipStyle(((TreeNode) element).getValue());
                 }
             });
         }

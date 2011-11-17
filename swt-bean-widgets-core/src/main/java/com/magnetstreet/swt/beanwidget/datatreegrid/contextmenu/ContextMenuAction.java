@@ -1,6 +1,7 @@
 package com.magnetstreet.swt.beanwidget.datatreegrid.contextmenu;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.Viewer;
 
 import java.util.Collection;
@@ -15,6 +16,19 @@ public class ContextMenuAction extends Action {
     protected Collection selectedContextModel;
     protected Viewer viewer;
 
+    public ContextMenuAction() { }
+
+    public ContextMenuAction(String text) {
+        super(text);
+    }
+
+    public ContextMenuAction(String text, ImageDescriptor image) {
+        super(text, image);
+    }
+
+    public ContextMenuAction(String text, int style) {
+        super(text, style);
+    }
 
     public Collection getSelectedContextModel() {
         return selectedContextModel;

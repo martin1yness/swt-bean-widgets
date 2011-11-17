@@ -1,5 +1,6 @@
 package com.magnetstreet.swt.example.datatreegrid;
 
+import com.google.common.collect.Sets;
 import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
 import com.magnetstreet.swt.beanwidget.datatreegrid.AbstractDataTreeGrid;
 import com.magnetstreet.swt.beanwidget.datatreegrid.contextmenu.ContextMenuAction;
@@ -7,6 +8,8 @@ import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -21,6 +24,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Order Tree View
@@ -29,6 +34,8 @@ import java.util.Comparator;
  * @since 10/12/11
  */
 public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
+    public AtomicInteger actionCounter = new AtomicInteger(0);
+
     public OrderDataTreeGrid(Composite composite, int i) {
         super(composite, i);
     }
@@ -43,7 +50,7 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
     }
 
     protected void defineContextMenu() {
-        bindContextMenuAction(new ContextMenuAction() {
+        bindContextMenuAction(new ActionContributionItem(new ContextMenuAction() {
             @Override public String getText() {
                 Collection selectedModelObjs = getSelectedContextModel();
                 if(selectedModelObjs!=null)
@@ -54,7 +61,20 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
                 TreeItem treeItem = ((TreeViewer) getViewer()).getTree().getItem(getSelectedBeans(Object.class).size()-1);
                 ((TreeViewer) getViewer()).getTree().setSelection(treeItem);
             }
-        });
+        }));
+        bindContextMenuAction(new ActionContributionItem(new Action("Normal A&ction@CTRL+N") {
+            @Override public void run() {
+                System.out.println("Normal Action Invoked " + actionCounter.incrementAndGet() + " times.");
+            }
+        }));
+        bindContextMenuAction(new ActionContributionItem(new ContextMenuAction((HashSet)Sets.newHashSet(Order.class)) {
+            @Override public String getText() { return "Order Only Action"; }
+            @Override public void run() { System.out.println("Order Action Invoked " + actionCounter.incrementAndGet() + " times."); }
+        }));
+        bindContextMenuAction(new ActionContributionItem(new ContextMenuAction((HashSet)Sets.newHashSet(OrderItem.class)) {
+            @Override public String getText() { return "Item Only Action"; }
+            @Override public void run() { System.out.println("Item Action Invoked " + actionCounter.incrementAndGet() + " times."); }
+        }));
     }
 
     protected void defineColumn_id() {

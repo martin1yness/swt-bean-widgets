@@ -558,4 +558,5 @@ public class AbstractDataTreeGridTest {
         assertThat(children.length, is(1));
         assertThat((TestBean2)children[0].getValue(), is(beanA.getTestBean2()));
     }
+
 }

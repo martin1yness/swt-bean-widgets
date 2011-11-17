@@ -6,6 +6,7 @@ import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -41,7 +42,7 @@ public class OrderReflectiveDataTreeGrid extends ReflectiveDataTreeGrid<Order> {
     }
 
     protected void defineContextMenu() {
-        bindContextMenuAction(new ContextMenuAction() {
+        bindContextMenuAction(new ActionContributionItem(new ContextMenuAction() {
             @Override public String getText() {
                 Collection selectedModelObjs = getSelectedContextModel();
                 if(selectedModelObjs!=null)
@@ -52,7 +53,7 @@ public class OrderReflectiveDataTreeGrid extends ReflectiveDataTreeGrid<Order> {
                 TreeItem treeItem = ((TreeViewer) getViewer()).getTree().getItem(getSelectedBeans(Object.class).size()-1);
                 ((TreeViewer) getViewer()).getTree().setSelection(treeItem);
             }
-        });
+        }));
     }
 
     protected void defineColumn_id() {

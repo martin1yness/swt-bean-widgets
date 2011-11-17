@@ -1,5 +1,6 @@
 package com.magnetstreet.swt.beanwidget.datatreegrid;
 
+import com.google.common.collect.Collections2;
 import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
 import com.magnetstreet.swt.beanwidget.datatreegrid.contextmenu.ContextMenuAction;
@@ -8,8 +9,7 @@ import com.magnetstreet.swt.beanwidget.datatreegrid.sorter.DataTreeGridSorter;
 import com.magnetstreet.swt.exception.InvalidGridStyleException;
 import com.magnetstreet.swt.util.BeanUtil;
 import com.magnetstreet.swt.util.SWTUtil;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -76,7 +76,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     protected Map<Class, Map<String, Comparator>> sortingDefinitions = new HashMap<Class, Map<String, Comparator>>();
 
     protected ContextMenuManager contextMenuManager = null;
-    protected List<ContextMenuAction> contextMenuActions = new LinkedList<ContextMenuAction>();
+    protected List<IContributionItem> contextMenuActions = new LinkedList<IContributionItem>();
 
     protected List<T> beans = new ArrayList<T>();
 
@@ -106,6 +106,8 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         });
         getTreeViewer().setSorter(treeViewerSorter);
         getTreeViewer().addFilter(defaultViewerFilter);
+        if(contextMenuActions!=null && contextMenuActions.size() > 0)
+            addContextMenu();
         initialized = true;
     }
 
@@ -260,34 +262,27 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         }
     }
 
-    private void addContextMenu() {
-        if(contextMenuManager==null)
-            contextMenuManager = new ContextMenuManager(getTreeViewer());
+    protected void addContextMenu() {
+        if(contextMenuManager!=null)
+            return;
+        contextMenuManager = new ContextMenuManager(getTreeViewer());
         contextMenuManager.setRemoveAllWhenShown(true);
         contextMenuManager.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
                 Collection selectedBeans = getSelectedBeans(Object.class);
                 contextMenuManager.setSelectedContextModel(selectedBeans);
-                for(final ContextMenuAction action: contextMenuActions) {
-                    contextMenuManager.add(new ContextMenuAction() {
-                        @Override public String getText() {
-                            return action.getText();
+                for(IContributionItem contribItem: contextMenuActions) {
+                    if(contribItem instanceof ActionContributionItem && ContextMenuAction.class.isAssignableFrom(((ActionContributionItem)contribItem).getAction().getClass())) {
+                        for(Object sb: selectedBeans) {
+                            ContextMenuAction action = (ContextMenuAction)((ActionContributionItem)contribItem).getAction();
+                            if(action.getApplicableTo()==null || action.getApplicableTo().size()==0 || action.getApplicableTo().contains(sb.getClass())) {
+                                contextMenuManager.add(action.clone());
+                                break;
+                            }
                         }
-                        @Override public void setViewer(Viewer viewer) {
-                            action.setViewer(viewer);
-                            super.setViewer(viewer);    //To change body of overridden methods use File | Settings | File Templates.
-                        }
-                        @Override public void setSelectedContextModel(Collection selectedContextModel) {
-                            action.setSelectedContextModel(selectedContextModel);
-                            super.setSelectedContextModel(selectedContextModel);    //To change body of overridden methods use File | Settings | File Templates.
-                        }
-                        @Override public void run() {
-                            action.run();
-                        }
-                        @Override public void runWithEvent(Event event) {
-                            action.runWithEvent(event);
-                        }
-                    });
+                    } else {
+                        contextMenuManager.add(contribItem);
+                    }
                 }
             }
         });
@@ -355,9 +350,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         sortingDefinitions.get(type).put(columnIdentifier, comparator);
     }
 
-    protected <V> void bindContextMenuAction(ContextMenuAction action) {
-        if(contextMenuManager==null)
-            addContextMenu();
+    protected <V> void bindContextMenuAction(IContributionItem action) {
         contextMenuActions.add(action);
     }
 
@@ -449,7 +442,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         Object[] treeNodes = ((CheckboxTreeViewer)getTreeViewer()).getCheckedElements();
         Collection<V> modelObjects = new ArrayList<V>(treeNodes.length);
         for(Object node: treeNodes) {
-            if(type.isAssignableFrom(node.getClass()))
+            if(type.isAssignableFrom(((TreeNode)node).getValue().getClass()))
                 modelObjects.add((V)((TreeNode)node).getValue());
         }
         return modelObjects;
@@ -475,7 +468,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         List<TreeNode> nodes = ((TreeSelection) getTreeViewer().getSelection()).toList();
         Collection<V> modelObjects = new ArrayList<V>(nodes.size());
         for(TreeNode node: nodes) {
-            if(type.isAssignableFrom(node.getClass()))
+            if(type.isAssignableFrom(node.getValue().getClass()))
                 modelObjects.add((V)node.getValue());
         }
         return modelObjects;
@@ -489,7 +482,6 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
 
         return modelObjects;
     }
-
 
     private TreeNode getRootNode(TreeNode node) {
         if(node.getParent()==null)

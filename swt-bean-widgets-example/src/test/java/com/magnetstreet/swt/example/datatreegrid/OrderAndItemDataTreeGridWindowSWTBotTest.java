@@ -133,6 +133,7 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         bot.tree().select(new String[0]);
         for(SWTBotTreeItem item: bot.tree().getAllItems())
             item.uncheck();
+        orderDataTreeGrid.actionCounter.set(0);
     }
 
     @Test public void testCellPopulation() throws InterruptedException {
@@ -200,6 +201,36 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         bot.tree().getTreeItem(bot.tree().cell(5,0)).contextMenu("Select: 1").click();
         assertThat(bot.tree().selectionCount(), is(1));
         assertThat(bot.tree().getTreeItem(bot.tree().cell(0,0)).isSelected(), is(true));
+    }
+
+    @Test public void testContextMenuItemsUsingBaseActionClassExecuteIncrementingCounter() throws Exception {
+        bot.tree().expandNode(bot.tree().cell(0, 0));
+        bot.tree().select(bot.tree().getTreeItem(bot.tree().cell(0, 0)));
+        assertThat(orderDataTreeGrid.actionCounter.get(), is(0));
+        bot.tree().getTreeItem(bot.tree().cell(5,0)).contextMenu("Normal Action").click();
+        assertThat(orderDataTreeGrid.actionCounter.get(), is(1));
+    }
+
+    @Test public void testContextMenuItemsDisabledByBeanTypeAreShownOnEnabledLevel() throws Exception {
+        bot.tree().expandNode(bot.tree().cell(0, 0));
+        bot.tree().select(bot.tree().getTreeItem(bot.tree().cell(0, 0)));
+        assertThat(orderDataTreeGrid.actionCounter.get(), is(0));
+        bot.tree().getTreeItem(bot.tree().cell(0,0)).contextMenu("Order Only Action").click();
+        assertThat(orderDataTreeGrid.actionCounter.get(), is(1));
+
+        bot.tree().select(bot.tree().getTreeItem(bot.tree().cell(0, 0)).getItems()[0]);
+        assertThat(orderDataTreeGrid.actionCounter.get(), is(1));
+        bot.tree().getTreeItem(bot.tree().cell(0, 0)).getItems()[0].contextMenu("Item Only Action").click();
+        assertThat(orderDataTreeGrid.actionCounter.get(), is(2));
+    }
+
+    @Test(expected = Exception.class)
+    public void testContextMenuItemsDisabledByBeanTypeAreNotAvailableOnNonEnabledLevel() throws Exception {
+        bot.tree().expandNode(bot.tree().cell(0, 0));
+        bot.tree().select(bot.tree().getTreeItem(bot.tree().cell(0, 0)).getItems()[0]);
+        assertThat(orderDataTreeGrid.actionCounter.get(), is(0));
+        bot.tree().getTreeItem(bot.tree().cell(0, 0)).getItems()[0].contextMenu("Order Only Action").click();
+        assertThat(orderDataTreeGrid.actionCounter.get(), is(1));
     }
 
     @Test public void testDefaultFilterFeature() throws Exception {

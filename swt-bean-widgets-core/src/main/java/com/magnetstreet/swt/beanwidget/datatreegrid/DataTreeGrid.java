@@ -7,6 +7,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * DataTreeGrid
@@ -78,6 +80,24 @@ public interface DataTreeGrid<T extends Comparable<T>> {
     public String captureSerializedColumnWidths();
     public void applySerializedColumnWidths(String widths);
 
+    /**
+     * Non-typed bean getter by criteria
+     * @param matcher The criteria to check all the tree grid's beans against
+     * @return List of beans matching the given criteria
+     */
+    public List getBeans(Comparable matcher);
+    /**
+     * Used to get beans from table that match a given criteria
+     * @param type The type of bean being matched (Use non type generic method for multiple types)
+     * @param matcher The criteria to check the bean type against
+     * @param <V> The type of bean matcher
+     * @return List of beans matching the given criteria and object type
+     */
+    public <V> List<V> getBeans(Class<V> type, Comparable<V> matcher);
+    /**
+     * @return All top level beans
+     */
+    public List<T> getBeans();
     /**
      * Used to populate the data grid in a batch
      * @param beans

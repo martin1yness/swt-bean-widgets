@@ -1,10 +1,13 @@
 package com.magnetstreet.swt.beanwidget.datatreegrid;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,11 +17,13 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.internal.verification.Times;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.isOneOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.collection.IsCollectionContaining.hasItems;
@@ -27,6 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willCallRealMethod;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -76,6 +82,11 @@ public class AbstractDataTreeGridTest {
     }
     public static class TestBean2 implements Comparable<TestBean2> {
         private Integer id = Math.round(Math.round(Math.random() * Integer.MAX_VALUE));
+        private List<TestBean3> testBean3s = new ArrayList<TestBean3>();
+
+        public TestBean2() {
+            this.testBean3s.add(new TestBean3());
+        }
 
         public Integer getId() {
             return id;
@@ -85,7 +96,29 @@ public class AbstractDataTreeGridTest {
             this.id = id;
         }
 
+        public List<TestBean3> getTestBean3s() {
+            return testBean3s;
+        }
+
+        public void setTestBean3s(List<TestBean3> testBean3s) {
+            this.testBean3s = testBean3s;
+        }
+
         @Override public int compareTo(TestBean2 o) {
+            return id.compareTo(o.id);
+        }
+    }
+    public static class TestBean3 implements Comparable<TestBean3> {
+        private Integer id = Math.round(Math.round(Math.random() * Integer.MAX_VALUE));
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        @Override public int compareTo(TestBean3 o) {
             return id.compareTo(o.id);
         }
     }
@@ -94,7 +127,10 @@ public class AbstractDataTreeGridTest {
     @Mock CheckboxTreeViewer treeViewer;
     @Mock Tree tree;
     @Mock TreeItem treeItemA, treeItemB, treeItemC, treeItemA_A, treeItemA_B, treeItemA_C,
-            treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C;
+            treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C; /*,
+            treeItemA_A_A, treeItemA_B_A, treeItemA_C_A, treeItemB_A_A, treeItemB_B_A,
+            treeItemB_C_A, treeItemC_A_A, treeItemC_B_A, treeItemC_C_A;*/
+    @Mock TreeColumn colA, colB;
     TestBean beanA, beanB, beanC;
     ArrayList<TestBean> testBeans = new ArrayList<TestBean>(3);
 
@@ -110,6 +146,8 @@ public class AbstractDataTreeGridTest {
         given(tree.getStyle()).willReturn(SWT.CHECK|SWT.MULTI);
         given(tree.getItemCount()).willReturn(3);
         given(tree.getItems()).willReturn(new TreeItem[]{treeItemA, treeItemB, treeItemC});
+        given(tree.getColumnCount()).willReturn(2);
+        given(tree.getColumns()).willReturn(new TreeColumn[]{colA, colB});
 
         given(treeItemA_A.getData()).willReturn(new TreeNode(beanA.getTestBean2s().get(0)));
         given(treeItemA_A.getItemCount()).willReturn(0);
@@ -146,6 +184,14 @@ public class AbstractDataTreeGridTest {
         given(treeItemC.getExpanded()).willReturn(false);
     }
 
+    @Test public void testRecursiveGetTreeItems_allItemsWithNullBeanList_everyTreeItemReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        List<TreeItem> items = dataTreeGrid.recursiveGetTreeItems(false, new TreeItem[]{treeItemA, treeItemB, treeItemC}, null);
+
+        assertThat(items.size(), is(12));
+        assertThat(items, hasItems(treeItemA, treeItemB, treeItemC, treeItemA_A, treeItemA_B, treeItemA_C,
+                treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C));
+    }
     @Test public void testRecursiveGetTreeItems_visibleOnlyRootElements_allGivenRootElementsReturned() {
         given(dataTreeGrid.recursiveGetTreeItems(eq(true), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
         List<TreeItem> items = dataTreeGrid.recursiveGetTreeItems(true, new TreeItem[]{treeItemA, treeItemB, treeItemC}, beanA, beanC);
@@ -373,5 +419,143 @@ public class AbstractDataTreeGridTest {
                 return true;
             }
         }));
+    }
+
+    @Test public void testGetBeans_genericMatcherWithParentClassType_allParentBeansReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        given(dataTreeGrid.getBeans(any(Class.class), any(Comparable.class))).willCallRealMethod();
+
+        List<TestBean> beans = dataTreeGrid.getBeans(TestBean.class, new Comparable<TestBean>() { @Override public int compareTo(TestBean o) { return 0; } });
+        assertThat(beans.size(), is(3));
+        assertThat(beans, hasItems(beanA,beanB,beanC));
+    }
+
+    @Test public void testGetBeans_beanAMatcherWithParentClassType_onlyBeanAReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        given(dataTreeGrid.getBeans(any(Class.class), any(Comparable.class))).willCallRealMethod();
+
+        List<TestBean> beans = dataTreeGrid.getBeans(TestBean.class, new Comparable<TestBean>() { @Override public int compareTo(TestBean o) { return o == beanA ? 0 : -1; } });
+        assertThat(beans.size(), is(1));
+        assertThat(beans, hasItems(beanA));
+    }
+
+    @Test public void testGetBeans_genericMatcherWithChildClassType_allChildrenReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        given(dataTreeGrid.getBeans(any(Class.class), any(Comparable.class))).willCallRealMethod();
+
+        List beans = dataTreeGrid.getBeans(TestBean2.class, new Comparable<TestBean2>() { @Override public int compareTo(TestBean2 o) { return 0; } });
+        assertThat(beans.size(), is(9));
+        assertThat(beans, hasItems(beanA.getTestBean2s().toArray()));
+        assertThat(beans, hasItems(beanB.getTestBean2s().toArray()));
+        assertThat(beans, hasItems(beanC.getTestBean2s().toArray()));
+    }
+
+    @Test public void testGetBeans_genericMatcherNoTypeSpecified_allTableItemBeansReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        given(dataTreeGrid.getBeans(any(Comparable.class))).willCallRealMethod();
+
+        List beans = dataTreeGrid.getBeans(new Comparable() { @Override public int compareTo(Object o) { return 0; } });
+        assertThat(beans.size(), is(12));
+        assertThat(beans, hasItems(beanA));
+        assertThat(beans, hasItems(beanB));
+        assertThat(beans, hasItems(beanC));
+        assertThat(beans, hasItems(beanA.getTestBean2s().toArray()));
+        assertThat(beans, hasItems(beanB.getTestBean2s().toArray()));
+        assertThat(beans, hasItems(beanC.getTestBean2s().toArray()));
+    }
+
+    @Test public void testGetBeans_parentMatcherNoTypeSpecified_allParentsReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        given(dataTreeGrid.getBeans(any(Comparable.class))).willCallRealMethod();
+
+        List beans = dataTreeGrid.getBeans(new Comparable() { @Override public int compareTo(Object o) {
+            if(o instanceof TestBean) return 0;
+            return -1;
+        } });
+        assertThat(beans.size(), is(3));
+        assertThat(beans, hasItems(beanA));
+        assertThat(beans, hasItems(beanB));
+        assertThat(beans, hasItems(beanC));
+    }
+
+    @Test public void testGetBeans_mixedMatcherNoTypeSpecified_mixedReturn() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        given(dataTreeGrid.getBeans(any(Comparable.class))).willCallRealMethod();
+
+        List beans = dataTreeGrid.getBeans(new Comparable() { @Override public int compareTo(Object o) {
+            if(o == beanA) return 0;
+            if(o == beanC.getTestBean2s().get(0)) return 0;
+            return -1;
+        }});
+        assertThat(beans.size(), is(2));
+        assertThat(beans, hasItems(beanA));
+        assertThat(beans, hasItems(beanC.getTestBean2s().get(0)));
+    }
+
+    @Test public void testApplySerializedColumnWidths_givenNull_return() {
+        willCallRealMethod().given(dataTreeGrid).applySerializedColumnWidths(null);
+        dataTreeGrid.applySerializedColumnWidths(null);
+        verifyZeroInteractions(colA);
+        verifyZeroInteractions(colB);
+    }
+
+    @Test public void testApplySerializedColumnWidths_givenEmptyString_return() {
+        willCallRealMethod().given(dataTreeGrid).applySerializedColumnWidths(anyString());
+        dataTreeGrid.applySerializedColumnWidths("");
+        verifyZeroInteractions(colA);
+        verifyZeroInteractions(colB);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testApplySerializedColumnWidths_givenMalformatedString_throwsRuntime() {
+        willCallRealMethod().given(dataTreeGrid).applySerializedColumnWidths(anyString());
+        dataTreeGrid.applySerializedColumnWidths("1asd=23;32434234");
+    }
+
+    @Test public void testApplySerializedColumnWidths_givenValid_applySizesToCols() {
+        willCallRealMethod().given(dataTreeGrid).applySerializedColumnWidths(anyString());
+        given(colA.getText()).willReturn("Col A");
+        given(colB.getText()).willReturn("Col B");
+        dataTreeGrid.applySerializedColumnWidths("Col A=100;Col B=200;");
+        verify(colA).setWidth(eq(100));
+        verify(colB).setWidth(eq(200));
+    }
+
+    @Test public void testRecursiveGenerateChildrenTreeNodes_singlePropertyNoChain_noChildrenOfChildren() {
+        given(dataTreeGrid.recursiveGenerateChildrenTreeNodes(Matchers.<TreeNode>any(), anyString())).willCallRealMethod();
+
+        TreeNode[] children = dataTreeGrid.recursiveGenerateChildrenTreeNodes(new TreeNode(beanA), "testBean2s");
+        assertThat(Collections2.transform(Arrays.asList(children), new Function<TreeNode, TestBean2>() {
+            @Override public TestBean2 apply(@Nullable TreeNode treeNode) {
+                return (TestBean2)treeNode.getValue();
+            }
+        }), hasItems(beanA.getTestBean2s().get(0), beanA.getTestBean2s().get(1), beanA.getTestBean2s().get(2)));
+    }
+
+    @Test public void testRecursiveGenerateChildrenTreeNodes_chainedCollections_childrenWithChildren() {
+        given(dataTreeGrid.recursiveGenerateChildrenTreeNodes(Matchers.<TreeNode>any(), anyString())).willCallRealMethod();
+
+        TreeNode[] children = dataTreeGrid.recursiveGenerateChildrenTreeNodes(new TreeNode(beanA), "testBean2s.testBean3s");
+        assertThat(Collections2.transform(Arrays.asList(children), new Function<TreeNode, TestBean2>() {
+            @Override public TestBean2 apply(@Nullable TreeNode treeNode) {
+                return (TestBean2)treeNode.getValue();
+            }
+        }), hasItems(beanA.getTestBean2s().get(0), beanA.getTestBean2s().get(1), beanA.getTestBean2s().get(2)));
+        for(TreeNode child: children) {
+            TreeNode[] childsChildren = child.getChildren();
+            assertThat(childsChildren.length, is(1));
+            assertThat((TestBean3)childsChildren[0].getValue(), isOneOf(beanA.getTestBean2s().get(0).getTestBean3s().get(0),
+                    beanA.getTestBean2s().get(1).getTestBean3s().get(0),
+                    beanA.getTestBean2s().get(2).getTestBean3s().get(0)));
+
+        }
+    }
+
+    @Test public void testRecursiveGenerateChildrenTreeNodes_chainedSingleProperty_childrenWithSingleChild() {
+        given(dataTreeGrid.recursiveGenerateChildrenTreeNodes(Matchers.<TreeNode>any(), anyString())).willCallRealMethod();
+
+        TreeNode[] children = dataTreeGrid.recursiveGenerateChildrenTreeNodes(new TreeNode(beanA), "testBean2");
+        assertThat(children.length, is(1));
+        assertThat((TestBean2)children[0].getValue(), is(beanA.getTestBean2()));
     }
 }

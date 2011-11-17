@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 
+import java.nio.charset.MalformedInputException;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Logger;
@@ -210,7 +211,11 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         return sb.toString();
     }
     public void applySerializedColumnWidths(String widths) {
+        if(widths==null || widths.trim().equals(""))
+            return;
         String[] widthsArr = widths.split(";");
+        if(widthsArr.length!=getTreeViewer().getTree().getColumnCount())
+            throw new RuntimeException("Malformed column widths string: "+ widths);
         Map<String,Integer> widthsTable = new HashMap<String, Integer>();
         for(String widthDef: widthsArr) {
             String[] widthDefArr = widthDef.split("=");
@@ -267,12 +272,13 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
                 children[i] = new TreeNode(obj);
                 children[i].setParent(parent);
                 if(propertyChain.indexOf('.')>0)
-                    children[i].setChildren(recursiveGenerateChildrenTreeNodes(children[i], propertyChain.substring(propertyChain.indexOf('.'))));
+                    children[i].setChildren(recursiveGenerateChildrenTreeNodes(children[i], propertyChain.substring(propertyChain.indexOf('.')+1)));
                 i++;
             }
             return children;
+        } else { // Assume single object
+            return new TreeNode[]{new TreeNode(nextCollection)};
         }
-        return null;
     }
 
     private TreeNode[] generateTreeNodes() {
@@ -375,11 +381,15 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     protected List<TreeItem> recursiveGetTreeItems(boolean visibleOnly, TreeItem[] treeItems, Object...beans) {
         List<TreeItem> items = new ArrayList<TreeItem>();
         for(TreeItem item: treeItems) {
-            for(Object bean: beans) {
-                if(((TreeNode)item.getData()).getValue().equals(bean)) {
-                    items.add(item);
-                    break;
+            if(beans!=null) {
+                for(Object bean: beans) {
+                    if(((TreeNode)item.getData()).getValue().equals(bean)) {
+                        items.add(item);
+                        break;
+                    }
                 }
+            } else {
+                items.add(item);
             }
             if(!visibleOnly || item.getExpanded()) {
                 if(item.getItemCount()>0)
@@ -458,7 +468,27 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         getTreeViewer().setInput(generateTreeNodes());
         getTreeViewer().refresh();
     }
-    protected List<T> getBeans() { return beans; }
+    @Override public List getBeans(Comparable matcher) {
+        List matchedBeans = new ArrayList();
+        List<TreeItem> treeItems = recursiveGetTreeItems(false, getTreeViewer().getTree().getItems(), null);
+        for(TreeItem treeItem: treeItems) {
+            if(matcher.compareTo(((TreeNode)treeItem.getData()).getValue())==0)
+                matchedBeans.add(((TreeNode)treeItem.getData()).getValue());
+        }
+        return matchedBeans;
+    }
+    @Override public <V> List<V> getBeans(Class<V> type, Comparable<V> matcher) {
+        List<V> matchedBeans = new ArrayList<V>();
+        List<TreeItem> treeItems = recursiveGetTreeItems(false, getTreeViewer().getTree().getItems(), null);
+        for(TreeItem treeItem: treeItems) {
+            if(type.isAssignableFrom( ((TreeNode)treeItem.getData()).getValue().getClass() )) {
+                if(matcher.compareTo((V)((TreeNode)treeItem.getData()).getValue())==0)
+                    matchedBeans.add((V)((TreeNode)treeItem.getData()).getValue());
+            }
+        }
+        return matchedBeans;
+    }
+    @Override public List<T> getBeans() { return beans; }
     @Override public void setBeans(Collection<T> beans) {
         getBeans().clear();
         getBeans().addAll(beans);

@@ -20,8 +20,12 @@ public abstract class SimpleInclusiveExclusiveKeywordColumnFilter extends Abstra
     private String compoundKeywordSuffix = "\"";
     private String[] inclusionOperators = new String[]{"+", ""};
     private String[] exclusionOperators = new String[]{"-"};
+    private boolean caseSensitive = false;
 
     public SimpleInclusiveExclusiveKeywordColumnFilter() { }
+    public SimpleInclusiveExclusiveKeywordColumnFilter(boolean caseSensitive) {
+        this.caseSensitive = caseSensitive;
+    }
     /**
      * Allows on creation overriding the default configuration of the filter.
      * @param customKeywordSeparator The set of characters to use to break up the text body into keywords (Default: ' ')
@@ -40,6 +44,14 @@ public abstract class SimpleInclusiveExclusiveKeywordColumnFilter extends Abstra
         this.inclusionOperators = inclusionOperators;
         this.exclusionOperators = exclusionOperators;
     }
+    protected SimpleInclusiveExclusiveKeywordColumnFilter(String keywordSeparator, String compoundKeywordPrefix, String compoundKeywordSuffix, String[] inclusionOperators, String[] exclusionOperators, boolean caseSensitive) {
+        this.keywordSeparator = keywordSeparator;
+        this.compoundKeywordPrefix = compoundKeywordPrefix;
+        this.compoundKeywordSuffix = compoundKeywordSuffix;
+        this.inclusionOperators = inclusionOperators;
+        this.exclusionOperators = exclusionOperators;
+        this.caseSensitive = caseSensitive;
+    }
 
     /**
      * Intended to be implemented to return the value of a text box filter from which a user enters filters like
@@ -54,16 +66,23 @@ public abstract class SimpleInclusiveExclusiveKeywordColumnFilter extends Abstra
         Set<String> inclusionKeywords = getInclusiveKeywords(allKeywordsWithOperators);
 
         for(String exclusion: exclusionKeywords) {
-            if(modelObjectProperty.contains(exclusion))
+            if(contains(modelObjectProperty, exclusion))
                 return false;
         }
 
         for(String inclusion: inclusionKeywords) {
-            if(!modelObjectProperty.contains(inclusion))
+            if(!contains(modelObjectProperty, inclusion))
                 return false;
         }
 
         return true;
+    }
+
+    protected boolean contains(String a, String b) {
+        if(caseSensitive)
+            return a.contains(b);
+        else
+            return a.toLowerCase().contains(b.toLowerCase());
     }
 
     protected List<String> getKeywords(String text) {

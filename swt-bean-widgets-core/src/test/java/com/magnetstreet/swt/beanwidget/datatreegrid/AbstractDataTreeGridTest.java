@@ -222,6 +222,39 @@ public class AbstractDataTreeGridTest {
         assertThat(items, hasItems(treeItemA, treeItemC_A, treeItemC_C));
     }
 
+    @Test public void testUncheckAll_allItemsAreUnChecked() {
+        willCallRealMethod().given(dataTreeGrid).uncheckAllItems();
+        ArrayList list = new ArrayList();
+        list.add(treeItemA);
+        list.add(treeItemA_A);
+        list.add(treeItemA_B);
+        list.add(treeItemA_C);
+        list.add(treeItemB);
+        list.add(treeItemB_A);
+        list.add(treeItemB_B);
+        list.add(treeItemB_C);
+        list.add(treeItemC);
+        list.add(treeItemC_A);
+        list.add(treeItemC_B);
+        list.add(treeItemC_C);
+        given(dataTreeGrid.recursiveGetTreeItems(eq(true), Matchers.<TreeItem[]>anyVararg(), eq(null))).willReturn(list);
+
+        dataTreeGrid.uncheckAllItems();
+
+        verify(treeItemA, new Times(1)).setChecked(eq(false));
+        verify(treeItemA_A, new Times(1)).setChecked(eq(false));
+        verify(treeItemA_B, new Times(1)).setChecked(eq(false));
+        verify(treeItemA_C, new Times(1)).setChecked(eq(false));
+        verify(treeItemB, new Times(1)).setChecked(eq(false));
+        verify(treeItemB_A, new Times(1)).setChecked(eq(false));
+        verify(treeItemB_B, new Times(1)).setChecked(eq(false));
+        verify(treeItemB_C, new Times(1)).setChecked(eq(false));
+        verify(treeItemC, new Times(1)).setChecked(eq(false));
+        verify(treeItemC_A, new Times(1)).setChecked(eq(false));
+        verify(treeItemC_B, new Times(1)).setChecked(eq(false));
+        verify(treeItemC_C, new Times(1)).setChecked(eq(false));
+    }
+
     @Test public void testCheckAll_checkAllItemsVisible() {
         willCallRealMethod().given(dataTreeGrid).checkAllItems();
         ArrayList list = new ArrayList();
@@ -237,7 +270,7 @@ public class AbstractDataTreeGridTest {
         list.add(treeItemC_A);
         list.add(treeItemC_B);
         list.add(treeItemC_C);
-        given(dataTreeGrid.recursiveGetTreeItems(eq(true), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willReturn(list);
+        given(dataTreeGrid.recursiveGetTreeItems(eq(true), Matchers.<TreeItem[]>anyVararg(), eq(null))).willReturn(list);
 
         dataTreeGrid.checkAllItems();
 
@@ -332,7 +365,7 @@ public class AbstractDataTreeGridTest {
         expandedItems.add(treeItemB_B);
         expandedItems.add(treeItemB_C);
         expandedItems.add(treeItemC);
-        given(dataTreeGrid.recursiveGetTreeItems(eq(true), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willReturn(expandedItems);
+        given(dataTreeGrid.recursiveGetTreeItems(eq(true), Matchers.<TreeItem[]>anyVararg(), eq(null))).willReturn(expandedItems);
 
         dataTreeGrid.selectAllItems();
         verify(treeViewer).setSelection(argThat(new ArgumentMatcher<StructuredSelection>() {

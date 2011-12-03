@@ -357,14 +357,14 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     @Override public void uncheckAllItems() {
         if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.CHECK) )
             throw new InvalidGridStyleException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
-        List<TreeItem> items = recursiveGetTreeItems(true, ((CheckboxTreeViewer) getTreeViewer()).getTree().getItems(), getBeans().toArray(new Object[getBeans().size()]));
+        List<TreeItem> items = recursiveGetTreeItems(true, ((CheckboxTreeViewer) getTreeViewer()).getTree().getItems(), null);
         for(TreeItem item: items)
             item.setChecked(false);
     }
     @Override public void checkAllItems() {
         if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.CHECK) )
             throw new InvalidGridStyleException("DataTreeGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
-        List<TreeItem> items = recursiveGetTreeItems(true, ((CheckboxTreeViewer) getTreeViewer()).getTree().getItems(), getBeans().toArray(new Object[getBeans().size()]));
+        List<TreeItem> items = recursiveGetTreeItems(true, ((CheckboxTreeViewer) getTreeViewer()).getTree().getItems(), null);
         for(TreeItem item: items)
             item.setChecked(true);
     }
@@ -384,7 +384,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     @Override public void selectAllItems() {
         if( !SWTUtil.hasStyle(getTreeViewer().getTree().getStyle(), SWT.MULTI) )
             throw new InvalidGridStyleException("DataTreeGrid was not created with the SWT.MULTI style, cannot select more than one row.");
-        List<TreeItem> treeItems = recursiveGetTreeItems(true, getTreeViewer().getTree().getItems(), getBeans().toArray(new Object[getBeans().size()]));
+        List<TreeItem> treeItems = recursiveGetTreeItems(true, getTreeViewer().getTree().getItems(), null);
         TreeNode[] nodes = new TreeNode[treeItems.size()];
         for(int i=0; i<treeItems.size(); i++)
             nodes[i] = (TreeNode)(treeItems.get(i)).getData();

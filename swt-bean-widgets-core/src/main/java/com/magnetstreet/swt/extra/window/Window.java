@@ -72,8 +72,10 @@ public abstract class
     private void initialize() {
         getShell().addListener(SWT.Close, new Listener() {
             public void handleEvent(Event event) {
-                event.doit = false;
-                close();
+                if(getState()!=STATE.CLOSED) {
+                    event.doit = false;
+                    close();
+                }
             }
         });
         if(hotKeyManager==null) {
@@ -342,7 +344,7 @@ public abstract class
     protected boolean close() {
         if(beforeClose()) {
             setState(STATE.CLOSED);
-            if(!getShell().isDisposed()) getShell().dispose();
+            if(!getShell().isDisposed()) getShell().close();
             else logger.warning("Shell already disposed! This is not necessary of the beforeClose() function.");
             liveWindows.remove(this);
             return true;

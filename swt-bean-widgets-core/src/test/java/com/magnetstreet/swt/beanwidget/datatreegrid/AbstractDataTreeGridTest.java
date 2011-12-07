@@ -141,6 +141,7 @@ public class AbstractDataTreeGridTest {
         testBeans.add(beanB = new TestBean());
         testBeans.add(beanC = new TestBean());
 
+        given(dataTreeGrid.compareTreeItemToBean(Matchers.<TreeItem>any(), (Comparable)any())).willCallRealMethod();
         given(dataTreeGrid.getTreeViewer()).willReturn(treeViewer);
         given(dataTreeGrid.getBeans()).willReturn(testBeans);
         given(treeViewer.getTree()).willReturn(tree);
@@ -192,6 +193,34 @@ public class AbstractDataTreeGridTest {
         given(treeItemC.getItemCount()).willReturn(beanC.getTestBean2s().size());
         given(treeItemC.getItems()).willReturn(new TreeItem[]{treeItemC_A, treeItemC_B, treeItemC_C});
         given(treeItemC.getExpanded()).willReturn(false);
+    }
+
+    @Test public void testSetTopBean_beanNotFound_doNothing() {
+        willCallRealMethod().given(dataTreeGrid).setTopBean((Comparable)any());
+        dataTreeGrid.setTopBean(new TestBean());
+
+        verify(tree, new Times(0)).setTopItem(Matchers.<TreeItem>any());
+    }
+
+    @Test public void testSetTopBean_nullBean_doNothing() {
+        willCallRealMethod().given(dataTreeGrid).setTopBean((Comparable)any());
+        dataTreeGrid.setTopBean(null);
+
+        verify(tree, new Times(0)).setTopItem(Matchers.<TreeItem>any());
+    }
+
+    @Test public void testSetTopBean_parentBeanGiven_topItemWithSameParentSetToTopItemOnTree() {
+        willCallRealMethod().given(dataTreeGrid).setTopBean((Comparable)any());
+        dataTreeGrid.setTopBean(beanB);
+
+        verify(tree).setTopItem(eq(treeItemB));
+    }
+
+    @Test public void testSetTopBean_childBeanGiven_topItemWithSameChildSetToTopItemOnTree() {
+        willCallRealMethod().given(dataTreeGrid).setTopBean((Comparable)any());
+        dataTreeGrid.setTopBean(beanB.getTestBean2s().get(1));
+
+        verify(tree).setTopItem(eq(treeItemB_B));
     }
 
     @Test public void testGetTopBean_noTreeItems_returnNull() {

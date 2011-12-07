@@ -169,17 +169,6 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
         TreeNode parent = new TreeNode(bean);
         parent.setChildren(recursiveGenerateChildrenTreeNodes(parent, "items"));
         return parent;
-        /*TreeNode parent = new TreeNode(bean);
-        if(bean.getItems()!=null && bean.getItems().size()>0) {
-            TreeNode[] children = new TreeNode[bean.getItems().size()];
-            int i=0;
-            for(OrderItem item: bean.getItems()) {
-                children[i] = new TreeNode(item);
-                children[i++].setParent(parent);
-            }
-            parent.setChildren(children);
-        }
-        return parent;*/
     }
 
     public static void main(String[] args) {

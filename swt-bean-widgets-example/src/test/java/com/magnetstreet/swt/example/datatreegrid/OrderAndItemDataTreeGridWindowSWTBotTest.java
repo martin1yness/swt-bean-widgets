@@ -1,5 +1,6 @@
 package com.magnetstreet.swt.example.datatreegrid;
 
+import com.google.common.collect.Lists;
 import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
@@ -9,6 +10,7 @@ import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swtbot.swt.finder.SWTBot;
@@ -72,6 +74,7 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
                                 return modelObjectProperty.getDivision().getName().equals(divisionComboFilter.getText());
                             }
                         });
+                        orderDataTreeGrid.setLayoutData(new RowData(300, 300));
                         return container;
                     }
                 };
@@ -134,6 +137,7 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         for(SWTBotTreeItem item: bot.tree().getAllItems())
             item.uncheck();
         orderDataTreeGrid.actionCounter.set(0);
+        bot.tree().getTreeItem("1").collapse();
     }
 
     @Test public void testCellPopulation() throws InterruptedException {
@@ -338,6 +342,27 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
         assertThat(checkedOrders.size(), is(6));
     }
 
+    @Test public void testCheckSpecificChildrenBeans() throws Exception {
+        assertThat(bot.tree().rowCount(), is(100));
+
+        bot.tree().getTreeItem("1").expand();
+        final Collection<Order> checkedOrders = new ArrayList<Order>();
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                checkedOrders.addAll(orderDataTreeGrid.getCheckedBeans());
+            }
+        });
+        assertThat(checkedOrders.size(), is(0));
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                checkedOrders.clear();
+                orderDataTreeGrid.checkBeans(Lists.newArrayList(beans.get(0).getItems().get(0), beans.get(0).getItems().get(2)));
+                checkedOrders.addAll(orderDataTreeGrid.getCheckedBeans());
+            }
+        });
+        assertThat(checkedOrders.size(), is(2));
+    }
+
     @Test public void testSelectAndUnselectAllItems() throws Exception {
         assertThat(bot.tree().rowCount(), is(100));
         final Collection<Order> selectedOrders = new ArrayList<Order>();
@@ -398,5 +423,71 @@ public class OrderAndItemDataTreeGridWindowSWTBotTest {
             }
         });
         assertThat(selectedOrders.size(), is(6));
+    }
+
+    @Test public void testSelectChildrenSpecificBeans() throws Exception {
+        assertThat(bot.tree().rowCount(), is(100));
+        bot.tree().expandNode("1");
+        final Collection<Order> selectedOrders = new ArrayList<Order>();
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                selectedOrders.addAll(orderDataTreeGrid.getSelectedBeans());
+            }
+        });
+        assertThat(selectedOrders.size(), is(0));
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                selectedOrders.clear();
+                ArrayList beansToSelect = new ArrayList();
+                beansToSelect.add(beans.get(0).getItems().get(0));
+                orderDataTreeGrid.selectBeans(beansToSelect);
+                selectedOrders.addAll(orderDataTreeGrid.getSelectedBeans());
+            }
+        });
+        assertThat(selectedOrders.size(), is(1));
+        assertThat(bot.tree().getTreeItem("1").getNode(0).isSelected(), is(true));
+    }
+
+    @Test public void testExpandItems() throws Exception {
+        assertThat(bot.tree().rowCount(), is(100));
+        final Collection<Order> expandedItems = new ArrayList<Order>();
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                expandedItems.addAll(orderDataTreeGrid.getExpandedBeans());
+            }
+        });
+        assertThat(expandedItems.size(), is(0));
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                expandedItems.clear();
+                ArrayList beansToSelect = new ArrayList();
+                beansToSelect.add(beans.get(0));
+                orderDataTreeGrid.expandBeans(beansToSelect);
+                expandedItems.addAll(orderDataTreeGrid.getExpandedBeans());
+            }
+        });
+        assertThat(expandedItems.size(), is(1));
+        assertThat(bot.tree().getTreeItem("1").isExpanded(), is(true));
+
+        // Ensure children are there
+        assertThat(bot.tree().getTreeItem("1").getItems().length, is(4));
+    }
+
+    @Test public void testSetTopBean() {
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                assertThat(orderDataTreeGrid.getTreeViewer().getTree().getTopItem().getText(0), is("1"));
+            }
+        });
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                orderDataTreeGrid.setTopBean(beans.get(3));
+            }
+        });
+        Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+                assertThat(orderDataTreeGrid.getTreeViewer().getTree().getTopItem().getText(0), is("4"));
+            }
+        });
     }
 }

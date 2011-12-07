@@ -407,19 +407,23 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     protected List<TreeItem> recursiveGetTreeItems(boolean visibleOnly, TreeItem[] treeItems, Object...beans) {
         List<TreeItem> items = new ArrayList<TreeItem>();
         for(TreeItem item: treeItems) {
-            if(beans!=null) {
-                for(Object bean: beans) {
-                    if(((TreeNode)item.getData()).getValue().equals(bean)) {
-                        items.add(item);
-                        break;
+            if(item.getData() instanceof TreeNode) {
+                if(beans!=null && beans.length > 0) {
+                    for(Object bean: beans) {
+                        if(((TreeNode)item.getData()).getValue().getClass() != bean.getClass())
+                            continue;
+                        if(((Comparable)((TreeNode)item.getData()).getValue()).compareTo(bean) == 0) {
+                            items.add(item);
+                            break;
+                        }
                     }
+                } else {
+                    items.add(item);
                 }
-            } else {
-                items.add(item);
-            }
-            if(!visibleOnly || item.getExpanded()) {
-                if(item.getItemCount()>0)
-                    items.addAll(recursiveGetTreeItems(visibleOnly, item.getItems(), beans));
+                if(!visibleOnly || item.getExpanded()) {
+                    if(item.getItemCount()>0)
+                        items.addAll(recursiveGetTreeItems(visibleOnly, item.getItems(), beans));
+                }
             }
         }
         return items;
@@ -483,11 +487,49 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
         return modelObjects;
     }
 
+    @Override public Collection getExpandedBeans() {
+        List expandedItems = new LinkedList();
+        for(TreeItem treeItem: recursiveGetTreeItems(true, getTreeViewer().getTree().getItems())) {
+            if(treeItem.getExpanded())
+                expandedItems.add(((TreeNode)treeItem.getData()).getValue());
+        }
+        return expandedItems;
+    }
+    @Override public void expandBeans(Collection beansToExpand) {
+        if(beansToExpand==null || beansToExpand.isEmpty())
+            return;
+        ArrayList<TreeNode> nodes = new ArrayList<TreeNode>(beansToExpand.size());
+        for(TreeItem treeItem: recursiveGetTreeItems(false, getTreeViewer().getTree().getItems(), beansToExpand.toArray(new Object[beansToExpand.size()]))) {
+            nodes.add((TreeNode)treeItem.getData());
+            TreeItem parent = treeItem.getParentItem();
+            while(parent!=null) {
+                nodes.add((TreeNode)parent.getData());
+                parent = parent.getParentItem();
+            }
+        }
+        getTreeViewer().setExpandedElements(nodes.toArray());
+    }
+
     private TreeNode getRootNode(TreeNode node) {
         if(node.getParent()==null)
             return node;
         return getRootNode(node.getParent());
     }
+
+
+    @Override public T getTopBean() {
+        return (T)((TreeNode)getTreeViewer().getTree().getTopItem().getData()).getValue();
+    }
+
+    @Override public void setTopBean(T bean) {
+        for(TreeItem item: getTreeViewer().getTree().getItems()) {
+            if(((T)((TreeNode)item.getData()).getValue()).compareTo(bean)==0) {
+                getTreeViewer().getTree().setTopItem(item);
+                break;
+            }
+        }
+    }
+
 
     @Override public void refresh() {
         getTreeViewer().setInput(generateTreeNodes());

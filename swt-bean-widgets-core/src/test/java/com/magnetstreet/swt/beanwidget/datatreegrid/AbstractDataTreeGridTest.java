@@ -2,6 +2,7 @@ package com.magnetstreet.swt.beanwidget.datatreegrid;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeNode;
@@ -9,6 +10,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,13 +21,13 @@ import org.mockito.Mock;
 import org.mockito.internal.verification.Times;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.isOneOf;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.collection.IsArray.array;
+import static org.hamcrest.collection.IsArrayContaining.hasItemInArray;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.collection.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertThat;
@@ -44,7 +47,7 @@ import static org.mockito.Mockito.*;
 @RunWith(org.mockito.runners.MockitoJUnitRunner.class)
 public class AbstractDataTreeGridTest {
     public static class TestBean implements Comparable<TestBean> {
-        private String objectOne = "One";
+        private String objectOne = "One"+Math.random();
         private TestBean2 testBean2 = new TestBean2();
         private List<TestBean2> testBean2s = new ArrayList<TestBean2>();
         public TestBean() {
@@ -150,22 +153,31 @@ public class AbstractDataTreeGridTest {
         given(tree.getColumns()).willReturn(new TreeColumn[]{colA, colB});
 
         given(treeItemA_A.getData()).willReturn(new TreeNode(beanA.getTestBean2s().get(0)));
+        given(treeItemA_A.getParentItem()).willReturn(treeItemA);
         given(treeItemA_A.getItemCount()).willReturn(0);
         given(treeItemA_B.getData()).willReturn(new TreeNode(beanA.getTestBean2s().get(1)));
+        given(treeItemA_B.getParentItem()).willReturn(treeItemA);
         given(treeItemA_B.getItemCount()).willReturn(0);
         given(treeItemA_C.getData()).willReturn(new TreeNode(beanA.getTestBean2s().get(2)));
+        given(treeItemA_C.getParentItem()).willReturn(treeItemA);
         given(treeItemA_C.getItemCount()).willReturn(0);
         given(treeItemB_A.getData()).willReturn(new TreeNode(beanB.getTestBean2s().get(0)));
+        given(treeItemB_A.getParentItem()).willReturn(treeItemB);
         given(treeItemB_A.getItemCount()).willReturn(0);
         given(treeItemB_B.getData()).willReturn(new TreeNode(beanB.getTestBean2s().get(1)));
+        given(treeItemB_B.getParentItem()).willReturn(treeItemB);
         given(treeItemB_B.getItemCount()).willReturn(0);
         given(treeItemB_C.getData()).willReturn(new TreeNode(beanB.getTestBean2s().get(2)));
+        given(treeItemB_C.getParentItem()).willReturn(treeItemB);
         given(treeItemB_C.getItemCount()).willReturn(0);
         given(treeItemC_A.getData()).willReturn(new TreeNode(beanC.getTestBean2s().get(0)));
+        given(treeItemC_A.getParentItem()).willReturn(treeItemC);
         given(treeItemC_A.getItemCount()).willReturn(0);
         given(treeItemC_B.getData()).willReturn(new TreeNode(beanC.getTestBean2s().get(1)));
+        given(treeItemC_B.getParentItem()).willReturn(treeItemC);
         given(treeItemC_B.getItemCount()).willReturn(0);
         given(treeItemC_C.getData()).willReturn(new TreeNode(beanC.getTestBean2s().get(2)));
+        given(treeItemC_C.getParentItem()).willReturn(treeItemC);
         given(treeItemC_C.getItemCount()).willReturn(0);
 
         given(treeItemA.getData()).willReturn(new TreeNode(beanA));
@@ -183,7 +195,141 @@ public class AbstractDataTreeGridTest {
         given(treeItemC.getItems()).willReturn(new TreeItem[]{treeItemC_A, treeItemC_B, treeItemC_C});
         given(treeItemC.getExpanded()).willReturn(false);
     }
+    @Test public void testGetExpandedBeans_oneParentExpanded_parentReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(true), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemB, treeItemC, treeItemB_A, treeItemB_B, treeItemB_C));
+        given(treeItemA.getExpanded()).willReturn(false);
+        given(treeItemB.getExpanded()).willReturn(true);
+        given(treeItemC.getExpanded()).willReturn(false);
+        given(dataTreeGrid.getExpandedBeans()).willCallRealMethod();
 
+        Collection expandedBeans = dataTreeGrid.getExpandedBeans();
+
+        assertThat(expandedBeans, hasItem(beanB));
+    }
+    @Test public void testGetExpandedBeans_oneParentOneChildExpanded_parentAndChildReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(true), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemB, treeItemC, treeItemB_A, treeItemB_B, treeItemB_C));
+        given(treeItemA.getExpanded()).willReturn(false);
+        given(treeItemB.getExpanded()).willReturn(true);
+        given(treeItemB_B.getExpanded()).willReturn(true);
+        given(treeItemC.getExpanded()).willReturn(false);
+        given(dataTreeGrid.getExpandedBeans()).willCallRealMethod();
+
+        Collection expandedBeans = dataTreeGrid.getExpandedBeans();
+
+        assertThat(expandedBeans, hasItems(beanB,beanB.getTestBean2s().get(1)));
+    }
+    @Test public void testGetExpandedBeans_oneParentNOChildExpanded_childNotReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(true), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemB, treeItemC, treeItemB_A, treeItemB_B, treeItemB_C));
+        given(treeItemA.getExpanded()).willReturn(false);
+        given(treeItemB.getExpanded()).willReturn(true);
+        given(treeItemB_B.getExpanded()).willReturn(false);
+        given(treeItemC.getExpanded()).willReturn(false);
+        given(dataTreeGrid.getExpandedBeans()).willCallRealMethod();
+
+        Collection expandedBeans = dataTreeGrid.getExpandedBeans();
+
+        assertThat(expandedBeans, not(hasItem(beanB.getTestBean2s().get(1))));
+    }
+    @Test public void testGetExpandedBeans_noElementsExpanded_emptyList() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(true), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemB, treeItemC));
+        given(treeItemA.getExpanded()).willReturn(false);
+        given(treeItemB.getExpanded()).willReturn(false);
+        given(treeItemC.getExpanded()).willReturn(false);
+        given(dataTreeGrid.getExpandedBeans()).willCallRealMethod();
+
+        Collection expandedBeans = dataTreeGrid.getExpandedBeans();
+
+        assertThat(expandedBeans.isEmpty(), org.hamcrest.Matchers.is(true));
+    }
+    @Test public void testExpandBeans_noBeansProvided_doesNothing() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemB, treeItemC));
+        willCallRealMethod().given(dataTreeGrid).expandBeans(anyList());
+
+        dataTreeGrid.expandBeans(new ArrayList());
+
+        verifyZeroInteractions(treeItemA, treeItemB, treeItemC, treeItemA_A, treeItemA_B, treeItemA_C,
+                treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C);
+    }
+    @Test public void testExpandBeans_parentOnlyProvided_expandParents() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemC));
+        willCallRealMethod().given(dataTreeGrid).expandBeans(anyList());
+
+        dataTreeGrid.expandBeans(Lists.newArrayList(beanA, beanC));
+
+        verify(treeViewer).setExpandedElements(argThat(new BaseMatcher<TreeNode[]>() {
+            @Override public boolean matches(Object o) {
+                assertThat((Object[])o, org.hamcrest.Matchers.hasItemInArray(treeItemA.getData()));
+                assertThat((Object[])o, org.hamcrest.Matchers.hasItemInArray(treeItemC.getData()));
+                return true;
+            }
+            @Override public void describeTo(Description description) { }
+        }));
+
+
+        // This doesn't work it makes children empty in GUI!
+        verify(treeItemA, new Times(0)).setExpanded(eq(true));
+        verify(treeItemC, new Times(0)).setExpanded(eq(true));
+    }
+    @Test public void testExpandBeans_parentOnlyProvided_doNotExpandChildren() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemC));
+        willCallRealMethod().given(dataTreeGrid).expandBeans(anyList());
+
+        dataTreeGrid.expandBeans(Lists.newArrayList(beanA, beanC));
+
+        verifyZeroInteractions(treeItemB, treeItemA_A, treeItemA_B, treeItemA_C,
+                treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C);
+    }
+    @Test public void testExpandBeans_parentAndChild_expandChild() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemA_A, treeItemC));
+        willCallRealMethod().given(dataTreeGrid).expandBeans(anyList());
+
+        dataTreeGrid.expandBeans(Lists.newArrayList(beanA, beanA.getTestBean2s().get(0), beanC));
+
+        verify(treeViewer).setExpandedElements(argThat(new BaseMatcher<TreeNode[]>() {
+            @Override public boolean matches(Object o) {
+                assertThat((Object[])o, org.hamcrest.Matchers.hasItemInArray(treeItemA.getData()));
+                assertThat((Object[])o, org.hamcrest.Matchers.hasItemInArray(treeItemA_A.getData()));
+                assertThat((Object[])o, org.hamcrest.Matchers.hasItemInArray(treeItemC.getData()));
+                return true;
+            }
+            @Override public void describeTo(Description description) { }
+        }));
+
+        // cannot set expanded at TreeItem level, must use TreeViewer to help
+        verify(treeItemA_A, new Times(0)).setExpanded(eq(true));
+    }
+    @Test public void testExpandBeans_ChildOnly_expandParentAndChild() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA_A, treeItemC));
+        willCallRealMethod().given(dataTreeGrid).expandBeans(anyList());
+
+        dataTreeGrid.expandBeans(Lists.newArrayList(beanA, beanA.getTestBean2s().get(0), beanC));
+
+        verify(treeViewer).setExpandedElements(argThat(new BaseMatcher<TreeNode[]>() {
+            @Override public boolean matches(Object o) {
+                assertThat((Object[])o, org.hamcrest.Matchers.hasItemInArray(treeItemA.getData()));
+                assertThat((Object[])o, org.hamcrest.Matchers.hasItemInArray(treeItemA_A.getData()));
+                assertThat((Object[])o, org.hamcrest.Matchers.hasItemInArray(treeItemC.getData()));
+                return true;
+            }
+            @Override public void describeTo(Description description) { }
+        }));
+
+        // cannot set expanded at TreeItem level, must use TreeViewer to help
+        verify(treeItemA, new Times(0)).setExpanded(eq(true));
+        verify(treeItemA_A, new Times(0)).setExpanded(eq(true));
+        verify(treeItemC, new Times(0)).setExpanded(eq(true));
+    }
+
+    @Test public void testRecursiveGetTreeItems_extraItemWithNullData_beanComparisonSkipped() {
+        TreeItem additionalItem = mock(TreeItem.class);
+        given(additionalItem.getData()).willReturn(null);
+        given(tree.getItems()).willReturn(new TreeItem[]{treeItemA, treeItemB, treeItemC, additionalItem});
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        List<TreeItem> items = dataTreeGrid.recursiveGetTreeItems(false, new TreeItem[]{treeItemA, treeItemB, treeItemC, additionalItem}, beanA);
+
+        assertThat(items, hasItem(treeItemA));
+
+    }
     @Test public void testRecursiveGetTreeItems_allItemsWithNullBeanList_everyTreeItemReturned() {
         given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
         List<TreeItem> items = dataTreeGrid.recursiveGetTreeItems(false, new TreeItem[]{treeItemA, treeItemB, treeItemC}, null);
@@ -191,6 +337,24 @@ public class AbstractDataTreeGridTest {
         assertThat(items.size(), is(12));
         assertThat(items, hasItems(treeItemA, treeItemB, treeItemC, treeItemA_A, treeItemA_B, treeItemA_C,
                 treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C));
+    }
+    @Test public void testRecursiveGetTreeItems_allItemsWithEmptyBeanList_everyTreeItemReturned() {
+        given(dataTreeGrid.recursiveGetTreeItems(eq(false), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        List<TreeItem> items = dataTreeGrid.recursiveGetTreeItems(false, new TreeItem[]{treeItemA, treeItemB, treeItemC});
+
+        assertThat(items.size(), is(12));
+        assertThat(items, hasItems(treeItemA, treeItemB, treeItemC, treeItemA_A, treeItemA_B, treeItemA_C,
+                treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C));
+    }
+    @Test public void testRecursiveGetTreeItems_allVisibleItemsWithEmptyBeanList_everyVisibleTreeItemReturned() {
+        given(treeItemA.getExpanded()).willReturn(false);
+        given(treeItemB.getExpanded()).willReturn(false);
+        given(treeItemC.getExpanded()).willReturn(false);
+        given(dataTreeGrid.recursiveGetTreeItems(eq(true), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();
+        List<TreeItem> items = dataTreeGrid.recursiveGetTreeItems(true, new TreeItem[]{treeItemA, treeItemB, treeItemC});
+
+        assertThat(items.size(), is(3));
+        assertThat(items, hasItems(treeItemA, treeItemB, treeItemC));
     }
     @Test public void testRecursiveGetTreeItems_visibleOnlyRootElements_allGivenRootElementsReturned() {
         given(dataTreeGrid.recursiveGetTreeItems(eq(true), Matchers.<TreeItem[]>anyVararg(), anyVararg())).willCallRealMethod();

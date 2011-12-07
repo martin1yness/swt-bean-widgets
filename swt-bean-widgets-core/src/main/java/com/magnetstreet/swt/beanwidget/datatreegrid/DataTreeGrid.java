@@ -54,6 +54,9 @@ public interface DataTreeGrid<T extends Comparable<T>> {
     public Collection getSelectedBeans();
     public Collection<T> getSelectedRootBeans();
 
+    public Collection getExpandedBeans();
+    public void expandBeans(Collection beansToExpand);
+
     /**
      * Checks the corresponding TreeItems of the beans supplied. If an empty collection or null value is
      * given, #uncheckAllItems() is called. Collection can be mixed types that match children elements in the
@@ -79,6 +82,9 @@ public interface DataTreeGrid<T extends Comparable<T>> {
 
     public String captureSerializedColumnWidths();
     public void applySerializedColumnWidths(String widths);
+
+    public T getTopBean();
+    public void setTopBean(T bean);
 
     /**
      * Non-typed bean getter by criteria

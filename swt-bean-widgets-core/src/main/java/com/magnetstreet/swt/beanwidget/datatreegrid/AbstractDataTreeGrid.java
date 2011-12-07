@@ -517,15 +517,25 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Comp
     }
 
 
-    @Override public T getTopBean() {
-        return (T)((TreeNode)getTreeViewer().getTree().getTopItem().getData()).getValue();
+    @Override public Object getTopBean() {
+        TreeItem topItem = getTreeViewer().getTree().getTopItem();
+        if(topItem!=null) {
+            Object data = topItem.getData();
+            if(data instanceof TreeNode)
+                return ((TreeNode)data).getValue();
+        }
+        return null;
     }
 
-    @Override public void setTopBean(T bean) {
+    @Override public void setTopBean(Comparable bean) {
         for(TreeItem item: getTreeViewer().getTree().getItems()) {
-            if(((T)((TreeNode)item.getData()).getValue()).compareTo(bean)==0) {
-                getTreeViewer().getTree().setTopItem(item);
-                break;
+            if(item.getData() instanceof TreeNode) {
+                if(((TreeNode) item.getData()).getValue().getClass() == bean.getClass()) {
+                    if(((Comparable)((TreeNode)item.getData()).getValue()).compareTo(bean)==0) {
+                        getTreeViewer().getTree().setTopItem(item);
+                        break;
+                    }
+                }
             }
         }
     }

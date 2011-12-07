@@ -83,8 +83,8 @@ public interface DataTreeGrid<T extends Comparable<T>> {
     public String captureSerializedColumnWidths();
     public void applySerializedColumnWidths(String widths);
 
-    public T getTopBean();
-    public void setTopBean(T bean);
+    public Object getTopBean();
+    public void setTopBean(Comparable bean);
 
     /**
      * Non-typed bean getter by criteria

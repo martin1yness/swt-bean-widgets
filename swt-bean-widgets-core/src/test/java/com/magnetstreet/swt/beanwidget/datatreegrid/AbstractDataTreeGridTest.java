@@ -23,9 +23,7 @@ import org.mockito.internal.verification.Times;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.isOneOf;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsArray.array;
 import static org.hamcrest.collection.IsArrayContaining.hasItemInArray;
 import static org.hamcrest.core.Is.is;
@@ -195,6 +193,32 @@ public class AbstractDataTreeGridTest {
         given(treeItemC.getItems()).willReturn(new TreeItem[]{treeItemC_A, treeItemC_B, treeItemC_C});
         given(treeItemC.getExpanded()).willReturn(false);
     }
+
+    @Test public void testGetTopBean_noTreeItems_returnNull() {
+        given(tree.getTopItem()).willReturn(null);
+        given(dataTreeGrid.getTopBean()).willCallRealMethod();
+        TestBean bean = (TestBean)dataTreeGrid.getTopBean();
+
+        assertThat(bean, org.hamcrest.Matchers.is(nullValue()));
+    }
+
+    @Test public void testGetTopBean_topItemNotTreeNodeItem_returnNull() {
+        TreeItem manualItem = mock(TreeItem.class);
+        given(manualItem.getData()).willReturn(null);
+        given(tree.getTopItem()).willReturn(manualItem);
+        TestBean bean = (TestBean)dataTreeGrid.getTopBean();
+
+        assertThat(bean, org.hamcrest.Matchers.is(nullValue()));
+    }
+
+    @Test public void testGetTopBean_hasTopTree_returnTreeItemBean() {
+        given(tree.getTopItem()).willReturn(treeItemA);
+        given(dataTreeGrid.getTopBean()).willCallRealMethod();
+        TestBean bean = (TestBean)dataTreeGrid.getTopBean();
+
+        assertThat(bean, org.hamcrest.Matchers.is(((TreeNode)treeItemA.getData()).getValue()));
+    }
+
     @Test public void testGetExpandedBeans_oneParentExpanded_parentReturned() {
         given(dataTreeGrid.recursiveGetTreeItems(eq(true), (TreeItem[])any(), anyVararg())).willReturn(Lists.<TreeItem>newArrayList(treeItemA, treeItemB, treeItemC, treeItemB_A, treeItemB_B, treeItemB_C));
         given(treeItemA.getExpanded()).willReturn(false);

@@ -18,7 +18,7 @@ import java.util.Map;
  * HotkeyDialog
  *
  * FUTURE: Make hot key list editable so users can view and change hotkeys.
- *         Could use the DataGrid if a HotKey table was created in database!
+ *         Could use the DataTableGrid if a HotKey table was created in database!
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @version 0.1.0 Aug 6, 2009
  * @since Aug 6, 2009

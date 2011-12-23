@@ -42,7 +42,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * AbstractDataGrid
+ * AbstractDataTableGrid
  *
  * Abstractly defines a table like widget specifically for Data Beans to display
  * designed to be extended to add additional features.
@@ -202,7 +202,7 @@ public abstract class AbstractDataGrid<T> extends Composite implements DataGrid<
      * @param event The mouse event used to get click coords
      */
     protected void handleRowDblClickEvent(MouseEvent event) {
-        log.logp(Level.FINER, "AbstractDataGrid", "handleRowDblClickEvent", "Triggered double click event handler");
+        log.logp(Level.FINER, "AbstractDataTableGrid", "handleRowDblClickEvent", "Triggered double click event handler");
         List<T> beans = getSelectedBeans();
         if(beans == null || beans.size() == 0) return;
         DataView<T> view = null;

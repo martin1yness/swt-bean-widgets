@@ -1,6 +1,6 @@
 package com.magnetstreet.swt.example.datagrid2.reflective;
 
-import com.magnetstreet.swt.beanwidget.datagrid2.filter.SimpleInclusiveExclusiveKeywordColumnFilter;
+import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.filter.SimpleInclusiveExclusiveKeywordColumnFilter;
 import com.magnetstreet.swt.example.bean.Division;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -29,7 +29,7 @@ public class DivisionReflectiveDataGridSimpleInclusiveExclusiveFilterWindow exte
     protected Group filtersGroup;
     protected CLabel descriptionFilterCLabel;
     protected Text descriptionFilterText;
-    protected DivisionReflectiveDataGrid dataGrid;
+    protected DivisionReflectiveDataTableGrid dataGrid;
 
     protected Set<Division> divisions = new HashSet<Division>();
 
@@ -81,7 +81,7 @@ public class DivisionReflectiveDataGridSimpleInclusiveExclusiveFilterWindow exte
         descriptionFilterTextLayoutData.top = new FormAttachment(0,100,5);
         descriptionFilterText.setLayoutData(descriptionFilterTextLayoutData);
 
-        dataGrid = new DivisionReflectiveDataGrid(container, SWT.FULL_SELECTION);
+        dataGrid = new DivisionReflectiveDataTableGrid(container, SWT.FULL_SELECTION);
         FormData dataGridLayoutData = new FormData(400,400);
         dataGridLayoutData.left = new FormAttachment(0,100,0);
         dataGridLayoutData.right = new FormAttachment(100,100,0);

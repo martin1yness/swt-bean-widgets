@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * DataGrid
+ * DataTableGrid
  *
  * Represents a table like widget that encapsulates many data views for
  * read or editing.

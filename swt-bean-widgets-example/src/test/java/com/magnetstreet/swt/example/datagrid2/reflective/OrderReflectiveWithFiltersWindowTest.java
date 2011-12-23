@@ -104,6 +104,9 @@ public class OrderReflectiveWithFiltersWindowTest {
         bot.table().header("Paid").click();
         bot.table().header("Id").click();
         bot.table().header("Id").click();
+        bot.table().click(0, 2);
+        bot.ccomboBox().setSelection(0);
+        bot.table().click(0, 1);
 
         inst.orderReflectiveDataGrid.discountTotalSaveCount.set(0);
     }

@@ -36,7 +36,7 @@ public class OrderManualWithFiltersWindow extends ApplicationWindow {
     protected Button paidFilterButton;
     protected Collection<Order> orders;
 
-    protected OrderManualDataGrid orderManualDataGrid;
+    protected OrderManualDataTableGrid orderManualDataGrid;
 
     public OrderManualWithFiltersWindow(Shell parentShell) {
         super(parentShell);
@@ -139,7 +139,7 @@ public class OrderManualWithFiltersWindow extends ApplicationWindow {
         }
 
         {
-            orderManualDataGrid = new OrderManualDataGrid(parent, SWT.FULL_SELECTION|SWT.MULTI);
+            orderManualDataGrid = new OrderManualDataTableGrid(parent, SWT.FULL_SELECTION|SWT.MULTI);
             FormData fd = new FormData(600,300);
             fd.top = new FormAttachment(filtersGroup,5);
             fd.left = new FormAttachment(0,100,5);

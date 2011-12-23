@@ -36,7 +36,7 @@ public class OrderReflectiveWithFiltersWindow extends ApplicationWindow {
     protected Button paidFilterButton;
     protected Collection<Order> orders;
 
-    protected OrderReflectiveDataGrid orderReflectiveDataGrid;
+    protected OrderReflectiveDataTableGrid orderReflectiveDataGrid;
 
     public OrderReflectiveWithFiltersWindow(Shell parentShell) {
         super(parentShell);
@@ -139,7 +139,7 @@ public class OrderReflectiveWithFiltersWindow extends ApplicationWindow {
         }
 
         {
-            orderReflectiveDataGrid = new OrderReflectiveDataGrid(parent, SWT.FULL_SELECTION|SWT.MULTI);
+            orderReflectiveDataGrid = new OrderReflectiveDataTableGrid(parent, SWT.FULL_SELECTION|SWT.MULTI);
             FormData fd = new FormData(600,300);
             fd.top = new FormAttachment(filtersGroup,5);
             fd.left = new FormAttachment(0,100,5);

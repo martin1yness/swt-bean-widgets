@@ -21,20 +21,28 @@ import org.mockito.Mock;
 import org.mockito.internal.verification.Times;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.collection.IsArray.array;
-import static org.hamcrest.collection.IsArrayContaining.hasItemInArray;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.collection.IsCollectionContaining.hasItems;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willCallRealMethod;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyCollection;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.anyVararg;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.mock;
 
 /**
  * AbstractDataTreeGridTest
@@ -44,7 +52,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(org.mockito.runners.MockitoJUnitRunner.class)
 public class AbstractDataTreeGridTest {
-    public static class TestBean implements Comparable<TestBean> {
+    /*public static class TestBean implements Comparable<TestBean> {
         private String objectOne = "One"+Math.random();
         private TestBean2 testBean2 = new TestBean2();
         private List<TestBean2> testBean2s = new ArrayList<TestBean2>();
@@ -128,9 +136,9 @@ public class AbstractDataTreeGridTest {
     @Mock CheckboxTreeViewer treeViewer;
     @Mock Tree tree;
     @Mock TreeItem treeItemA, treeItemB, treeItemC, treeItemA_A, treeItemA_B, treeItemA_C,
-            treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C; /*,
+            treeItemB_A, treeItemB_B, treeItemB_C, treeItemC_A, treeItemC_B, treeItemC_C; *//*,
             treeItemA_A_A, treeItemA_B_A, treeItemA_C_A, treeItemB_A_A, treeItemB_B_A,
-            treeItemB_C_A, treeItemC_A_A, treeItemC_B_A, treeItemC_C_A;*/
+            treeItemB_C_A, treeItemC_A_A, treeItemC_B_A, treeItemC_C_A;*//*
     @Mock TreeColumn colA, colB;
     TestBean beanA, beanB, beanC;
     ArrayList<TestBean> testBeans = new ArrayList<TestBean>(3);
@@ -808,5 +816,5 @@ public class AbstractDataTreeGridTest {
         assertThat(children.length, is(1));
         assertThat((TestBean2)children[0].getValue(), is(beanA.getTestBean2()));
     }
-
+*/
 }

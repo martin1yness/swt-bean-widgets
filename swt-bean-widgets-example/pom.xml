@@ -4,7 +4,7 @@
 
   <groupId>com.magnetstreet.swt</groupId>
   <artifactId>swt-bean-widgets-example</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-beta4</version>
   <packaging>jar</packaging>
 
   <name>SWT Bean Widgets Example Package</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>com.magnetstreet.swt</groupId>
     <artifactId>swt-bean-widgets-super-pom</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-beta4</version>
     <relativePath>../swt-bean-widgets-super-pom</relativePath>
   </parent>
 

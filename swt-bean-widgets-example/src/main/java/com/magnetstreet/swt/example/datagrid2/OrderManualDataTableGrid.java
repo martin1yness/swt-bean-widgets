@@ -1,11 +1,11 @@
 package com.magnetstreet.swt.example.datagrid2;
 
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.AbstractDataTableGrid;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.editor.AbstractDataGridCellEditingSupport;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.editor.DateTimeCellEditor;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.header.ColumnHeaderProvider;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.validator.AbstractTooltipDataGridCellValidator;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.validator.IDataGridCellValidator;
+import com.magnetstreet.swt.beanwidget.datagrid2.AbstractDataTableGrid;
+import com.magnetstreet.swt.beanwidget.datagrid2.editor.AbstractDataGridCellEditingSupport;
+import com.magnetstreet.swt.beanwidget.datagrid2.editor.DateTimeCellEditor;
+import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
+import com.magnetstreet.swt.beanwidget.datagrid2.validator.AbstractTooltipDataGridCellValidator;
+import com.magnetstreet.swt.beanwidget.datagrid2.validator.IDataGridCellValidator;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
 import org.eclipse.jface.viewers.CellEditor;

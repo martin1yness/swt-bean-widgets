@@ -1,6 +1,6 @@
 package com.magnetstreet.swt.example.datagrid2.reflective;
 
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.filter.SimpleInclusiveExclusiveKeywordColumnFilter;
+import com.magnetstreet.swt.beanwidget.datagrid2.filter.SimpleInclusiveExclusiveKeywordColumnFilter;
 import com.magnetstreet.swt.example.bean.Division;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;

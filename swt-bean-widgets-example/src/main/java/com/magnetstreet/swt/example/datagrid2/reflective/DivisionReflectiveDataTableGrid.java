@@ -1,7 +1,7 @@
 package com.magnetstreet.swt.example.datagrid2.reflective;
 
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.ReflectiveDataTableGrid;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.editor.StringEditingSupport;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.ReflectiveDataTableGrid;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.StringEditingSupport;
 import com.magnetstreet.swt.example.bean.Division;
 import org.eclipse.swt.widgets.Composite;
 

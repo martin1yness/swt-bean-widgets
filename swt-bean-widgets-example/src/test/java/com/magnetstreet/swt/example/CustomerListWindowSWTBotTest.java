@@ -2,6 +2,7 @@ package com.magnetstreet.swt.example;
 
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.magnetstreet.swt.example.CustomerListWindow;
@@ -35,8 +36,11 @@ public class CustomerListWindowSWTBotTest {
         SWTBotPreferences.TYPE_INTERVAL = 1000;
     }
 
+    @AfterClass public static void shutdownClass() throws Exception {
+        shell.dispose();
+    }
+
     @Test public  void testDblClickOpenDialog() throws InterruptedException {
-        Thread.sleep(6000);
         bot.table().doubleClick(1,1);
         assertTrue(bot.checkBox().isChecked());
     }

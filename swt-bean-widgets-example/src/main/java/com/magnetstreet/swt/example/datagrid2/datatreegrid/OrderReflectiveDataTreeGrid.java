@@ -1,7 +1,7 @@
 package com.magnetstreet.swt.example.datagrid2.datatreegrid;
 
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.ReflectiveDataTreeGrid;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.contextmenu.ContextMenuAction;
+import com.magnetstreet.swt.beanwidget.datagrid2.ReflectiveDataTreeGrid;
+import com.magnetstreet.swt.beanwidget.datagrid2.contextmenu.ContextMenuAction;
 import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;

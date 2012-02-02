@@ -1,7 +1,7 @@
 package com.magnetstreet.swt.example.datagrid2.datatreegrid;
 
 import com.google.common.collect.Lists;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.filter.ColumnFilter;
+import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;

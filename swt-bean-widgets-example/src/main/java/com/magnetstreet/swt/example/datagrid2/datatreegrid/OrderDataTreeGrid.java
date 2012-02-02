@@ -1,9 +1,9 @@
 package com.magnetstreet.swt.example.datagrid2.datatreegrid;
 
 import com.google.common.collect.Sets;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.header.ColumnHeaderProvider;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.AbstractDataTreeGrid;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.contextmenu.ContextMenuAction;
+import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
+import com.magnetstreet.swt.beanwidget.datagrid2.AbstractDataTreeGrid;
+import com.magnetstreet.swt.beanwidget.datagrid2.contextmenu.ContextMenuAction;
 import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;

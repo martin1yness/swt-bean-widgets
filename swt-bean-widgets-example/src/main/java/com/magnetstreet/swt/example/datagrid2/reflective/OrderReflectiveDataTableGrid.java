@@ -1,12 +1,12 @@
 package com.magnetstreet.swt.example.datagrid2.reflective;
 
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.ReflectiveDataTableGrid;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.editor.BigDecimalEditingSupport;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.editor.BooleanEditingSupport;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.editor.CalendarEditingSupport;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.editor.SelectableObjectEditingSupport;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.header.TemplatedColumnHeaderProvider;
-import com.magnetstreet.swt.beanwidget.datagrid2.datatreegrid.reflective.viewer.TemplatedColumnLabelProvider;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.ReflectiveDataTableGrid;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.BigDecimalEditingSupport;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.BooleanEditingSupport;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.CalendarEditingSupport;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.editor.SelectableObjectEditingSupport;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.header.TemplatedColumnHeaderProvider;
+import com.magnetstreet.swt.beanwidget.datagrid2.reflective.viewer.TemplatedColumnLabelProvider;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;

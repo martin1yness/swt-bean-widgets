@@ -1,14 +1,11 @@
-package com.magnetstreet.swt.example.datagrid2.datatreegrid;
+package com.magnetstreet.swt.example.datagrid2;
 
-import com.google.common.collect.Sets;
-import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
-import com.magnetstreet.swt.beanwidget.datagrid2.AbstractDataTreeGrid;
+import com.magnetstreet.swt.beanwidget.datagrid2.ReflectiveDataTreeGrid;
 import com.magnetstreet.swt.beanwidget.datagrid2.contextmenu.ContextMenuAction;
 import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.TreeNode;
@@ -23,9 +20,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Order Tree View
@@ -33,10 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 10/12/11
  */
-public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
-    public AtomicInteger actionCounter = new AtomicInteger(0);
-
-    public OrderDataTreeGrid(Composite composite, int i) {
+public class OrderReflectiveDataTreeGrid extends ReflectiveDataTreeGrid<Order> {
+    public OrderReflectiveDataTreeGrid(Composite composite, int i) {
         super(composite, i);
     }
 
@@ -62,72 +54,33 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
                 ((TreeViewer) getViewer()).getTree().setSelection(treeItem);
             }
         }));
-        bindContextMenuAction(new ActionContributionItem(new Action("Normal A&ction@CTRL+N") {
-            @Override public void run() {
-                System.out.println("Normal Action Invoked " + actionCounter.incrementAndGet() + " times.");
-            }
-        }));
-        bindContextMenuAction(new ActionContributionItem(new ContextMenuAction((HashSet)Sets.newHashSet(Order.class)) {
-            @Override public String getText() { return "Order Only Action"; }
-            @Override public void run() { System.out.println("Order Action Invoked " + actionCounter.incrementAndGet() + " times."); }
-        }));
-        bindContextMenuAction(new ActionContributionItem(new ContextMenuAction((HashSet)Sets.newHashSet(OrderItem.class)) {
-            @Override public String getText() { return "Item Only Action"; }
-            @Override public void run() { System.out.println("Item Action Invoked " + actionCounter.incrementAndGet() + " times."); }
-        }));
     }
 
     protected void defineColumn_id() {
         String identifier = "ID";
-        bindHeader(identifier, new ColumnHeaderProvider() {
-            @Override public String getTitle() { return "ID"; }
-            @Override public int getWidth() { return 90; }
-        });
-        bindViewer(Order.class, identifier, new ColumnLabelProvider() {
-            @Override public String getText(Object element) {
-                return ""+((Order)element).getId();
-            }
-        });
-        bindViewer(OrderItem.class, identifier, new ColumnLabelProvider() {
-            @Override public String getText(Object element) {
-                return ""+((OrderItem)element).getId();
-            }
-        });
-        bindSorter(Order.class, identifier, new Comparator<Order>() {
-            @Override public int compare(Order o1, Order o2) {
-                return o1.getId().compareTo(o2.getId());
-            }
-        });
-        bindSorter(OrderItem.class, identifier, new Comparator<OrderItem>() {
-            @Override public int compare(OrderItem o1, OrderItem o2) {
-                return o1.getId().compareTo(o2.getId());
-            }
-        });
+        bindColumnIdentifier(Order.class, identifier, "id");
+        bindColumnIdentifier(OrderItem.class, identifier, "id");
+        bindColumnWithDefaultTemplates(identifier, true);
     }
 
     protected void defineColumn_description() {
         String identifier = "Description";
-        bindHeader(identifier, new ColumnHeaderProvider() {
-            @Override public String getTitle() { return "Description"; }
-            @Override public int getWidth() { return 290; }
-        });
+        bindColumnIdentifier(Order.class, identifier, null);
+        bindColumnIdentifier(OrderItem.class, identifier, "productName");
+        bindColumnWithDefaultTemplates(identifier, true);
         bindViewer(Order.class, identifier, new ColumnLabelProvider() {
             @Override public String getText(Object element) {
                 return ((Order)element).getCustomer().getName() + " - " + ((Order)element).getDivision().getName();
             }
         });
-        bindViewer(OrderItem.class, identifier, new ColumnLabelProvider() {
-            @Override public String getText(Object element) {
-                return ((OrderItem)element).getProductName();
-            }
-        });
     }
     protected void defineColumn_quantity() {
         String identifier = "Quantity";
-        bindHeader(identifier, new ColumnHeaderProvider() {
-            @Override public String getTitle() { return "Quantity"; }
-            @Override public int getWidth() { return 100; }
-        });
+        bindColumnIdentifier(Order.class, identifier, null);
+        bindColumnIdentifier(OrderItem.class, identifier, "quantity");
+        bindColumnWithDefaultTemplates(identifier, true);
+
+        // Overrides default viewer
         bindViewer(Order.class, identifier, new ColumnLabelProvider() {
             @Override public String getText(Object element) {
                 int qty = 0;
@@ -137,23 +90,14 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
                 return ""+qty;
             }
         });
-        bindViewer(OrderItem.class, identifier, new ColumnLabelProvider() {
-            @Override public String getText(Object element) {
-                return ""+((OrderItem)element).getQuantity();
-            }
-        });
     }
     protected void defineColumn_cost() {
         String identifier = "Cost";
-        bindHeader(identifier, new ColumnHeaderProvider() {
-            @Override public String getTitle() { return "Cost"; }
-            @Override public int getWidth() { return 150; }
-        });
-        bindViewer(Order.class, identifier, new ColumnLabelProvider() {
-            @Override public String getText(Object element) {
-                return ((Order)element).getTotalCost().toString();
-            }
-        });
+        bindColumnIdentifier(Order.class, identifier, "totalCost");
+        bindColumnIdentifier(OrderItem.class, identifier, null);
+        bindColumnWithDefaultTemplates(identifier, true);
+
+        // Overrides default viewer
         bindViewer(OrderItem.class, identifier, new ColumnLabelProvider() {
             @Override public String getText(Object element) {
                 return new BigDecimal(((OrderItem)element).getQuantity()).multiply(((OrderItem)element).getProductUnitPrice()).toString();
@@ -176,7 +120,7 @@ public class OrderDataTreeGrid extends AbstractDataTreeGrid<Order> {
             @Override protected Control createContents(Composite parent) {
                 Composite container = new Composite(parent, SWT.EMBEDDED);
                 container.setLayout(new FillLayout());
-                OrderDataTreeGrid orderDataTreeGrid = new OrderDataTreeGrid(container, SWT.MULTI) {
+                OrderReflectiveDataTreeGrid orderDataTreeGrid = new OrderReflectiveDataTreeGrid(container, SWT.MULTI) {
                     @Override protected void preInit() {
                         super.preInit();    //To change body of overridden methods use File | Settings | File Templates.
                     }

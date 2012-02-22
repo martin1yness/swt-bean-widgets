@@ -6,6 +6,7 @@ import com.magnetstreet.swt.example.bean.CustomerRecord;
 import com.magnetstreet.swt.example.bean.Division;
 import com.magnetstreet.swt.example.bean.Order;
 import com.magnetstreet.swt.example.bean.OrderItem;
+import com.magnetstreet.swt.example.datagrid2.OrderDataTreeGrid;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;

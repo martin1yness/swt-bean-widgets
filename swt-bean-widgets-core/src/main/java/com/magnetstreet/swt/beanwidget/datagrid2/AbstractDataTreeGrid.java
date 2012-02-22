@@ -63,13 +63,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Abst
 
     protected DataTreeGridSorter treeViewerSorter = new DataTreeGridSorter() {
         @Override public int compare(Viewer viewer, Object e1, Object e2) {
-            if(sortingDefinitions.containsKey(((TreeNode)e1).getValue().getClass())) {
-                if(sortingDefinitions.get(((TreeNode)e1).getValue().getClass()).containsKey(identifier)) {
-                    int asc = sortingDefinitions.get(((TreeNode)e1).getValue().getClass()).get(identifier).compare((T)((TreeNode)e1).getValue(), (T)((TreeNode)e2).getValue());
-                    return (direction) ?  asc : -1 * asc ;
-                }
-            }
-            return 0;
+            return compareTreeNodes((TreeNode)e1, (TreeNode)e2, identifier, direction);
         }
     };
 
@@ -256,6 +250,20 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Abst
                 }
             });
         }
+    }
+    
+    protected int compareTreeNodes(TreeNode nodeA, TreeNode nodeB, String identifier, boolean direction) {
+        return compareTreeNodesWithSortingDefinitionsByColumnIdentifier(nodeA,nodeB,identifier,direction);
+    }
+
+    protected int compareTreeNodesWithSortingDefinitionsByColumnIdentifier(TreeNode nodeA, TreeNode nodeB, String identifier, boolean direction) {
+        if(sortingDefinitions.containsKey(nodeA.getValue().getClass())) {
+            if(sortingDefinitions.get(nodeB.getValue().getClass()).containsKey(identifier)) {
+                int asc = sortingDefinitions.get(nodeA.getValue().getClass()).get(identifier).compare(nodeA.getValue(), nodeB.getValue());
+                return (direction) ?  asc : -1 * asc ;
+            }
+        }
+        return 0;
     }
 
     public String captureSerializedColumnWidths() {

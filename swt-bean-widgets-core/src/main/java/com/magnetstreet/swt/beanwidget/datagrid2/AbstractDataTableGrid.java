@@ -3,14 +3,18 @@ package com.magnetstreet.swt.beanwidget.datagrid2;
 import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
 import com.magnetstreet.swt.beanwidget.datagrid2.sorter.DataGridColumnSorter;
+import com.magnetstreet.swt.exception.InvalidGridStyleException;
 import com.magnetstreet.swt.util.BeanUtil;
+import com.magnetstreet.swt.util.SWTUtil;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
@@ -21,10 +25,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.TreeColumn;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -151,6 +158,33 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
         getTableViewer().refresh();
     }
 
+    public String captureSerializedColumnWidths() {
+        StringBuilder sb = new StringBuilder();
+        for(TableColumn col: getTableViewer().getTable().getColumns()) {
+            sb.append(col.getText());
+            sb.append('=');
+            sb.append(col.getWidth());
+            sb.append(';');
+        }
+        return sb.toString();
+    }
+    public void applySerializedColumnWidths(String widths) {
+        if(widths==null || widths.trim().equals(""))
+            return;
+        String[] widthsArr = widths.split(";");
+        if(widthsArr.length!=getTableViewer().getTable().getColumnCount())
+            throw new RuntimeException("Malformed column widths string: "+ widths);
+        Map<String,Integer> widthsTable = new HashMap<String, Integer>();
+        for(String widthDef: widthsArr) {
+            String[] widthDefArr = widthDef.split("=");
+            widthsTable.put(widthDefArr[0], Integer.parseInt(widthDefArr[1]));
+        }
+        for(TableColumn col: getTableViewer().getTable().getColumns()) {
+            if(widthsTable.containsKey(col.getText()))
+                col.setWidth(widthsTable.get(col.getText()));
+        }
+    }
+
     /**
      * Defines how a column bound to the given property should be sorted when the user chooses to sort by that
      * column. The comparator should function as defined in the Java 1.6 spec.
@@ -236,6 +270,17 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
         List<T> selectedBeans = new LinkedList<T>();
         for(TableItem ti: getTableViewer().getTable().getSelection())
             selectedBeans.add((T)ti.getData());
+        return selectedBeans;
+    }
+
+    @Override public List<T> getCheckedBeans() {
+        if( !SWTUtil.hasStyle(getViewer().getControl().getStyle(), SWT.CHECK) )
+            throw new InvalidGridStyleException("DataGrid was not initialized with the SWT.CHECK style, there are no checked beans.");
+        List<T> selectedBeans = new LinkedList<T>();
+        for(TableItem ti: getTableViewer().getTable().getItems()) {
+            if(ti.getChecked())
+                selectedBeans.add((T)ti.getData());
+        }
         return selectedBeans;
     }
 }

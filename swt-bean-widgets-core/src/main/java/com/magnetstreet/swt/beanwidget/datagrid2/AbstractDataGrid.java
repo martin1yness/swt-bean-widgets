@@ -1,8 +1,13 @@
 package com.magnetstreet.swt.beanwidget.datagrid2;
 
 import com.magnetstreet.swt.beanwidget.datagrid2.sorter.DataGridColumnSorter;
+import com.magnetstreet.swt.exception.InvalidGridStyleException;
+import com.magnetstreet.swt.util.SWTUtil;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import java.lang.reflect.ParameterizedType;

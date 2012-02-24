@@ -75,6 +75,15 @@ public interface DataTableGrid<T> {
      * @return The bean(s) associated with the row(s) selected in the table
      */
     public List<T> getSelectedBeans();
+
+    /**
+     * @return All beans marked with a check, requires table to be SWT.CHECK style enabled
+     */
+    public List<T> getCheckedBeans();
+
+    public String captureSerializedColumnWidths();
+    public void applySerializedColumnWidths(String widths);
+
     /**
      * @return All beans added to the grid
      */

@@ -2,7 +2,7 @@ package com.magnetstreet.swt.beanwidget.datagrid2;
 
 import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
-import com.magnetstreet.swt.beanwidget.datagrid2.sorter.TableViewComparator;
+import com.magnetstreet.swt.beanwidget.datagrid2.sorter.DataGridColumnSorter;
 import com.magnetstreet.swt.util.BeanUtil;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -24,9 +24,9 @@ import org.eclipse.swt.widgets.TableItem;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.text.Collator;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,11 +46,10 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
 
     private boolean initialized = false;
 
-    protected int tableStyle = 0;
-    protected Collection<T> beans = new ArrayList<T>();
+    protected int tableStyle = 0;    
 
-    protected Map<String, ColumnHeaderProvider> columnHeaderDefinitions = new LinkedHashMap<String, ColumnHeaderProvider>();
-    protected Map<String, ColumnLabelProvider> columnDefinitions = new LinkedHashMap<String, ColumnLabelProvider>();
+    protected final Map<String, ColumnHeaderProvider> columnHeaderDefinitions = new LinkedHashMap<String, ColumnHeaderProvider>();
+    protected final Map<String, ColumnLabelProvider> columnDefinitions = new LinkedHashMap<String, ColumnLabelProvider>();
     protected Map<String, Callable<String>> legacyRegexFilterDefinitions = new LinkedHashMap<String, Callable<String>>();
     protected Map<String, ColumnFilter> filterDefinitions = new LinkedHashMap<String, ColumnFilter>();
     protected Map<String, EditingSupport> cellEditorDefinitions = new LinkedHashMap<String, EditingSupport>();
@@ -58,17 +57,6 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
     protected Map<String, Comparator<T>> sortingDefinitions = new LinkedHashMap<String, Comparator<T>>();
 
     protected Map<String, TableViewerColumn> tableViewerColumnMap = new LinkedHashMap<String, TableViewerColumn>();
-
-    protected TableViewComparator defaultSorter = new TableViewComparator() {
-        @Override public int compare(Viewer viewer, Object e1, Object e2) {
-            Comparator<T> viewerComparator = sortingDefinitions.get(property);
-            if(viewerComparator!=null) {
-                int asc = viewerComparator.compare((T)e1, (T)e2);
-                return (direction) ?  asc : -1 * asc ;
-            }
-            return 0;
-        }
-    };
 
     protected ViewerFilter legacyRegexViewerFilter = new ViewerFilter() {
         @Override public boolean select(Viewer viewer, Object o, Object o1) {
@@ -104,7 +92,7 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
         super(composite, SWT.NONE);
         setLayout(new FillLayout());
         tableStyle = i;
-        setViewer(new TableViewer(this, tableStyle|SWT.FULL_SELECTION));
+        setViewer(new TableViewer(this, tableStyle | SWT.FULL_SELECTION));
         preInit();
         initialize();
     }
@@ -122,8 +110,10 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
             column.setResizable(headerProvider.isResizable());
             column.addSelectionListener(new SelectionAdapter() {
                 @Override public void widgetSelected(SelectionEvent selectionEvent) {
-                    defaultSorter.setProperty(property);
-                    getTableViewer().refresh();
+                    boolean d = true;
+                    if(getViewer().getComparator() instanceof DataGridColumnSorter)
+                        d = !((DataGridColumnSorter)getViewer().getComparator()).getDirection();
+                    getViewer().setComparator(new DataGridColumnSorter(sortingDefinitions.get(property), getBeanToCategory(), d));
                 }
             });
             if(headerProvider.getTooltip()!=null) column.setToolTipText(headerProvider.getTooltip());
@@ -143,7 +133,8 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
      */
     protected abstract void preInit();
 
-    protected void initialize() {
+    @Override protected void initialize() {
+        super.initialize();
         generateViewerColumns();
         Table table = getTableViewer().getTable();
         table.setHeaderVisible(true);
@@ -151,7 +142,6 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
         getTableViewer().setContentProvider(new ArrayContentProvider());
         getTableViewer().addFilter(legacyRegexViewerFilter);
         getTableViewer().addFilter(defaultViewerFilter);
-        getTableViewer().setComparator(defaultSorter);
 
         initialized = true;
     }
@@ -248,10 +238,4 @@ public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> imple
             selectedBeans.add((T)ti.getData());
         return selectedBeans;
     }
-
-    @Override public void setBeans(Collection<T> beans) { this.beans = beans; }
-    @Override public Collection<T> getBeans() { return this.beans; }
-    @Override public void addBean(T bean) { this.beans.add(bean); }
-    @Override public void removeBean(T bean) { this.beans.remove(bean); }
-    @Override public void removeAllBeans() { this.beans = new ArrayList<T>(); }
 }

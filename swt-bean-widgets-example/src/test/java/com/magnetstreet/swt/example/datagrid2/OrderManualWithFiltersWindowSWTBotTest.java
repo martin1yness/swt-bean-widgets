@@ -111,10 +111,13 @@ public class OrderManualWithFiltersWindowSWTBotTest {
     }
 
     @Test public void testSortingFunctionality() throws InterruptedException {
-        bot.checkBox().click();
+        if(!bot.checkBox().isChecked())
+            bot.checkBox().click();
+
         SWTBotTable tbl = bot.table();
-        assertThat(tbl.getTableItem(0).getText(0), is("1"));
         SWTBotTableColumn idCol = tbl.header("ID");
+        idCol.click();
+        assertThat(tbl.getTableItem(0).getText(0), is("1"));
         idCol.click();
         assertThat(tbl.getTableItem(0).getText(0), is("100"));
         idCol.click();

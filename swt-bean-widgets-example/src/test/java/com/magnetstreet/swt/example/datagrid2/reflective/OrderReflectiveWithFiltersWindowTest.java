@@ -125,8 +125,10 @@ public class OrderReflectiveWithFiltersWindowTest {
     @Test public void testSortingFunctionality() throws InterruptedException {
         bot.checkBox().click();
         SWTBotTable tbl = bot.table();
-        assertThat(tbl.getTableItem(0).getText(0), is("1"));
         SWTBotTableColumn idCol = tbl.header("Id");
+        idCol.click();
+        Thread.sleep(10000);
+        assertThat(tbl.getTableItem(0).getText(0), is("1"));
         idCol.click();
         assertThat(tbl.getTableItem(0).getText(0), is("100"));
         idCol.click();
@@ -244,6 +246,25 @@ public class OrderReflectiveWithFiltersWindowTest {
         } catch (WidgetNotFoundException t) { }
         tbl.click(0, 1);
         assertThat(tbl.cell(0,2), is("Division A"));
+    }
+    
+    @Test public void testGroupingSortedItemsWithCategoryMechanism() throws Exception {
+        inst.getShell().getDisplay().syncExec(new Runnable() {
+            @Override public void run() {
+                inst.orderReflectiveDataGrid.groupOrdersByRevenue();
+                inst.orderReflectiveDataGrid.refresh();
+            }
+        });
+        bot.checkBox().select(); // show all
+
+        SWTBotTable tbl = bot.table();
+        SWTBotTableColumn idCol = tbl.header("Id");
+        assertThat(tbl.getTableItem(0).getText(0), is("1"));
+        idCol.click();
+        assertThat(tbl.getTableItem(0).getText(0), is("10"));
+        assertThat(tbl.getTableItem(10).getText(0), is("49"));
+        idCol.click();
+        assertThat(tbl.getTableItem(0).getText(0), is("1"));
     }
 
     @Ignore(value = "Wait until SWTBot supports drag and drop to write test for this.")

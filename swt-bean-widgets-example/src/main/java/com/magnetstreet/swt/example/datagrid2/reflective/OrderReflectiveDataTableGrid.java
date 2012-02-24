@@ -37,6 +37,18 @@ public class OrderReflectiveDataTableGrid extends ReflectiveDataTableGrid<Order>
         defineColumn_Paid();
         defineColumn_PlacedOn();
     }
+    
+    public void groupOrdersByRevenue() {
+        for(Order bean: beans) {
+            int category = 0;
+            if(bean.getTotalCost().doubleValue() >= 50)
+                category = 10;
+            else if(bean.getTotalCost().doubleValue() < 50 && bean.getTotalCost().doubleValue() > 10)
+                category = 5;
+                
+            bindBeanToCategory(bean, category);
+        }
+    }
 
     protected void defineColumn_ID() {
         bindColumnWithDefaults("id", true);

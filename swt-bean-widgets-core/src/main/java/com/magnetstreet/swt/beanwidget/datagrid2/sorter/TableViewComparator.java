@@ -10,7 +10,9 @@ import java.util.Comparator;
  *
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 4/27/11
+ * @deprecated Use com.magnetstreet.swt.beanwidget.datagrid2.sorter.DataGridColumnSorter
  */
+@Deprecated
 public abstract class TableViewComparator extends ViewerComparator {
     protected String property = "";
     protected boolean direction = false; // False DESC, True ASC

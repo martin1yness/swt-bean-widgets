@@ -2,6 +2,7 @@ package com.magnetstreet.swt.beanwidget.datagrid2;
 
 import com.magnetstreet.swt.beanwidget.datagrid2.contextmenu.ContextMenuAction;
 import com.magnetstreet.swt.beanwidget.datagrid2.contextmenu.ContextMenuManager;
+import com.magnetstreet.swt.beanwidget.datagrid2.sorter.DataGridColumnSorter;
 import com.magnetstreet.swt.beanwidget.datagrid2.sorter.DataTreeGridSorter;
 import com.magnetstreet.swt.beanwidget.datagrid2.filter.ColumnFilter;
 import com.magnetstreet.swt.beanwidget.datagrid2.header.ColumnHeaderProvider;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,16 +58,10 @@ import java.util.logging.Logger;
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 10/11/11
  */
-public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends AbstractDataGrid implements DataTreeGrid<T> {
+public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends AbstractDataGrid<T> implements DataTreeGrid<T> {
     private Logger logger = Logger.getLogger(AbstractDataTreeGrid.class.getSimpleName());
 
     private boolean initialized = false;
-
-    protected DataTreeGridSorter treeViewerSorter = new DataTreeGridSorter() {
-        @Override public int compare(Viewer viewer, Object e1, Object e2) {
-            return compareTreeNodes((TreeNode)e1, (TreeNode)e2, identifier, direction);
-        }
-    };
 
     protected ViewerFilter defaultViewerFilter = new ViewerFilter() {
         @Override public boolean select(Viewer viewer, Object parentElement, Object element) {
@@ -86,7 +82,7 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Abst
     };
 
     protected Map<String, ColumnHeaderProvider> columnHeaderDefinitions = new LinkedHashMap<String, ColumnHeaderProvider>();
-    protected Map<Class, Map<String, ColumnLabelProvider>> columnDefinitions = new HashMap<Class, Map<String, ColumnLabelProvider>>();
+    protected final Map<Class, Map<String, ColumnLabelProvider>> columnDefinitions = new HashMap<Class, Map<String, ColumnLabelProvider>>();
     protected Map<Class, Map<String, ColumnFilter>> filterDefinitions = new HashMap<Class, Map<String, ColumnFilter>>();
     protected Map<Class, Map<String, EditingSupport>> cellEditorDefinitions = new HashMap<Class, Map<String, EditingSupport>>();
     protected Map<Class, Map<String, ICellEditorValidator>> cellEditorValidatorDefinitions = new LinkedHashMap<Class, Map<String, ICellEditorValidator>>();
@@ -94,8 +90,6 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Abst
 
     protected ContextMenuManager contextMenuManager = null;
     protected List<IContributionItem> contextMenuActions = new LinkedList<IContributionItem>();
-
-    protected List<T> beans = new ArrayList<T>();
 
     public AbstractDataTreeGrid(Composite composite, int i) {
         super(composite, SWT.NONE);
@@ -114,14 +108,14 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Abst
      */
     protected abstract void preInit();
 
-    protected void initialize() {
+    @Override protected void initialize() {
+        super.initialize();
         buildColumns();
         getTreeViewer().getTree().setHeaderVisible(true);
         getTreeViewer().getTree().setLinesVisible(true);
         getTreeViewer().setContentProvider(new TreeNodeContentProvider() {
             // Override if necessary
         });
-        getTreeViewer().setSorter(treeViewerSorter);
         getTreeViewer().addFilter(defaultViewerFilter);
         if(contextMenuActions!=null && contextMenuActions.size() > 0)
             addContextMenu();
@@ -139,8 +133,14 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Abst
             if(columnHeaderProvider.getImage()!=null) column.setImage(columnHeaderProvider.getImage());
             column.addSelectionListener(new SelectionAdapter() {
                 @Override public void widgetSelected(SelectionEvent selectionEvent) {
-                    treeViewerSorter.setIdentifier(columnIdentifier);
-                    getTreeViewer().refresh();
+                    boolean d = true;
+                    if(getViewer().getComparator() instanceof DataGridColumnSorter)
+                        d = !((DataGridColumnSorter)getViewer().getComparator()).getDirection();
+                    viewer.setComparator(new DataGridColumnSorter(new Comparator() {
+                        @Override public int compare(Object o1, Object o2) {
+                            return sortingDefinitions.get(o1.getClass()).get(columnIdentifier).compare(o1,o2);
+                        }
+                    }, getBeanToCategory(), d));
                 }
             });
             columnViewer.setLabelProvider(new ColumnLabelProvider() {
@@ -250,10 +250,6 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Abst
                 }
             });
         }
-    }
-    
-    protected int compareTreeNodes(TreeNode nodeA, TreeNode nodeB, String identifier, boolean direction) {
-        return compareTreeNodesWithSortingDefinitionsByColumnIdentifier(nodeA,nodeB,identifier,direction);
     }
 
     protected int compareTreeNodesWithSortingDefinitionsByColumnIdentifier(TreeNode nodeA, TreeNode nodeB, String identifier, boolean direction) {
@@ -609,19 +605,5 @@ public abstract class AbstractDataTreeGrid<T extends Comparable<T>> extends Abst
             }
         }
         return matchedBeans;
-    }
-    @Override public List<T> getBeans() { return beans; }
-    @Override public void setBeans(Collection<T> beans) {
-        getBeans().clear();
-        getBeans().addAll(beans);
-    }
-    @Override public void addBean(T bean) {
-        getBeans().add(bean);
-    }
-    @Override public void removeBean(T bean) {
-        getBeans().remove(bean);
-    }
-    @Override public void removeAllBeans() {
-        getBeans().clear();
     }
 }

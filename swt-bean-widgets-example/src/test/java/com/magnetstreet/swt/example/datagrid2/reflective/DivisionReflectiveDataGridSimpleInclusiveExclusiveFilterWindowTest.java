@@ -51,8 +51,8 @@ public class DivisionReflectiveDataGridSimpleInclusiveExclusiveFilterWindowTest 
 
     @Test public void testFilters() throws InterruptedException {
         SWTBotTable tbl = bot.table();
-        tbl.header("Id").click();   // sorty by id DESC
         tbl.header("Id").click();   // sorty by id ASC
+        tbl.header("Id").click();   // sorty by id DESC
         assertThat(tbl.rowCount(), is(3));
 
         bot.textWithLabel("Description:").setText("second");
@@ -60,8 +60,8 @@ public class DivisionReflectiveDataGridSimpleInclusiveExclusiveFilterWindowTest 
 
         bot.textWithLabel("Description:").setText("in -second");
         assertThat(tbl.rowCount(), is(2));
-        assertThat(tbl.cell(0,2), is(containsString("first")));
-        assertThat(tbl.cell(1,2), is(containsString("third")));
+        assertThat(tbl.cell(0,2), is(containsString("third")));
+        assertThat(tbl.cell(1,2), is(containsString("first")));
     }
 
 }

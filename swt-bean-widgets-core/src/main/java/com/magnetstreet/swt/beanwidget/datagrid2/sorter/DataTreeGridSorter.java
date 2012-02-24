@@ -10,7 +10,9 @@ import java.text.Collator;
  *
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 10/12/11
+ * @deprecated Use com.magnetstreet.swt.beanwidget.datagrid2.sorter.DataGridColumnSorter
  */
+@Deprecated
 public abstract class DataTreeGridSorter extends ViewerSorter {
     protected String identifier = "";
     protected boolean direction = false; // False DESC, True ASC

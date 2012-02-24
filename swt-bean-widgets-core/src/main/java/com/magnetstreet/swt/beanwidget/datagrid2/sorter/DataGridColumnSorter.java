@@ -1,7 +1,4 @@
 package com.magnetstreet.swt.beanwidget.datagrid2.sorter;
-
-import com.magnetstreet.swt.beanwidget.datagrid2.viewer.BeanValueProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 

@@ -48,7 +48,7 @@ import java.util.logging.Logger;
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 4/27/11
  */
-public abstract class AbstractDataTableGrid<T> extends AbstractDataGrid<T> implements DataTableGrid<T> {
+public abstract class AbstractDataTableGrid<T extends Comparable<T>> extends AbstractDataGrid<T> implements DataTableGrid<T> {
     private Logger logger = Logger.getLogger(AbstractDataTableGrid.class.getSimpleName());
 
     private boolean initialized = false;

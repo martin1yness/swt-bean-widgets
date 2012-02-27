@@ -7,12 +7,14 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,17 +25,15 @@ import java.util.Map;
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 2011-12-23
  */
-public abstract class AbstractDataGrid<T> extends Composite {
+public abstract class AbstractDataGrid<T extends Comparable<T>> extends Composite {
     protected List<T> beans = new ArrayList<T>();
 
     private final Map<Object, Integer> beanToCategory = new HashMap<Object, Integer>();
-    protected final Class<T> parentType;
 
     protected ColumnViewer viewer;
 
     public AbstractDataGrid(Composite parent, int style) {
         super(parent, style);
-        parentType = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     public ColumnViewer getViewer() {
@@ -45,7 +45,9 @@ public abstract class AbstractDataGrid<T> extends Composite {
     }
 
     protected void initialize() {
-
+        getViewer().setComparator(new DataGridColumnSorter(new Comparator<T>() {
+            @Override public int compare(T o1, T o2) { return o1.compareTo(o2); }
+        }, getBeanToCategory(), true));
     }
 
     public void clearBeanToCategoryMappings() {

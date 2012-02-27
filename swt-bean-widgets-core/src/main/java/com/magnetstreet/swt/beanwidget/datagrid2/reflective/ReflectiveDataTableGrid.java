@@ -16,7 +16,7 @@ import java.util.Comparator;
  * @author Martin Dale Lyness <martin.lyness@gmail.com>
  * @since 5/5/11
  */
-public abstract class ReflectiveDataTableGrid<T> extends AbstractDataTableGrid<T> {
+public abstract class ReflectiveDataTableGrid<T extends Comparable<T>> extends AbstractDataTableGrid<T> {
     public ReflectiveDataTableGrid(Composite composite, int i) {
         super(composite, i);
     }
